@@ -43,9 +43,19 @@ void UServerGameInstance::OnFindSessionComplete(bool Succeeded)
 	if (Succeeded)
 	{
 		TArray<FOnlineSessionSearchResult> SearchResults = SessionSearch->SearchResults;
+		for (FOnlineSessionSearchResult Result : SearchResults)
+		{
+			if (!Result.IsValid())
+				continue;
+			FServerInfo Info;
+			Info.ServerName = "Test Server name";
+			Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+			Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
+			ServerListDel.Broadcast(Info);
+
+		}
 
 		UE_LOG(LogTemp, Warning, TEXT("OnFindSession Complete, Server Count : %d"), SearchResults.Num());
-
 
 		if (SearchResults.Num())
 		{

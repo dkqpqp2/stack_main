@@ -7,9 +7,19 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "ServerGameInstance.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FServerInfo //서버 정보 가져오기 위한 구조체 
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadOnly)
+	   FString ServerName;
+	UPROPERTY(BlueprintReadOnly)
+	   int32 CurrentPlayers;
+	UPROPERTY(BlueprintReadOnly)
+	   int32 MaxPlayers;
+};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerDel, FServerInfo, ServerListDel);
 UCLASS()
 class STACKOBOT_API UServerGameInstance : public UGameInstance
 {
@@ -19,6 +29,9 @@ public:
 	UServerGameInstance();
 
 protected:
+	UPROPERTY(BlueprintAssignable)
+	FServerDel ServerListDel;
+
 	IOnlineSessionPtr SessionInterface;
 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
