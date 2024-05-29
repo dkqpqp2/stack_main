@@ -18,6 +18,9 @@ public:
 
 private:
 	int32 PlayerIDOfNextPlayer = 0;
+
+public:
+	void ServerTravelToGameMap();
 };
 
 
