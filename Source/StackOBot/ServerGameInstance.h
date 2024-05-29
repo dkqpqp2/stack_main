@@ -14,10 +14,17 @@ struct FServerInfo //서버 정보 가져오기 위한 구조체
 public:
 	UPROPERTY(BlueprintReadOnly)
 	   FString ServerName;
+    UPROPERTY(BlueprintReadOnly)
+	   FString PlayerCountStr;
 	UPROPERTY(BlueprintReadOnly)
 	   int32 CurrentPlayers;
 	UPROPERTY(BlueprintReadOnly)
 	   int32 MaxPlayers;
+
+	   void SetPlayerCount()
+	   {
+		   PlayerCountStr = FString(FString::FromInt(CurrentPlayers) + "/" + FString::FromInt(MaxPlayers));
+	   } 
 };
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerDel, FServerInfo, ServerListDel);
 UCLASS()
@@ -43,8 +50,8 @@ protected:
 	virtual void OnFindSessionComplete(bool Succeeded);
 	virtual void OnJoinsessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 	UFUNCTION(BlueprintCallable)
-	void CreateServer();
+	void CreateServer(FString ServerName, FString HostName);
 
 	UFUNCTION(BlueprintCallable)
-	void JoinServer();
+	void FindServers();
 };

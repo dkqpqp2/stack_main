@@ -47,10 +47,19 @@ void UServerGameInstance::OnFindSessionComplete(bool Succeeded)
 		{
 			if (!Result.IsValid())
 				continue;
+
 			FServerInfo Info;
-			Info.ServerName = "Test Server name";
+			FString ServerName = "Empty Server Name";
+			FString HostName = "Empty Host Name";
+
+			Result.Session.SessionSettings.Get(FName("SERVER_NAME_KEY"), ServerName);
+			Result.Session.SessionSettings.Get(FName("SERVER_HOSTNAME_KEY"), HostName);
+
+			Info.ServerName = ServerName;
 			Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
 			Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
+			Info.SetPlayerCount();
+
 			ServerListDel.Broadcast(Info);
 
 		}
@@ -78,7 +87,7 @@ void UServerGameInstance::OnJoinsessionComplete(FName SessionName, EOnJoinSessio
 	}
 }
 
-void UServerGameInstance::CreateServer()
+void UServerGameInstance::CreateServer(FString ServerName, FString HostName)
 {
 	UE_LOG(LogTemp, Warning, TEXT("CreateServer"));
 
@@ -93,11 +102,14 @@ void UServerGameInstance::CreateServer()
 	SessionSettings.bUsesPresence = true;
 	SessionSettings.NumPublicConnections = 5;
 
+	SessionSettings.Set(FName("SERVER_NAME_KEY"), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.Set(FName("SERVER_HOSTNAME_KEY"), HostName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 	SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
 
 }
 
-void UServerGameInstance::JoinServer()
+void UServerGameInstance::FindServers()
 {
 	SessionSearch = MakeShareable(new FOnlineSessionSearch()); //MakeShareable = smart_pointer 
 	if (IOnlineSubsystem::Get()->GetSubsystemName() != "NULL")
@@ -108,5 +120,5 @@ void UServerGameInstance::JoinServer()
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);// query setting은 조건검색 -> prsence는 접속 여부로 보면됩니다  equals -> 이에 해당하는
 
 	SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-	UE_LOG(LogTemp, Warning, TEXT("JoinServer"));
+	UE_LOG(LogTemp, Warning, TEXT("FindServers"));
 }
