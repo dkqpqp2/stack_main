@@ -18,7 +18,7 @@ void ALobbyPlayerController::BeginPlay()
 
 	FInputModeGameAndUI LobbyInputMode;
 	SetInputMode(LobbyInputMode);
-
+	
 	if (IsLocalController())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---LobbyPC BeginPlay()---"));

@@ -35,5 +35,4 @@ protected:
 public:
 	void LobbyWidgetUpdate();
 
-
 };

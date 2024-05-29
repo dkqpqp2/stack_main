@@ -57,3 +57,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 	LocalLobbyPC->LobbyWidgetUpdate();
 }
+
+void ALobbyGameMode::ServerTravelToGameMap()
+{
+	GetWorld()->ServerTravel("TempGameMap");
+}

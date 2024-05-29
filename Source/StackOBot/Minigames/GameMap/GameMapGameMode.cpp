@@ -4,27 +4,27 @@
 #include "GameMapGameMode.h"
 #include "../BasePlayerState.h"
 #include "../BaseGameInstance.h"
+#include "GamePlayerController.h"
 
 
 void AGameMapGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
 {
-	UBaseGameInstance* GI = GetGameInstance<UBaseGameInstance>();
-	if (!IsValid(GI))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GI Is Not Valid : AGameMapGameMode::RestartPlayer()"));
-		return;
-	}
-
 	ABasePlayerState* PS = NewPlayer->GetPlayerState<ABasePlayerState>();
-
 	if (!IsValid(PS))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Is Not Valid : AGameMapGameMode::RestartPlayer()"));
 		return;
 	}
 
+	AGamePlayerController* PC = Cast<AGamePlayerController>(NewPlayer);
+	if (!IsValid(PC))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PC Is Not Valid : AGameMapGameMode::RestartPlayer()"));
+		return;
+	}
 
-	const TSubclassOf<APawn>* ClassOfSpawningPawn = GI->FindCharacterClass(PS->GetSelectedCharacter());
+	// Change Game Instance to PlayerController...
+	const TSubclassOf<APawn>* ClassOfSpawningPawn = PC->FindCharacterClass(PS->GetSelectedCharacter());
 
 	FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;

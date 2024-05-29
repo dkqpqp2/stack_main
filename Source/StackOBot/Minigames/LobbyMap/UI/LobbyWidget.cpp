@@ -8,10 +8,10 @@ void ULobbyWidget::SwitchSwitcherWidget(bool bHasAuthority)
 {
 	if (bHasAuthority)
 	{
-		ReadyOrStartSwitcher->ActiveWidgetIndex = 1;
+		ReadyOrStartSwitcher->SetActiveWidgetIndex(1);
 	}
 	else
 	{
-		ReadyOrStartSwitcher->ActiveWidgetIndex = 0;
+		ReadyOrStartSwitcher->SetActiveWidgetIndex(0);
 	}
 }
