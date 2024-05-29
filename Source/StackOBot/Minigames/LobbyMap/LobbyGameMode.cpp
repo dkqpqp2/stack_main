@@ -48,14 +48,22 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%d : Current GameState's PlayerArray's Num"), LobbyGS->PlayerArray.Num())); // It Seems Okay 2
 
 	LobbyPS->SetPlayerEnterID(PlayerIDOfNextPlayer);
-	PlayerIDOfNextPlayer++;
+
 
 	auto LocalLobbyPC = GetWorld()->GetFirstPlayerController<ALobbyPlayerController>();
 	if (!IsValid(LocalLobbyPC))
 	{
 		return;
 	}
-	LocalLobbyPC->LobbyWidgetUpdate();
+
+	// 방장이 아닌 새로운 플레이어가 들어올 때, 서버의 위젯을 한번 업데이트 시켜주자.
+	// TODO : 그러고 보니 나갈때도 해줘야 겠네...
+	if (PlayerIDOfNextPlayer != 0)
+	{
+		LocalLobbyPC->LobbyWidgetUpdate();
+	}
+
+	PlayerIDOfNextPlayer++;
 }
 
 void ALobbyGameMode::ServerTravelToGameMap()
