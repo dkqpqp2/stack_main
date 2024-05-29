@@ -26,6 +26,7 @@ public:
 		   PlayerCountStr = FString(FString::FromInt(CurrentPlayers) + "/" + FString::FromInt(MaxPlayers));
 	   } 
 };
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerDel, FServerInfo, ServerListDel);
 UCLASS()
 class STACKOBOT_API UServerGameInstance : public UGameInstance
@@ -49,6 +50,8 @@ protected:
 	virtual void OnCreateSessionComplete(FName ServerName, bool Succeeded);
 	virtual void OnFindSessionComplete(bool Succeeded);
 	virtual void OnJoinsessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	//virtual void OnDestroysessionComplete(FName SessionName, bool Succeeded);
+	
 	UFUNCTION(BlueprintCallable)
 	void CreateServer(FString ServerName, FString HostName);
 

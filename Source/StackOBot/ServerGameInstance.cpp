@@ -23,7 +23,6 @@ void UServerGameInstance::Init()
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UServerGameInstance::OnCreateSessionComplete);
 			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UServerGameInstance::OnFindSessionComplete);
 			SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UServerGameInstance::OnJoinsessionComplete);
- 		    
 		}
 	}
 }
@@ -89,7 +88,12 @@ void UServerGameInstance::OnJoinsessionComplete(FName SessionName, EOnJoinSessio
 
 void UServerGameInstance::CreateServer(FString ServerName, FString HostName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("CreateServer"));
+	auto ExistingSession = SessionInterface->GetNamedSession(FName("MY Session"));
+	if (ExistingSession != nullptr)
+	{
+		SessionInterface->DestroySession(FName("MY Session"));
+		return;
+	}
 
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bAllowJoinInProgress = true;
