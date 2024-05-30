@@ -45,13 +45,18 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPostLogin, GameState Not Valid"));
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%d : Current GameState's PlayerArray's Num"), LobbyGS->PlayerArray.Num())); // It Seems Okay 2
 
 	LobbyPS->SetPlayerEnterID(PlayerIDOfNextPlayer);
 
+	if (LobbyPC->IsLocalController())	// Server's Controller
+	{
+		LobbyPS->SetIsHost(true);
 
-	auto LocalLobbyPC = GetWorld()->GetFirstPlayerController<ALobbyPlayerController>();
-	if (!IsValid(LocalLobbyPC))
+	}
+
+
+	auto HostLobbyPC = GetWorld()->GetFirstPlayerController<ALobbyPlayerController>();
+	if (!IsValid(HostLobbyPC))
 	{
 		return;
 	}
@@ -60,7 +65,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	// TODO : 그러고 보니 나갈때도 해줘야 겠네...
 	if (PlayerIDOfNextPlayer != 0)
 	{
-		LocalLobbyPC->LobbyWidgetUpdate();
+		HostLobbyPC->LobbyWidgetUpdate();
 	}
 
 	PlayerIDOfNextPlayer++;

@@ -115,9 +115,6 @@ void ALobbyPlayerState::OnRep_SelectedCharacter()
 
 
 // ----------------- IsHost, IsReady ------------------------------
-void ALobbyPlayerState::OnRep_bIsHost()
-{
-}
 
 void ALobbyPlayerState::OnRep_bIsReady()
 {
@@ -125,21 +122,46 @@ void ALobbyPlayerState::OnRep_bIsReady()
 	OnReadyChanged();
 }
 
+void ALobbyPlayerState::SV_RequestSetIsReady_Implementation(const bool IsReady)
+{
+	bIsReady = IsReady;
+	OnReadyChanged();
+}
+
 void ALobbyPlayerState::OnReadyChanged()
 {
 	// change Widget's Readytext...
+	UpdatePlayerListWidget();
 }
 
 void ALobbyPlayerState::SetIsReady(bool bNewIsReady)
 {
-	bIsReady = bNewIsReady;
-	// Call On Ready Change...
-	OnReadyChanged();
+	if (HasAuthority())
+	{
+		bIsReady = bNewIsReady;
+		// Call On Ready Change...
+		OnReadyChanged();
+	}
+	else
+	{
+		// send to server... mostly here.
+		SV_RequestSetIsReady(bNewIsReady);
+	}
 }
 
 bool ALobbyPlayerState::GetIsReady() const
 {
 	return bIsReady;
+}
+
+
+void ALobbyPlayerState::SetIsHost(bool IsHost)
+{
+	bIsHost = IsHost;
+}
+bool ALobbyPlayerState::GetIsHost() const
+{
+	return bIsHost;
 }
 // ----------------- IsHost, IsReady ------------------------------
 
