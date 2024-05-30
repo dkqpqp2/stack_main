@@ -7,6 +7,7 @@
 
 void UTeamSelectWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
 	IsRedTeamCheckBox->OnCheckStateChanged.AddDynamic(this, &ThisClass::OnIsRedTeamSettedTo);
 	
 }

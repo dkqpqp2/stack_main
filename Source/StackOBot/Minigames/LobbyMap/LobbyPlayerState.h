@@ -47,17 +47,17 @@ protected:
 
 // ------------- IsReady, IsHost Related Functions Only In LobbyPlayerState -------------
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_bIsHost)
+	UPROPERTY(Replicated)
 	bool bIsHost;
 
 	UPROPERTY(ReplicatedUsing = OnRep_bIsReady)
 	bool bIsReady;
 
 	UFUNCTION()
-	void OnRep_bIsHost();
-
-	UFUNCTION()
 	void OnRep_bIsReady();
+
+	UFUNCTION(Server, Reliable)
+	void SV_RequestSetIsReady(const bool IsReady);
 
 	void OnReadyChanged();
 
@@ -65,6 +65,9 @@ protected:
 public:
 	void SetIsReady(bool bNewIsReady);
 	bool GetIsReady() const;
+
+	void SetIsHost(bool IsHost);
+	bool GetIsHost() const;
 
 // ------------- Change LobbyUI's Player List widget. ------------
 protected:
