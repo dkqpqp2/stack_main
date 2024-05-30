@@ -163,6 +163,7 @@ void UMenu::JoinButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->FindSessions(10000);
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Find Session Clear")));
 	}
 	if (GEngine)
 	{
