@@ -14,6 +14,9 @@
 
 void ALobbyPlayerController::BeginPlay()
 {
+	// 이거 수퍼 함수 안부르면 난리가 나는군요...
+	Super::BeginPlay();
+
 	bShowMouseCursor = true;
 
 	FInputModeGameAndUI LobbyInputMode;

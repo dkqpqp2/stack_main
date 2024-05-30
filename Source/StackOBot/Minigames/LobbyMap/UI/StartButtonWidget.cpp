@@ -7,6 +7,7 @@
 
 void UStartButtonWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
 	StartButton->OnClicked.AddDynamic(this, &ThisClass::OnStartButtonClicked);
 
 }
