@@ -8,8 +8,20 @@ public class StackOBot : ModuleRules
 	public StackOBot(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicIncludePaths.AddRange(new string[] { "StackOBot" });
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OnlineSubsystem", "OnlineSubsystemSteam", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core",
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"OnlineSubsystem",
+			"OnlineSubsystemSteam",
+			"EnhancedInput",
+			"Niagara"
+		
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
