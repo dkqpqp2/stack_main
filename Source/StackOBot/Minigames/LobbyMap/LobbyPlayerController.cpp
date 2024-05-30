@@ -21,7 +21,19 @@ void ALobbyPlayerController::BeginPlay()
 	
 	if (IsLocalController())
 	{
+		
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---LobbyPC BeginPlay()---"));
+		if (!IsValid(LobbyWidgetClass))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidgetClass Error : LobbyPlayerController BeginPlay()"));
+			return;
+		}
+
+		if (!IsValid(GetPawn()))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Not Controlling. : LobbyPlayerController BeginPlay()"));
+			return;
+		}
 
 		UUserWidget* Widget = CreateWidget<UUserWidget>(this, LobbyWidgetClass);
 		LobbyWidget = Cast<ULobbyWidget>(Widget);
