@@ -29,13 +29,14 @@ void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn
 {
 	if (!HasAuthority())
 	{
-		AThirdPersonCharacter* NewCharacter = Cast<AThirdPersonCharacter>(NewPawn);
-		if (!IsValid(NewCharacter))
+		ITeamChangeInterface* GamePawn = Cast<ITeamChangeInterface>(NewPawn);
+		if (GamePawn == nullptr)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 			return;
 		}
-		NewCharacter->SetMaterialByPlayerTeam(IsRedTeam);
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPawnSet"));
+		GamePawn->SetMaterialToTeamColor(IsRedTeam);
+
 	}
 
 }
