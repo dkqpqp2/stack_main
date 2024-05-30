@@ -14,6 +14,8 @@ class STACKOBOT_API AGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 protected:
+	virtual void BeginPlay() override;
+protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FString, TSubclassOf<APawn>> CharacterClassesMap;
 

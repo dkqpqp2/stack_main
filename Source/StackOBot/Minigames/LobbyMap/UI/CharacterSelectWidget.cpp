@@ -9,6 +9,7 @@
 
 void UCharacterSelectWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
 	SelectCharacterButton->OnClicked.AddDynamic(this, &ThisClass::OnSelectCharacter);
 
 	CharacterNameText->SetText(FText::FromString(CharacterName));

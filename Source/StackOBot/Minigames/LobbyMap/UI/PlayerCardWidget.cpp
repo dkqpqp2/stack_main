@@ -19,14 +19,25 @@ void UPlayerCardWidget::CardUpdate(const ALobbyPlayerState* const  LobbyPS )
 
 	CharacterText->SetText(FText::FromString(LobbyPS->GetSelectedCharacter()));
 
-	//if (LobbyPS->GetIsReady())
-	//{
-	//	CharacterText->SetText(FText::FromString(TEXT("Ready")));
-	//}
-	//else
-	//{
-	//	CharacterText->SetText(FText::FromString(TEXT("Not Ready")));
-	//}
+	if (LobbyPS->GetIsHost())
+	{
+		ReadyTextBlock->SetText(FText::FromString(TEXT("Host")));
+
+	}
+	else
+	{
+		if (LobbyPS->GetIsReady())
+		{
+			ReadyTextBlock->SetText(FText::FromString(TEXT("Ready")));
+
+		}
+		else
+		{
+			ReadyTextBlock->SetText(FText::FromString(TEXT("Not Ready")));
+
+		}
+
+	}
 
 	// 
 }
