@@ -16,7 +16,7 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem():
 	
 }
 //CreateServer()
-void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
+void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType, FString ServerName, FString HostName)
 {
 	if (!IsValidSessionInterface())
 	{
@@ -29,6 +29,8 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 		bCreateSessionOnDestroy = true;
 		LastNumPublicConnections = NumPublicConnections;
 		LastMatchType = MatchType;
+		LastServerName = ServerName;
+		LastHostName = HostName;
 
 		DestroySession();
 	}
@@ -44,6 +46,8 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bShouldAdvertise = true;
 	LastSessionSettings->bUsesPresence = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(FName("SERVER_NAME_KEY"), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	LastSessionSettings->Set(FName("SERVER_HOSTNAME_KEY"), HostName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	LastSessionSettings->BuildUniqueId = 1;
 	LastSessionSettings->bUseLobbiesIfAvailable = true;
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
@@ -154,7 +158,41 @@ void UMultiplayerSessionsSubsystem::OnFindSessionsComplete(bool bWasSuccessful)
 		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
 		return;
 	}
+
 	MultiplayerOnFindSessionsComplete.Broadcast(LastSessionSearch->SearchResults, bWasSuccessful);
+	TArray<FOnlineSessionSearchResult> SearchResults = LastSessionSearch->SearchResults;
+	int32 ArrayIndex = 0;
+
+	for (FOnlineSessionSearchResult Result : SearchResults)
+	{
+		++ArrayIndex;
+		if (!Result.IsValid())
+			continue;
+		FServerInformation Info;
+		FString ServerName = "Empty Server Name";
+		FString HostName = "Empty Server Name";
+
+		Result.Session.SessionSettings.Get(FName("SERVER_NAME_KEY"), ServerName);
+		Result.Session.SessionSettings.Get(FName("SERVER_HOSTNAME_KEY"), HostName);
+
+		Info.ServerName = ServerName;
+		Info.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+		Info.CurrentPlayers = Info.MaxPlayers - Result.Session.NumOpenPublicConnections;
+		Info.SetPlayerCount();
+
+		ServerListDel.Broadcast(Info);
+	}
+	/*마지막 검색에서 검색 결과를 TArray에 저장
+	for (const FOnlineSessionSearchResult& SearchResult : SearchResults)
+	{
+		//세션 이름 가져오면 세팅에 있는 maxplayer
+		FString SessionName;
+		if (SearchResult.Session.SessionSettings.Get(FName("SESSION_NAME_KEY"), SessionName))
+		{
+			int32 CurrentNumPlayers = SearchResult.Session.NumOpenPublicConnections;
+			int32 MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+		}
+	}*/
 }
 
 void UMultiplayerSessionsSubsystem::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -176,7 +214,7 @@ void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, 
 	if (bWasSuccessful && bCreateSessionOnDestroy)
 	{
 		bCreateSessionOnDestroy = false;
-		CreateSession(LastNumPublicConnections, LastMatchType);
+		CreateSession(LastNumPublicConnections, LastMatchType, LastServerName,LastHostName);
 	}
 	MultiplayerOnDestroySessionComplete.Broadcast(bWasSuccessful);
 }

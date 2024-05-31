@@ -15,7 +15,7 @@ AItemActor::AItemActor()
 
 	SetRootComponent(mCollision);
 
-	mCollision->SetBoxExtent(FVector(50.f, 50.f, 50.f));
+	mCollision->SetBoxExtent(FVector(60.f, 60.f, 60.f));
 	mCollision->SetCollisionProfileName(TEXT("Item"));
 
 	mBox->SetupAttachment(mCollision);

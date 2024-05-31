@@ -5,11 +5,15 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Components/WidgetSwitcher.h"
+#include "Components/EditableText.h"
+
 #include "Menu.generated.h"
 
 /**
  * 
  */
+
 UCLASS()
 class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 {
@@ -41,7 +45,15 @@ private:
 	class UButton* HostButton; // create server
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* JoinButton;
+	UButton* JoinButton; //참가 버튼
+
+	UPROPERTY(meta = (BindWidget))
+	UEditableText* ServerNameTextBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UEditableText* HostNameTextBox;
+
+
 
 	UFUNCTION()
 	void HostButtonClicked();
