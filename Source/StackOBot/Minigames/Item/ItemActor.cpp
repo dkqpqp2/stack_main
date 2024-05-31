@@ -2,6 +2,8 @@
 
 
 #include "ItemActor.h"
+#include "../GameMap/GamePlayerState.h"
+#include "../GameMap/CoinGame/CoinGameState.h"
 //게임 모드랑 게임 스테이트 추가 해야 함 
 // 
 // Sets default values
@@ -57,10 +59,26 @@ void AItemActor::OnBoxComponentOverlapped(
 	const FHitResult& SweepResult
 )
 {
-	if (OtherActor->IsA<ACharacter>())
+	if (OtherActor->IsA<ACharacter>() && HasAuthority())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
+		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		if (!IsValid(PS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+			return;
+		}
+		//player score add.
+		PS->TrySetScore(PS->GetScore() + 1.f);
 
+		// team score add.
+		auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
+		if (!IsValid(CoinGS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
+			return;
+		}
+		CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
 		Destroy();
 	}
 }

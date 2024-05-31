@@ -21,6 +21,15 @@ public:
 	virtual void SetSelectedCharacter(FString NewCharacter);
 
 public:
+	void TrySetScore(float NewScore);
+protected:
+	UFUNCTION(Server, Reliable)
+	void SV_TrySetScore(float NewScore);
+	virtual void OnSetScore();
+public:
+	virtual void OnRep_Score() override;
+
+public:
 	// Call when OnPawnSet Done. Since TeamColor is not replicated, Do Initial Paint.
 	UFUNCTION()
 	void SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);

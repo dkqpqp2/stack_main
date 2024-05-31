@@ -31,6 +31,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	// 나중에 블프에서 변경하고 싶으면 UPROPERTY 붙여서 보이게 하자.
+	float ItemScore = 1.f;
+
 	UFUNCTION()
 	void OnBoxComponentOverlapped(
 		UPrimitiveComponent* OverlappedComponent, 
