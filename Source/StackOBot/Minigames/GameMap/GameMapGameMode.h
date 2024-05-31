@@ -19,4 +19,8 @@ public:
 
 	// is it playercontroller changing test.
 	virtual void SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC) override;
+
+protected:
+	//virtual void OnMatchStateSet() override;
+	virtual void HandleMatchHasEnded() override;
 };

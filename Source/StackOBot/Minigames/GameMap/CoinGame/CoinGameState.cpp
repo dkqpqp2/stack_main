@@ -4,6 +4,7 @@
 #include "Minigames/GameMap/CoinGame/CoinGameState.h"
 #include "Net/UnrealNetwork.h"
 #include "CoinGamePlayerController.h"
+#include "../GameMapGameMode.h"
 
 
 void ACoinGameState::OnRep_RedTeamScore()
@@ -49,7 +50,11 @@ void ACoinGameState::SetTeamScore(bool IsRed, int32 NewScore)
 	{
 		return;
 	}
-
+	if (NewScore == 5)
+	{
+		// get game mode, end match, travel to lobby map again.
+		Cast<AGameMode>(AuthorityGameMode)->EndMatch();
+	}
 	if (IsRed)
 	{
 		RedTeamScore = NewScore;

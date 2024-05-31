@@ -156,14 +156,6 @@ bool ALobbyPlayerState::GetIsReady() const
 }
 
 
-void ALobbyPlayerState::SetIsHost(bool IsHost)
-{
-	bIsHost = IsHost;
-}
-bool ALobbyPlayerState::GetIsHost() const
-{
-	return bIsHost;
-}
 // ----------------- IsHost, IsReady ------------------------------
 
 

@@ -68,7 +68,13 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	TSubclassOf<APawn>* NewCharacterClass = CharacterClassesMap.Find(NewCharacterName);
 	// Destroy Pawn, ReSpawn, Possess
 	auto CurrentPawn = GetPawn();
-	FTransform SpawnTransform = GetPawn()->GetTransform();
+	if (!IsValid(CurrentPawn))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid : LobbyPlayerController : ChangeCharacter"));
+
+		return;
+	}
+	FTransform SpawnTransform = CurrentPawn->GetTransform();
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
