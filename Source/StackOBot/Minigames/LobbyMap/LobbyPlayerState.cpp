@@ -4,6 +4,7 @@
 #include "LobbyPlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "../ThirdPersonCharacter.h"
+#include "../TeamChangeInterface.h"
 #include "LobbyPlayerController.h"
 
 
@@ -55,13 +56,13 @@ void ALobbyPlayerState::OnRep_IsRedTeam()
 
 void ALobbyPlayerState::OnIsRedTeamChanged()
 {
-	AThirdPersonCharacter* LobbyPlayerCharacter = Cast<AThirdPersonCharacter> (GetPawn() );
-	if (!IsValid(LobbyPlayerCharacter))
+	ITeamChangeInterface* Pawn = Cast<ITeamChangeInterface>( GetPawn() );
+	if (Pawn == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn From PS Not available"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 		return;
 	}
-	LobbyPlayerCharacter->SetMaterialByPlayerTeam(IsRedTeam);
+	Pawn->SetMaterialToTeamColor(IsRedTeam);
 
 	//Widget Also Changes.
 
@@ -200,12 +201,14 @@ void ALobbyPlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APaw
 {
 	if (!HasAuthority())
 	{
-		AThirdPersonCharacter* NewCharacter = Cast<AThirdPersonCharacter>(NewPawn);
-		if (!IsValid(NewCharacter))
+		ITeamChangeInterface* LobbyPawn = Cast<ITeamChangeInterface>(NewPawn);
+		if (LobbyPawn == nullptr)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 			return;
 		}
-		NewCharacter->SetMaterialByPlayerTeam(IsRedTeam);
+		LobbyPawn->SetMaterialToTeamColor(IsRedTeam);
+		
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPawnSet"));
 	}
 

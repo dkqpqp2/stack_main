@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "TeamChangeInterface.h"
 #include "ThirdPersonCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AThirdPersonCharacter : public ACharacter
+class AThirdPersonCharacter : public ACharacter, public ITeamChangeInterface
 {
 	GENERATED_BODY()
 
@@ -74,7 +75,7 @@ protected:
 	UMaterialInstanceDynamic* MeshMID;
 
 public:
-	void SetMaterialByPlayerTeam(bool IsRedTeam);
+	virtual void SetMaterialToTeamColor(bool IsTeamRed) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 

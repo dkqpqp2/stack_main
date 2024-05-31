@@ -24,6 +24,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// 빙의 되었을 때 인풋매핑컨텍스트 적용해주기.
+	virtual void PossessedBy(AController* NewController) override;
+
 	bool IsHovering() const;
 	UFUNCTION(Server, Unreliable)
 	void ServerStartHover();

@@ -69,7 +69,7 @@ void AThirdPersonCharacter::BeginPlay()
 	if (IsValid(PS))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Char BeginPlay, SetMaterial Success?"));
-		SetMaterialByPlayerTeam(PS->GetIsRedTeam());
+		SetMaterialToTeamColor(PS->GetIsRedTeam());
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Char Begin Play MID Setted"));
@@ -86,14 +86,14 @@ void AThirdPersonCharacter::BeginPlay()
 
 }
 
-void AThirdPersonCharacter::SetMaterialByPlayerTeam(bool IsRedTeam)
+void AThirdPersonCharacter::SetMaterialToTeamColor(bool IsTeamRed)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted Start"));
 
 	// Why Not Valid?
 	if (IsValid(MeshMID))
 	{
-		if (IsRedTeam)
+		if (IsTeamRed)
 		{
 			MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(1.0, 0.0, 0.0, 1.0));
 
@@ -104,7 +104,6 @@ void AThirdPersonCharacter::SetMaterialByPlayerTeam(bool IsRedTeam)
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted"));
 	}
-
 }
 
 void AThirdPersonCharacter::PossessedBy(AController* NewController)
@@ -115,6 +114,7 @@ void AThirdPersonCharacter::PossessedBy(AController* NewController)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
+			Subsystem->ClearAllMappings();
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 
@@ -129,7 +129,7 @@ void AThirdPersonCharacter::PossessedBy(AController* NewController)
 			);
 			return;
 		}
-		SetMaterialByPlayerTeam(PS->GetIsRedTeam());
+		SetMaterialToTeamColor(PS->GetIsRedTeam());
 	}
 
 

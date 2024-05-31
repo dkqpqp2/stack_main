@@ -109,6 +109,18 @@ void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 }
 
+void AMG_CharacterPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		EnableInput(PlayerController);
+	}
+	SetCharacterControl(CurrentCharacterControlType);
+}
+
 bool AMG_CharacterPlayer::IsHovering() const
 {
 	return bIsHovering;

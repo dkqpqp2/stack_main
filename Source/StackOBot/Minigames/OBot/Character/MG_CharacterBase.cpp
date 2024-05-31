@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MG_ControlData.h"
+#include "../../BasePlayerState.h"
 
 // Sets default values
 AMG_CharacterBase::AMG_CharacterBase()
@@ -63,6 +64,66 @@ void AMG_CharacterBase::SetCharacterControlData(const UMG_ControlData* Character
         GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
         GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
         GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
+    }
+}
+
+void AMG_CharacterBase::BeginPlay()
+{
+    Super::BeginPlay();
+    // 다이내믹 머티리얼 인스턴스 초기화. (팀선택시 색깔 바뀔 때 쓸 다이나믹 머티리얼)
+    MaterialDynamicInstance = GetMesh()->CreateDynamicMaterialInstance(0);
+    auto PS = GetPlayerState<ABasePlayerState>();
+    if (IsValid(PS))
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
+        SetMaterialToTeamColor(PS->GetIsRedTeam());
+    }
+}
+
+void AMG_CharacterBase::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+
+    //Add Input Mapping Context
+    if (APlayerController* PlayerController = Cast<APlayerController>(NewController))
+    {
+        //if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+        //{
+        //    Subsystem->AddMappingContext(DefaultMappingContext, 0);
+        //}
+
+        auto PS = PlayerController->GetPlayerState<ABasePlayerState>();
+        if (!IsValid(PS))
+        {
+            GEngine->AddOnScreenDebugMessage(
+                -1,
+                10.f,
+                FColor::Red,
+                TEXT("PlayerState Not Valid : AMG_Character_Base::PossessedBY()")
+            );
+            return;
+        }
+        SetMaterialToTeamColor(PS->GetIsRedTeam());
+    }
+}
+
+// 머티리얼의 색깔 지정해주는 함수.
+void AMG_CharacterBase::SetMaterialToTeamColor(bool IsTeamRed)
+{
+    if (!IsValid(MaterialDynamicInstance))
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("DYNAMIC MATERIAL NOT VALID : AMG_CharacterBase::SetMaterialToTeamColor"));
+        return;
+    }
+
+    if (IsTeamRed)
+    {
+        MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), FVector4(1.0, 0.0, 0.0, 1.0));
+
+    }
+    else
+    {
+        MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), FVector4(0.0, 0.0, 1.0, 1.0));
     }
 }
 
