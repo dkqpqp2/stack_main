@@ -75,7 +75,34 @@ void AMG_CharacterBase::BeginPlay()
     auto PS = GetPlayerState<ABasePlayerState>();
     if (IsValid(PS))
     {
-        //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Char BeginPlay, SetMaterial Success?"));
+        GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
+        SetMaterialToTeamColor(PS->GetIsRedTeam());
+    }
+}
+
+void AMG_CharacterBase::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+
+    //Add Input Mapping Context
+    if (APlayerController* PlayerController = Cast<APlayerController>(NewController))
+    {
+        //if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+        //{
+        //    Subsystem->AddMappingContext(DefaultMappingContext, 0);
+        //}
+
+        auto PS = PlayerController->GetPlayerState<ABasePlayerState>();
+        if (!IsValid(PS))
+        {
+            GEngine->AddOnScreenDebugMessage(
+                -1,
+                10.f,
+                FColor::Red,
+                TEXT("PlayerState Not Valid : AMG_Character_Base::PossessedBY()")
+            );
+            return;
+        }
         SetMaterialToTeamColor(PS->GetIsRedTeam());
     }
 }
