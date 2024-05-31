@@ -28,12 +28,13 @@ void UTeamSelectWidget::OnIsRedTeamSettedTo(bool bIsChecked)
 	if (!IsValid( PS ))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerState Not Valid"));
+		return;
 	}
 	auto LobbyPS = Cast<ALobbyPlayerState>(PS);
 	if (!IsValid(LobbyPS))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPlayerState Not Valid"));
-
+		return;
 	}
 
 	LobbyPS->SetIsRedTeamTo(bIsChecked);
