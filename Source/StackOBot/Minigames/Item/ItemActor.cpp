@@ -30,13 +30,15 @@ AItemActor::AItemActor()
 		mBox->SetStaticMesh(Asset.Object);
 
 	SetReplicates(true);
+
 }
 
 // Called when the game starts or when spawned
 void AItemActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	mCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBoxComponentOverlapped);
+
 }
 
 // Called every frame
@@ -44,5 +46,22 @@ void AItemActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AItemActor::OnBoxComponentOverlapped(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
+	const FHitResult& SweepResult
+)
+{
+	if (OtherActor->IsA<ACharacter>())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
+
+		Destroy();
+	}
 }
 
