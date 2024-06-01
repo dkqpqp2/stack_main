@@ -11,6 +11,7 @@
 #include "MG_ControlData.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "StackOBot.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -79,6 +80,8 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 
 void AMG_CharacterPlayer::BeginPlay()
 {
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("추가 내용"));
+
 	Super::BeginPlay();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
