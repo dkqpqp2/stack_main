@@ -6,7 +6,7 @@
 
 AMG_GameMode::AMG_GameMode()
 {
-	static ConstructorHelpers::FClassFinder<APawn> OBotClassRef(TEXT("/Script/StackOBot.MG_CharacterPlayer"));
+	static ConstructorHelpers::FClassFinder<APawn> OBotClassRef(TEXT("/Game/Character/Animation/BPMG_CharacterPlayer.BPMG_CharacterPlayer_C"));
 	if (OBotClassRef.Class)
 	{
 		DefaultPawnClass = OBotClassRef.Class;
