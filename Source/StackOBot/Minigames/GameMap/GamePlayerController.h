@@ -16,6 +16,7 @@ class STACKOBOT_API AGamePlayerController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 protected:
+	// 이변수 언젠가는 게임 인스턴스로 옮기긴 해야함...
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FString, TSubclassOf<APawn>> CharacterClassesMap;
 

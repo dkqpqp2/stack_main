@@ -25,6 +25,38 @@ void AGamePlayerState::SetSelectedCharacter(FString NewCharacter)
 	SelectedCharacter = NewCharacter;
 }
 
+void AGamePlayerState::TrySetScore(float NewScore)
+{
+	if (HasAuthority())
+	{
+		SetScore(NewScore);
+		// On SetScore() widget update...
+		OnSetScore();
+	}
+	else
+	{
+		// RPC To Server.
+		SV_TrySetScore(NewScore);
+	}
+}
+
+void AGamePlayerState::OnSetScore()
+{
+	// widget update.
+}
+
+void AGamePlayerState::OnRep_Score()
+{
+	OnSetScore();
+}
+
+void AGamePlayerState::SV_TrySetScore_Implementation(float NewScore)
+{
+	SetScore(NewScore);
+	// OnSetScore(); widget update...
+	OnSetScore();
+}
+
 void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
 	if (!HasAuthority())

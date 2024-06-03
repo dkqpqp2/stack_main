@@ -4,6 +4,16 @@
 #include "BasePlayerState.h"
 #include "Net/UnrealNetwork.h"
 
+void ABasePlayerState::SetIsHost(bool IsHost)
+{
+	bIsHost = IsHost;
+}
+
+bool ABasePlayerState::GetIsHost() const
+{
+	return bIsHost;
+}
+
 void ABasePlayerState::SetPlayerEnterID(int32 NewEnterID)
 {
 }
@@ -61,6 +71,7 @@ void ABasePlayerState::CopyProperties(APlayerState* PlayerState)
 	NewPlayerState->SetIsRedTeamTo(IsRedTeam);
 	NewPlayerState->SetSelectedCharacter(SelectedCharacter);
 	NewPlayerState->SetPlayerEnterID(PlayerEnterID);
+	NewPlayerState->SetIsHost(bIsHost);
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, SelectedCharacter);
 }
 
@@ -71,4 +82,5 @@ void ABasePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ABasePlayerState, IsRedTeam);
 	DOREPLIFETIME(ABasePlayerState, SelectedCharacter);
 	DOREPLIFETIME(ABasePlayerState, PlayerEnterID);
+	DOREPLIFETIME(ABasePlayerState, bIsHost);
 }

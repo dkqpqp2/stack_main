@@ -2,6 +2,8 @@
 
 
 #include "ItemActor.h"
+#include "../GameMap/GamePlayerState.h"
+#include "../GameMap/CoinGame/CoinGameState.h"
 //게임 모드랑 게임 스테이트 추가 해야 함 
 // 
 // Sets default values
@@ -30,13 +32,15 @@ AItemActor::AItemActor()
 		mBox->SetStaticMesh(Asset.Object);
 
 	SetReplicates(true);
+
 }
 
 // Called when the game starts or when spawned
 void AItemActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	mCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBoxComponentOverlapped);
+
 }
 
 // Called every frame
@@ -44,5 +48,38 @@ void AItemActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AItemActor::OnBoxComponentOverlapped(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
+	const FHitResult& SweepResult
+)
+{
+	if (OtherActor->IsA<ACharacter>() && HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
+		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		if (!IsValid(PS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+			return;
+		}
+		//player score add.
+		PS->TrySetScore(PS->GetScore() + 1.f);
+
+		// team score add.
+		auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
+		if (!IsValid(CoinGS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
+			return;
+		}
+		CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
+		Destroy();
+	}
 }
 
