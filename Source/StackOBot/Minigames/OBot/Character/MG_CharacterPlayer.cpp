@@ -142,6 +142,9 @@ void AMG_CharacterPlayer::ServerStartHover_Implementation()
 {
 	//Server에서 StartHover 상태를 모든 플레이어에게 전파
 	MulticastStartHover();
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMG_CharacterPlayer::ServerStopHover, HoveringTime, false);
 }
 
 void AMG_CharacterPlayer::MulticastStartHover_Implementation()

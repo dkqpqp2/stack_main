@@ -114,6 +114,7 @@ protected:
 	void OnRep_CanAttack();
 
 	float AttackTime = 1.4667f;
+	float HoveringTime = 2.0f;
 
 	void StartJump();
 	virtual void Jump() override;
