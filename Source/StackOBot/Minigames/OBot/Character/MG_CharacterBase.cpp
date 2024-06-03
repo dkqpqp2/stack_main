@@ -15,7 +15,7 @@ AMG_CharacterBase::AMG_CharacterBase()
     bUseControllerRotationRoll = false;
 
     GetCapsuleComponent()->InitCapsuleSize(35.0f, 60.0f);
-    GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+    GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);

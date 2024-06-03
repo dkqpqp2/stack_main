@@ -3,4 +3,6 @@
 #include "StackOBot.h"
 #include "Modules/ModuleManager.h"
 
+DEFINE_LOG_CATEGORY(LogMiniGame);
+
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, StackOBot, "StackOBot" );
