@@ -89,6 +89,18 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 
 }
 
+const TSubclassOf<APawn>* const ALobbyPlayerController::FindCharacterClass(const FString& CharacterClassName) const
+{
+	if (CharacterClassesMap.Contains(CharacterClassName))
+	{
+		return CharacterClassesMap.Find(CharacterClassName);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 void ALobbyPlayerController::LobbyWidgetUpdate()
 {
 	if (!IsValid(LobbyWidget))
