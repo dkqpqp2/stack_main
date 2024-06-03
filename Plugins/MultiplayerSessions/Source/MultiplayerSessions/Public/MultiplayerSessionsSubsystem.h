@@ -8,6 +8,29 @@
 
 #include "MultiplayerSessionsSubsystem.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FServerInformation //서버 정보 가져오기 위한 구조체 
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FString ServerName;
+	UPROPERTY(BlueprintReadOnly)
+	FString PlayerCountStr;
+	UPROPERTY(BlueprintReadOnly)
+	int32 CurrentPlayers;
+	UPROPERTY(BlueprintReadOnly)
+	int32 MaxPlayers;
+	UPROPERTY(BlueprintReadOnly)
+	int32 ServerArrayIndex;
+
+	void SetPlayerCount()
+	{
+		PlayerCountStr = FString(FString::FromInt(CurrentPlayers) + "/" + FString::FromInt(MaxPlayers));
+	}
+};
+
 //
 // Delcaring our own custom delegates for the Menu class to bind callbacks to
 //
@@ -16,7 +39,8 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionsComplete, const T
 DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FServerDel, FServerInformation, ServerListDel);
+//서버 정보랑 리스트를 옮겨 줌 
 /**
  * 
  */
@@ -30,7 +54,7 @@ public:
 	//
 	// To handle session functionality. The Menu class will call these
 	//
-	void CreateSession(int32 NumPublicConnections, FString MatchType);
+	void CreateSession(int32 NumPublicConnections, FString MatchType, FString ServerName, FString HostName);
 	void FindSessions(int32 MaxSearchResults);
 	void JoinSession(const FOnlineSessionSearchResult& SessionResult);
 	void DestroySession();
@@ -82,4 +106,9 @@ private:
 	bool bCreateSessionOnDestroy{ false };
 	int32 LastNumPublicConnections;
 	FString LastMatchType;
+	FString LastServerName;
+	FString LastHostName;
+
+	UPROPERTY(BlueprintAssignable)
+	FServerDel ServerListDel;
 };
