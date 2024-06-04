@@ -3,11 +3,15 @@
 
 #include "GamePlayerState.h"
 #include "../ThirdPersonCharacter.h"
+#include "../Item/ItemBase.h"
+#include "Net/UnrealNetwork.h"
+#include "MiniGameGameState.h"
 
 void AGamePlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPawnSet.AddDynamic(this, &ThisClass::SetPlayerPawn);
+
 }
 
 void AGamePlayerState::SetPlayerEnterID(int32 NewEnterID)
@@ -25,6 +29,38 @@ void AGamePlayerState::SetSelectedCharacter(FString NewCharacter)
 	SelectedCharacter = NewCharacter;
 }
 
+void AGamePlayerState::TrySetScore(float NewScore)
+{
+	if (HasAuthority())
+	{
+		SetScore(NewScore);
+		// On SetScore() widget update...
+		OnSetScore();
+	}
+	else
+	{
+		// RPC To Server.
+		SV_TrySetScore(NewScore);
+	}
+}
+
+void AGamePlayerState::OnSetScore()
+{
+	// widget update.
+}
+
+void AGamePlayerState::OnRep_Score()
+{
+	OnSetScore();
+}
+
+void AGamePlayerState::SV_TrySetScore_Implementation(float NewScore)
+{
+	SetScore(NewScore);
+	// OnSetScore(); widget update...
+	OnSetScore();
+}
+
 void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
 	if (!HasAuthority())
@@ -39,4 +75,50 @@ void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn
 
 	}
 
+}
+
+void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+}
+
+
+void AGamePlayerState::SetCurrentItem(UItemBase* NewItem)
+{
+	if (HasAuthority())
+	{
+		if (CurrentItem == nullptr)
+		{
+			if (IsValid(NewItem))
+			{
+				CurrentItem = NewItem;
+				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Item Setted"));
+
+				// ItemData Update.
+				// Server UI Update.
+			}
+
+		}
+	}
+
+}
+
+void AGamePlayerState::UseItem()
+{
+	if (HasAuthority())
+	{
+		APawn* Pawn = GetPawn();
+		if (!IsValid(Pawn))
+		{
+			return;
+		}
+		if (!IsValid(CurrentItem))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No Item"));
+			return;
+		}
+		CurrentItem->ActivateItem(Pawn);
+	}
 }

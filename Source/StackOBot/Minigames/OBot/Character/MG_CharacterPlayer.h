@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MG_CharacterBase.h"
+#include "Minigames/OBot/Interface/MG_AnimationAttackInterface.h"
 #include "MG_CharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -10,7 +11,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_CharacterPlayer : public AMG_CharacterBase
+class STACKOBOT_API AMG_CharacterPlayer : public AMG_CharacterBase, public IMG_AnimationAttackInterface
 {
 	GENERATED_BODY()
 public:
@@ -82,11 +83,38 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> QuaterMoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> AttackAction;
+
 	void ShoulderMove(const FInputActionValue& Value);
 	void ShoulderLook(const FInputActionValue& Value);
 	void QuaterMove(const FInputActionValue& Value);
 
 	ECharacterControlType CurrentCharacterControlType;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ActionMontage;
+
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const override;
+	void Attack();
+	virtual void AttackHitCheck() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAttack();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAttack();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CanAttack)
+	uint8 bCanAttack : 1;
+
+	UFUNCTION()
+	void OnRep_CanAttack();
+
+	float AttackTime = 1.4667f;
+	float HoveringTime = 2.0f;
 
 	void StartJump();
 	virtual void Jump() override;
@@ -94,4 +122,13 @@ protected:
 private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
+
+// ---------- Item Functions ------------
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnBoosterItem();
+
+protected:
+	void OnBoosterEnd();
+	FTimerHandle Timer;
 };

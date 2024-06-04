@@ -11,6 +11,9 @@
 #include "MG_ControlData.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "StackOBot.h"
+#include "Animation/AnimMontage.h"
+#include "Net/UnrealNetwork.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -69,16 +72,25 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	{
 		QuaterMoveAction = InputActionQuaterMoveRef.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Character/Input/IA_Attack.IA_Attack'"));
+	if (nullptr != InputActionAttackRef.Object)
+	{
+		AttackAction = InputActionAttackRef.Object;
+	}
 	
 
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 	bIsJetpackActive = false;
+	bCanAttack = true;
 
 }
 
 
 void AMG_CharacterPlayer::BeginPlay()
 {
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("추가 내용"));
+
 	Super::BeginPlay();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
@@ -86,6 +98,8 @@ void AMG_CharacterPlayer::BeginPlay()
 		EnableInput(PlayerController);
 	}
 	SetCharacterControl(CurrentCharacterControlType);
+
+
 }
 
 void AMG_CharacterPlayer::Tick(float DeltaTime)
@@ -114,6 +128,7 @@ void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::QuaterMove);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_CharacterPlayer::Attack);
 
 }
 
@@ -137,6 +152,9 @@ void AMG_CharacterPlayer::ServerStartHover_Implementation()
 {
 	//Server에서 StartHover 상태를 모든 플레이어에게 전파
 	MulticastStartHover();
+
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMG_CharacterPlayer::ServerStopHover, HoveringTime, false);
 }
 
 void AMG_CharacterPlayer::MulticastStartHover_Implementation()
@@ -262,6 +280,104 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
+void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// DOREPLIFETIME 매크로 : #include "Net/UnrealNetwork.h" 헤더파일 추가해야 사용할 수 있음
+	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
+}
+
+void AMG_CharacterPlayer::Attack()
+{
+	if (bCanAttack)
+	{
+		ServerAttack();
+	}
+
+}
+
+void AMG_CharacterPlayer::AttackHitCheck()
+{
+	if (HasAuthority())
+	{
+		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+		FHitResult HitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), true, this);
+
+		const float AttackRange = 10.0f;
+		const float AttackRadius = 20.0f;
+		const FVector Start = GetMesh()->GetSocketLocation(TEXT("AttackSocket")) + GetActorForwardVector();
+		const FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+		if (HitDetected)
+		{
+
+		}
+
+#if ENABLE_DRAW_DEBUG
+
+		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+		float CapsuleHalfHeight = AttackRange * 0.5f;
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+
+		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
+
+#endif
+	}
+}
+
+bool AMG_CharacterPlayer::ServerAttack_Validate()
+{
+	return true;
+}
+
+void AMG_CharacterPlayer::ServerAttack_Implementation()
+{
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+	MulticastAttack();
+}
+
+void AMG_CharacterPlayer::MulticastAttack_Implementation()
+{
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+	if (HasAuthority())
+	{
+		bCanAttack = false;
+		OnRep_CanAttack();
+
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]
+			{
+				bCanAttack = true;
+				OnRep_CanAttack();
+			}
+		), AttackTime, false, -1.0f);
+	}
+
+	// Animation은 Server와 Client 모두 보여야함
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(ActionMontage);
+}
+
+// Server에선 호출이안됨, Client에선 자동으로 호출됨
+void AMG_CharacterPlayer::OnRep_CanAttack()
+{
+	if (!bCanAttack)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+}
+
 void AMG_CharacterPlayer::StartJump()
 {
 	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
@@ -296,4 +412,19 @@ void AMG_CharacterPlayer::StopJumping()
 	{
 		ServerStopHover();
 	}
+}
+
+void AMG_CharacterPlayer::OnBoosterItem()
+{
+	// 잠시 동안만...
+	GetCharacterMovement()->MaxWalkSpeed = 1500.f;
+
+	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+	
+}
+
+void AMG_CharacterPlayer::OnBoosterEnd()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
 }

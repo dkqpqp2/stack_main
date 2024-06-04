@@ -14,6 +14,13 @@ class STACKOBOT_API ABasePlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(Replicated)
+	bool bIsHost;
+public:
+	void SetIsHost(bool IsHost);
+	bool GetIsHost() const;
+
 // --------- Player Enter ID ---------
 protected:
 	// 먼저들어온 사람부터 0, 1, 2, 3...
@@ -42,7 +49,7 @@ protected:
 // ------------ Selected Character's ----------------------
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedCharacter)
-	FString SelectedCharacter = "Quinn";
+	FString SelectedCharacter = "Bot";
 
 public:
 	virtual void SetSelectedCharacter(FString NewCharacter);

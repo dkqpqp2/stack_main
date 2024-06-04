@@ -45,11 +45,8 @@ protected:
 	virtual void OnChangeCharacter() override;
 	virtual void OnRep_SelectedCharacter() override;
 
-// ------------- IsReady, IsHost Related Functions Only In LobbyPlayerState -------------
+// ------------- IsReady,  Related Functions Only In LobbyPlayerState -------------
 protected:
-	UPROPERTY(Replicated)
-	bool bIsHost;
-
 	UPROPERTY(ReplicatedUsing = OnRep_bIsReady)
 	bool bIsReady;
 
@@ -66,8 +63,7 @@ public:
 	void SetIsReady(bool bNewIsReady);
 	bool GetIsReady() const;
 
-	void SetIsHost(bool IsHost);
-	bool GetIsHost() const;
+
 
 // ------------- Change LobbyUI's Player List widget. ------------
 protected:

@@ -7,6 +7,11 @@
 #include "GamePlayerController.h"
 
 
+AGameMapGameMode::AGameMapGameMode()
+{
+
+}
+
 void AGameMapGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
 {
 	ABasePlayerState* PS = NewPlayer->GetPlayerState<ABasePlayerState>();
@@ -57,3 +62,12 @@ void AGameMapGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerCo
 		}
 	}
 }
+
+void AGameMapGameMode::HandleMatchHasEnded()
+{
+	Super::HandleMatchHasEnded();
+
+	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+}
+
+

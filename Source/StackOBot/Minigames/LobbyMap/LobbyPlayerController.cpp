@@ -68,7 +68,13 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	TSubclassOf<APawn>* NewCharacterClass = CharacterClassesMap.Find(NewCharacterName);
 	// Destroy Pawn, ReSpawn, Possess
 	auto CurrentPawn = GetPawn();
-	FTransform SpawnTransform = GetPawn()->GetTransform();
+	if (!IsValid(CurrentPawn))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid : LobbyPlayerController : ChangeCharacter"));
+
+		return;
+	}
+	FTransform SpawnTransform = CurrentPawn->GetTransform();
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -81,6 +87,18 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Done-------"));
 
 
+}
+
+const TSubclassOf<APawn>* const ALobbyPlayerController::FindCharacterClass(const FString& CharacterClassName) const
+{
+	if (CharacterClassesMap.Contains(CharacterClassName))
+	{
+		return CharacterClassesMap.Find(CharacterClassName);
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 void ALobbyPlayerController::LobbyWidgetUpdate()
