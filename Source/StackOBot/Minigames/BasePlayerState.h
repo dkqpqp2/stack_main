@@ -49,7 +49,7 @@ protected:
 // ------------ Selected Character's ----------------------
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedCharacter)
-	FString SelectedCharacter = "Quinn";
+	FString SelectedCharacter = "Bot";
 
 public:
 	virtual void SetSelectedCharacter(FString NewCharacter);

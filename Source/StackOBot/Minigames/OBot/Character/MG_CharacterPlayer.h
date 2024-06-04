@@ -122,4 +122,13 @@ protected:
 private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
+
+// ---------- Item Functions ------------
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnBoosterItem();
+
+protected:
+	void OnBoosterEnd();
+	FTimerHandle Timer;
 };

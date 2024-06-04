@@ -33,4 +33,18 @@ public:
 	// Call when OnPawnSet Done. Since TeamColor is not replicated, Do Initial Paint.
 	UFUNCTION()
 	void SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+// --------- ITEM ----------
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
+	class UItemBase* CurrentItem;
+
+	UFUNCTION()
+	void OnRep_CurrentItem();
+
+public:
+	void GetNewItem(class UItemBase* NewItem);
+	void UseItem();
+
 };
