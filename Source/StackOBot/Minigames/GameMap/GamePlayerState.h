@@ -37,14 +37,14 @@ public:
 
 // --------- ITEM ----------
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
 	class UItemBase* CurrentItem;
 
-	UFUNCTION()
-	void OnRep_CurrentItem();
+	
 
 public:
-	void GetNewItem(class UItemBase* NewItem);
+	void SetCurrentItem(class UItemBase* NewItem);
+
+	UFUNCTION(BlueprintCallable)
 	void UseItem();
 
 };

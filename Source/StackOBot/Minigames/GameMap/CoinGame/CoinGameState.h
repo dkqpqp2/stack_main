@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../MiniGameGameState.h"
 #include "GameFramework/GameState.h"
 #include "CoinGameState.generated.h"
 
@@ -10,7 +11,7 @@
  * 
  */
 UCLASS()
-class STACKOBOT_API ACoinGameState : public AGameState
+class STACKOBOT_API ACoinGameState : public AMiniGameGameState
 {
 	GENERATED_BODY()
 	

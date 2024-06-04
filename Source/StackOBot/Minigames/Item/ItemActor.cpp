@@ -64,31 +64,27 @@ void AItemActor::OnBoxComponentOverlapped(
 	if (OtherActor->IsA<ACharacter>() && HasAuthority())
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
-		//AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
-		//if (!IsValid(PS))
-		//{
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
-		//	return;
-		//}
+		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		if (!IsValid(PS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+			return;
+		}
 		////player score add.
 		//PS->TrySetScore(PS->GetScore() + 1.f);
 
-		//// team score add.
-		//auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
-		//if (!IsValid(CoinGS))
-		//{
-		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
-		//	return;
-		//}
-		//CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
-
-		UItemBase* NewItem = GetWorld()->GetAuthGameMode<AGameMapGameMode>()->GetItem();
-
-		if (!IsValid(NewItem))
+		// team score add.
+		auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
+		if (!IsValid(CoinGS))
 		{
-			MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("ItemActor에서 GetItem 실패"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
 			return;
 		}
+		
+		PS->SetCurrentItem(CoinGS->GetItem());
+
+		
+
 		// Player State의 item에 넣기.
 
 
