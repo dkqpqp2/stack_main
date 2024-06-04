@@ -105,6 +105,14 @@ void AMG_CharacterPlayer::BeginPlay()
 void AMG_CharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	//글리치 현상 c++로 해결하려 했으나 오류로 우선 bp처리
+	/*FVector FirstMovement = FVector(1, 1, 0);
+	FVector SecondMovement = FVector(-1, -1, 0);
+	if (GetCharacterMovement())
+		GetCharacterMovement()->MoveUpdatedComponent(FirstMovement, GetActorRotation(), true);
+		GetCharacterMovement()->MoveUpdatedComponent(SecondMovement, GetActorRotation(), true);*/
+		
 }
 
 void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
