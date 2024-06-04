@@ -82,7 +82,7 @@ void AItemActor::OnBoxComponentOverlapped(
 		//}
 		//CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
 
-		UItemBase* NewItem = GetWorld()->GetAuthGameMode<AGameMapGameMode>()->GetItem();
+		AItemBase* NewItem = GetWorld()->GetAuthGameMode<AGameMapGameMode>()->GetItem();
 
 		if (!IsValid(NewItem))
 		{

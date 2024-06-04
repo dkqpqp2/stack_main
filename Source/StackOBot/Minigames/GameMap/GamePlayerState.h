@@ -38,13 +38,13 @@ public:
 // --------- ITEM ----------
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
-	class UItemBase* CurrentItem;
+	class AItemBase* CurrentItem;
 
 	UFUNCTION()
 	void OnRep_CurrentItem();
 
 public:
-	void GetNewItem(class UItemBase* NewItem);
+	void GetNewItem(class AItemBase* NewItem);
 	void UseItem();
 
 };

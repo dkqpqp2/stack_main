@@ -31,10 +31,10 @@ protected:
 // --------- Item List --------
 protected:
 	UPROPERTY(EditAnywhere);
-	TArray< TSubclassOf<UItemBase>> ItemClasses;
-	TArray<UItemBase*> AvailableItems;
+	TArray< TSubclassOf<AItemBase>> ItemClasses;
+	TArray<AItemBase*> AvailableItems;
 
 public:
-	UItemBase* GetItem();
+	AItemBase* GetItem();
 	
 };

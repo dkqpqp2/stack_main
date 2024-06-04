@@ -11,7 +11,7 @@ AGameMapGameMode::AGameMapGameMode()
 {
 	for (auto ItemClass : ItemClasses)
 	{
-		UItemBase* Item = NewObject<UItemBase>(this, ItemClass);
+		AItemBase* Item = NewObject<AItemBase>(this, ItemClass);
 		AvailableItems.Add(Item);
 	}
 }
@@ -74,7 +74,7 @@ void AGameMapGameMode::HandleMatchHasEnded()
 	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
 }
 
-UItemBase* AGameMapGameMode::GetItem()
+AItemBase* AGameMapGameMode::GetItem()
 {
 	if (AvailableItems.IsEmpty())
 	{

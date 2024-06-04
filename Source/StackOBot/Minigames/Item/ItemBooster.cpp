@@ -5,7 +5,7 @@
 #include "../OBot/Character/MG_CharacterPlayer.h"
 
 
-void UItemBooster::ActivateItem(APawn* const ItemUser)
+void AItemBooster::ActivateItem(APawn* const ItemUser)
 {
 	AMG_CharacterPlayer* ItemUserBot = Cast<AMG_CharacterPlayer>(ItemUser);
 	if (!IsValid(ItemUserBot))

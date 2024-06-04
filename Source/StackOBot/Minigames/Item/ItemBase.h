@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameFramework/Actor.h"
 #include "ItemBase.generated.h"
 
 /**
  * 
  */
-UCLASS(Abstract, Blueprintable)
-class STACKOBOT_API UItemBase : public UObject
+UCLASS(Blueprintable)
+class STACKOBOT_API AItemBase : public AActor
 {
 	GENERATED_BODY()
 

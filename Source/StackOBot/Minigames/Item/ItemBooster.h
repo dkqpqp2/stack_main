@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class STACKOBOT_API UItemBooster : public UItemBase
+class STACKOBOT_API AItemBooster : public AItemBase
 {
 	GENERATED_BODY()
 

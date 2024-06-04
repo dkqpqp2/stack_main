@@ -89,7 +89,7 @@ void AGamePlayerState::OnRep_CurrentItem()
 	// client's UI 변경...
 }
 
-void AGamePlayerState::GetNewItem(UItemBase* NewItem)
+void AGamePlayerState::GetNewItem(AItemBase* NewItem)
 {
 	if (CurrentItem == nullptr && HasAuthority())
 	{
