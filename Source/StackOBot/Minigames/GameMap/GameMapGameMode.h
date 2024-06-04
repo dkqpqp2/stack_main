@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Item/ItemBase.h"
 #include "GameFramework/GameMode.h"
 #include "GameMapGameMode.generated.h"
 
@@ -13,6 +14,8 @@ UCLASS()
 class STACKOBOT_API AGameMapGameMode : public AGameMode
 {
 	GENERATED_BODY()
+
+	AGameMapGameMode();
 	
 public:
 	virtual void RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot) override;
@@ -23,4 +26,15 @@ public:
 protected:
 	//virtual void OnMatchStateSet() override;
 	virtual void HandleMatchHasEnded() override;
+
+
+// --------- Item List --------
+protected:
+	UPROPERTY(EditAnywhere);
+	TArray< TSubclassOf<UItemBase>> ItemClasses;
+	TArray<UItemBase*> AvailableItems;
+
+public:
+	UItemBase* GetItem();
+	
 };

@@ -3,22 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "ItemBase.generated.h"
+#include "Minigames/Item/ItemBase.h"
+#include "ItemBooster.generated.h"
 
 /**
  * 
  */
-UCLASS(Abstract, Blueprintable)
-class STACKOBOT_API UItemBase : public UObject
+UCLASS()
+class STACKOBOT_API UItemBooster : public UItemBase
 {
 	GENERATED_BODY()
 
-protected:
-	FString ItemName;
-public:
-	FString& GetItemName();
 public:
 	virtual void ActivateItem(APawn* const ItemUser);
-	
 };

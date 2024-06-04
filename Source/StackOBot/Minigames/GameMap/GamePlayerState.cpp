@@ -3,6 +3,8 @@
 
 #include "GamePlayerState.h"
 #include "../ThirdPersonCharacter.h"
+#include "../Item/ItemBase.h"
+#include "Net/UnrealNetwork.h"
 
 void AGamePlayerState::BeginPlay()
 {
@@ -71,4 +73,40 @@ void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn
 
 	}
 
+}
+
+void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+
+	DOREPLIFETIME(AGamePlayerState, CurrentItem);
+
+}
+
+void AGamePlayerState::OnRep_CurrentItem()
+{
+	// client's UI 변경...
+}
+
+void AGamePlayerState::GetNewItem(UItemBase* NewItem)
+{
+	if (CurrentItem == nullptr && HasAuthority())
+	{
+		CurrentItem = NewItem;
+		// Update Server's UI. 
+	}
+}
+
+void AGamePlayerState::UseItem()
+{
+	if (HasAuthority())
+	{
+		APawn* Pawn = GetPawn();
+		if (!IsValid(Pawn))
+		{
+			return;
+		}
+		CurrentItem->ActivateItem(Pawn);
+	}
 }

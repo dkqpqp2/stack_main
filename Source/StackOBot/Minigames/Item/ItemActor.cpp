@@ -4,6 +4,8 @@
 #include "ItemActor.h"
 #include "../GameMap/GamePlayerState.h"
 #include "../GameMap/CoinGame/CoinGameState.h"
+#include "../GameMap/GameMapGameMode.h"
+#include "StackOBot.h"
 //게임 모드랑 게임 스테이트 추가 해야 함 
 // 
 // Sets default values
@@ -61,24 +63,35 @@ void AItemActor::OnBoxComponentOverlapped(
 {
 	if (OtherActor->IsA<ACharacter>() && HasAuthority())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
-		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
-		if (!IsValid(PS))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
-			return;
-		}
-		//player score add.
-		PS->TrySetScore(PS->GetScore() + 1.f);
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
+		//AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		//if (!IsValid(PS))
+		//{
+		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+		//	return;
+		//}
+		////player score add.
+		//PS->TrySetScore(PS->GetScore() + 1.f);
 
-		// team score add.
-		auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
-		if (!IsValid(CoinGS))
+		//// team score add.
+		//auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
+		//if (!IsValid(CoinGS))
+		//{
+		//	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
+		//	return;
+		//}
+		//CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
+
+		UItemBase* NewItem = GetWorld()->GetAuthGameMode<AGameMapGameMode>()->GetItem();
+
+		if (!IsValid(NewItem))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
+			MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("ItemActor에서 GetItem 실패"));
 			return;
 		}
-		CoinGS->SetTeamScore(PS->GetIsRedTeam(), CoinGS->GetTeamScore(PS->GetIsRedTeam()) + 1);
+		// Player State의 item에 넣기.
+
+
 		Destroy();
 	}
 }

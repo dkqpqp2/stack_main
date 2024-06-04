@@ -9,6 +9,6 @@ FString& UItemBase::GetItemName()
 	return ItemName;
 }
 
-void UItemBase::ActivateItem()
+void UItemBase::ActivateItem(APawn* const ItemUser)
 {
 }

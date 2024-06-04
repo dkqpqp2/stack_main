@@ -98,6 +98,8 @@ void AMG_CharacterPlayer::BeginPlay()
 		EnableInput(PlayerController);
 	}
 	SetCharacterControl(CurrentCharacterControlType);
+
+
 }
 
 void AMG_CharacterPlayer::Tick(float DeltaTime)
@@ -402,4 +404,19 @@ void AMG_CharacterPlayer::StopJumping()
 	{
 		ServerStopHover();
 	}
+}
+
+void AMG_CharacterPlayer::OnBoosterItem()
+{
+	// 잠시 동안만...
+	GetCharacterMovement()->MaxWalkSpeed = 1500.f;
+
+	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+	
+}
+
+void AMG_CharacterPlayer::OnBoosterEnd()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
 }
