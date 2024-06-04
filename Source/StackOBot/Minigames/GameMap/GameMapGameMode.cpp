@@ -9,11 +9,7 @@
 
 AGameMapGameMode::AGameMapGameMode()
 {
-	for (auto ItemClass : ItemClasses)
-	{
-		UItemBase* Item = NewObject<UItemBase>(this, ItemClass);
-		AvailableItems.Add(Item);
-	}
+
 }
 
 void AGameMapGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
@@ -74,15 +70,4 @@ void AGameMapGameMode::HandleMatchHasEnded()
 	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
 }
 
-UItemBase* AGameMapGameMode::GetItem()
-{
-	if (AvailableItems.IsEmpty())
-	{
-		return nullptr;
-	}
-
-	
-	// 우선은 0번아이템 전달.
-	return AvailableItems[0];
-}
 

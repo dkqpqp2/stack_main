@@ -5,11 +5,13 @@
 #include "../ThirdPersonCharacter.h"
 #include "../Item/ItemBase.h"
 #include "Net/UnrealNetwork.h"
+#include "MiniGameGameState.h"
 
 void AGamePlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPawnSet.AddDynamic(this, &ThisClass::SetPlayerPawn);
+
 }
 
 void AGamePlayerState::SetPlayerEnterID(int32 NewEnterID)
@@ -80,22 +82,27 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 
-	DOREPLIFETIME(AGamePlayerState, CurrentItem);
-
 }
 
-void AGamePlayerState::OnRep_CurrentItem()
-{
-	// client's UI 변경...
-}
 
-void AGamePlayerState::GetNewItem(UItemBase* NewItem)
+void AGamePlayerState::SetCurrentItem(UItemBase* NewItem)
 {
-	if (CurrentItem == nullptr && HasAuthority())
+	if (HasAuthority())
 	{
-		CurrentItem = NewItem;
-		// Update Server's UI. 
+		if (CurrentItem == nullptr)
+		{
+			if (IsValid(NewItem))
+			{
+				CurrentItem = NewItem;
+				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Item Setted"));
+
+				// ItemData Update.
+				// Server UI Update.
+			}
+
+		}
 	}
+
 }
 
 void AGamePlayerState::UseItem()
@@ -105,6 +112,11 @@ void AGamePlayerState::UseItem()
 		APawn* Pawn = GetPawn();
 		if (!IsValid(Pawn))
 		{
+			return;
+		}
+		if (!IsValid(CurrentItem))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No Item"));
 			return;
 		}
 		CurrentItem->ActivateItem(Pawn);

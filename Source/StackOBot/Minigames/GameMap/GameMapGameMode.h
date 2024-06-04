@@ -28,13 +28,6 @@ protected:
 	virtual void HandleMatchHasEnded() override;
 
 
-// --------- Item List --------
-protected:
-	UPROPERTY(EditAnywhere);
-	TArray< TSubclassOf<UItemBase>> ItemClasses;
-	TArray<UItemBase*> AvailableItems;
 
-public:
-	UItemBase* GetItem();
 	
 };
