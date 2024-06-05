@@ -2,10 +2,17 @@
 
 
 #include "MiniGameGameState.h"
+#include "../Item/ItemClassDataTableRow.h"
 
 AMiniGameGameState::AMiniGameGameState()
 {
-
+	//static ConstructorHelpers::FObjectFinder<UDataTable> DT_ItemClasses(
+	//	TEXT("")
+	//);
+	//if (DT_ItemClasses.Succeeded())
+	//{
+	//	DT_ItemClasses.Object;
+	//}
 }
 
 void AMiniGameGameState::BeginPlay()
@@ -18,6 +25,7 @@ void AMiniGameGameState::BeginPlay()
 		
 		AvailableItems.Add(Cast<UItemBase>(ItemClass->GetDefaultObject(true)));
 	}
+
 }
 
 UItemBase* AMiniGameGameState::GetItem()

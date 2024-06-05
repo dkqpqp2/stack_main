@@ -24,6 +24,7 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere);
 	TArray< TSubclassOf<UItemBase>> ItemClasses;
+
 	TArray<UItemBase*> AvailableItems;
 
 public:
