@@ -3,11 +3,14 @@
 
 #include "MG_ItemSpawnPoint.h"
 #include "Components/ArrowComponent.h"
-#include "Minigames/OBot/Item/MG_ItemBox.h"
+#include "MG_ItemBox.h"
+#include "StackOBot.h"
 
 // Sets default values
 AMG_ItemSpawnPoint::AMG_ItemSpawnPoint()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 #if WITH_EDITORONLY_DATA
@@ -29,19 +32,29 @@ void AMG_ItemSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Spawn();
-
 }
+
 
 // Called every frame
 void AMG_ItemSpawnPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (!SpawnBox)
+	{
+		AccTime += DeltaTime;
+		if (AccTime >= SpawnTime)
+		{
+			Spawn();
+		}
+	}
+
 
 }
 
 void AMG_ItemSpawnPoint::Spawn()
 {
+
 	if (!IsValid(SpawnClass))
 	{
 		return;
@@ -50,16 +63,22 @@ void AMG_ItemSpawnPoint::Spawn()
 
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	AMG_ItemBox* DefaultObj = Cast<AMG_ItemBox>(SpawnClass->GetDefaultObject());
+	/*AMG_ItemBox* DefaultObj = Cast<AMG_ItemBox>(SpawnClass->GetDefaultObject());
 	
 	FVector HalfHeight;
 
 	if (IsValid(DefaultObj))
 	{
 		HalfHeight = DefaultObj->GetActorLocation();
-	}
+	}*/
 
-	SpawnBox = GetWorld()->SpawnActor<AMG_ItemBox>(SpawnClass, GetActorLocation() + HalfHeight, GetActorRotation(), SpawnParam);
+	SpawnBox = GetWorld()->SpawnActor<AMG_ItemBox>(SpawnClass, GetActorLocation(), GetActorRotation(), SpawnParam);
 	SpawnBox->SetItemSpawnPoint(this);
+}
+
+void AMG_ItemSpawnPoint::ClearSpawnObject()
+{
+	SpawnBox = nullptr;
+	AccTime = 0.f;
 }
 

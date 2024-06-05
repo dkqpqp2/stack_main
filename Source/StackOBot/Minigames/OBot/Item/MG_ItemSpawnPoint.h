@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AMG_ItemBox> SpawnClass;
 
-	TObjectPtr<class AMG_ItemBox> SpawnBox;
+	class AMG_ItemBox* SpawnBox;
 
 	UPROPERTY(EditAnywhere)
 	float SpawnTime;
@@ -35,6 +35,7 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 
 public:	
 	// Called every frame

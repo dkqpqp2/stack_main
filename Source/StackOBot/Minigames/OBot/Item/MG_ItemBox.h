@@ -53,8 +53,17 @@ protected:
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_ServerRotationYaw)
 	float ServerRotationYaw;
+
+	UPROPERTY(ReplicatedUsing = OnRep_ServerRotationRoll)
+	float ServerRotationRoll;
+
+	UFUNCTION()
+	void OnRep_ServerRotationYaw();
+
+	UFUNCTION()
+	void OnRep_ServerRotationRoll();
 
 	float RotationRate = 30.0f;
 
