@@ -128,6 +128,10 @@ void AGamePlayerState::UseItem()
 			return;
 		}
 		CurrentItem->ActivateItem(Pawn);
+		
+		// 현재 아이템 초기화.
+		CurrentItem = nullptr;
+		CurrentItemName = TEXT("");
 	}
 	else
 	{
