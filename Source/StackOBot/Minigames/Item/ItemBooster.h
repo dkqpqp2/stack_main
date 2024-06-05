@@ -13,7 +13,7 @@ UCLASS()
 class STACKOBOT_API UItemBooster : public UItemBase
 {
 	GENERATED_BODY()
-
+	UItemBooster();
 public:
 	virtual void ActivateItem(APawn* const ItemUser);
 };

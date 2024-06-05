@@ -36,7 +36,6 @@ void AJumpPad::OnOverlapJumpPad(UPrimitiveComponent* OverlappedComponent, AActor
 	ACharacter* Character = Cast<ACharacter>(OtherActor);
 	if (Character)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("HIT"));
 		// Get Arrow's Forward Vector.
 		FVector LaunchVelocity = JumpDirectionArrow->GetForwardVector() * LaunchStrength;
 		Character->LaunchCharacter(LaunchVelocity, false, true);

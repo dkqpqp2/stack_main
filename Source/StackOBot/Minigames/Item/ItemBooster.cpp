@@ -5,6 +5,11 @@
 #include "../OBot/Character/MG_CharacterPlayer.h"
 
 
+UItemBooster::UItemBooster()
+{
+	ItemName = TEXT("Booster");
+}
+
 void UItemBooster::ActivateItem(APawn* const ItemUser)
 {
 	AMG_CharacterPlayer* ItemUserBot = Cast<AMG_CharacterPlayer>(ItemUser);

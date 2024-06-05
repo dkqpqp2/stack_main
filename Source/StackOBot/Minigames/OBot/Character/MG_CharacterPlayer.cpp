@@ -425,6 +425,19 @@ void AMG_CharacterPlayer::OnBoosterItem()
 
 void AMG_CharacterPlayer::OnBoosterEnd()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+
+}
+
+void AMG_CharacterPlayer::OnBarrierOverlap()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+
+	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBarrierEnd, 1.f, false);
+}
+
+void AMG_CharacterPlayer::OnBarrierEnd()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
 
 }
