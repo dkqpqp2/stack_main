@@ -81,9 +81,14 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-
+	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
 }
 
+
+void AGamePlayerState::OnRep_CurrentItemName()
+{
+	// client ui update. find item's ui by string. only if client's local player get item.
+}
 
 void AGamePlayerState::SetCurrentItem(UItemBase* NewItem)
 {
@@ -97,7 +102,10 @@ void AGamePlayerState::SetCurrentItem(UItemBase* NewItem)
 				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Item Setted"));
 
 				// ItemData Update.
-				// Server UI Update.
+				CurrentItemName = NewItem->GetItemName();
+
+				// Server UI Update only if server's local player get item. 
+
 			}
 
 		}
@@ -120,5 +128,18 @@ void AGamePlayerState::UseItem()
 			return;
 		}
 		CurrentItem->ActivateItem(Pawn);
+	}
+	else
+	{
+		// RPC Use Item();
+		SV_UseItem();
+	}
+}
+
+void AGamePlayerState::SV_UseItem_Implementation()
+{
+	if (HasAuthority())
+	{
+		UseItem();
 	}
 }

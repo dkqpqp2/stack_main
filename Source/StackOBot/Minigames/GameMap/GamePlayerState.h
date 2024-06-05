@@ -39,12 +39,20 @@ public:
 protected:
 	class UItemBase* CurrentItem;
 
-	
+	UPROPERTY(ReplicatedUsing=OnRep_CurrentItemName)
+	FString CurrentItemName;
+
+	UFUNCTION()
+	void OnRep_CurrentItemName();
 
 public:
 	void SetCurrentItem(class UItemBase* NewItem);
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem();
+
+protected:
+	UFUNCTION(Server, Reliable)
+	void SV_UseItem();
 
 };
