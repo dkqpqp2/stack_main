@@ -120,5 +120,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ALobbyGameMode::ServerTravelToGameMap()
 {
-	GetWorld()->ServerTravel("TempGameMap");
+	// /Script/Engine.World'/Game/Lobby/ThirdPerson/Maps/TempGameMap.TempGameMap'
+	//GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/TempGameMap");
+	GetWorld()->ServerTravel("/Game/MainGame/Level/GameMap");
 }

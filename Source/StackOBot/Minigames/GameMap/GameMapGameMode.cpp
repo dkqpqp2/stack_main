@@ -52,15 +52,15 @@ void AGameMapGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerCo
 	// OldPC will be destroy...
 	Super::SwapPlayerControllers(OldPC, NewPC);
 
-	// 이전 플레이어컨트롤러 파괴?
-	if (IsValid(OldPC))
-	{
-		if (GetWorld()->DestroyActor(OldPC))
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("--- Destroy Old PC---"));
-			// 실험 결과 파괴해도 다시 생성되는듯 하다... 어디서? 어떻게????
-		}
-	}
+	//// 이전 플레이어컨트롤러 파괴?
+	//if (IsValid(OldPC))
+	//{
+	//	if (GetWorld()->DestroyActor(OldPC))
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("--- Destroy Old PC---"));
+	//		// 실험 결과 파괴해도 다시 생성되는듯 하다... 어디서? 어떻게????
+	//	}
+	//}
 }
 
 void AGameMapGameMode::HandleMatchHasEnded()
