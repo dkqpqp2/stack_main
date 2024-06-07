@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Item/ItemBoxItemEnum.h"
 #include "../BasePlayerState.h"
 #include "GamePlayerState.generated.h"
+
 
 /**
  * 
@@ -37,16 +39,15 @@ public:
 
 // --------- ITEM ----------
 protected:
-	class UItemBase* CurrentItem;
 
-	UPROPERTY(ReplicatedUsing=OnRep_CurrentItemName)
-	FString CurrentItemName;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
+	EItem CurrentItem = EItem::E_NONE;
 
 	UFUNCTION()
-	void OnRep_CurrentItemName();
+	void OnRep_CurrentItem();
 
 public:
-	void SetCurrentItem(class UItemBase* NewItem);
+	void SetCurrentItem(EItem NewItem);
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem();
@@ -55,4 +56,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void SV_UseItem();
 
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
+protected:
+	void UseBarrier();
 };

@@ -9,6 +9,9 @@
 #include "Net/UnrealNetwork.h"
 #include "MG_ItemSpawnPoint.h"
 #include "StackOBot.h"
+#include "../../GameMap/GamePlayerState.h"
+#include "../Character/MG_CharacterBase.h"
+
 
 // Sets default values
 AMG_ItemBox::AMG_ItemBox()
@@ -54,6 +57,8 @@ AMG_ItemBox::AMG_ItemBox()
 void AMG_ItemBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AMG_ItemBox::Tick(float DeltaTime)
@@ -72,24 +77,20 @@ void AMG_ItemBox::Tick(float DeltaTime)
 	}
 }
 
-void AMG_ItemBox::ServerAddItem_Implementation()
-{
-	//MulticastAddItem();
-}
-
-void AMG_ItemBox::MulticastAddItem_Implementation()
-{
-	//Trigger->OnComponentBeginOverlap.AddDynamic(this, &AMG_ItemBox::OnOverlapBegin);
-}
-
 void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
-	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
-	Effect->Activate(true);
-	Mesh->SetHiddenInGame(true);
-	SetActorEnableCollision(false);
-	Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
-	//ServerAddItemFinish();
+	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
+	{
+		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
+		Effect->Activate(true);
+		Mesh->SetHiddenInGame(true);
+		SetActorEnableCollision(false);
+		Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
+		//ServerAddItemFinish();
+
+		// 아이템을 캐릭터에 추가.
+		GetNewItemTo(OtherActor);
+	}
 }
 
 void AMG_ItemBox::OnEffectFinished(UNiagaraComponent* NiagaraSystem)
@@ -123,6 +124,23 @@ void AMG_ItemBox::OnRep_ServerRotationRoll()
 	FRotator NewRotator = RootComponent->GetComponentRotation();
 	NewRotator.Roll = ServerRotationRoll;
 	RootComponent->SetWorldRotation(NewRotator);
+}
+
+void AMG_ItemBox::GetNewItemTo(AActor* OtherActor)
+{
+	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
+		AGamePlayerState* PS = Cast<AMG_CharacterBase>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		if (!IsValid(PS))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+			return;
+		}
+
+		uint8 RandomItemNumber = (uint8)(FMath::RandRange(1, 2));
+		PS->SetCurrentItem(EItem(RandomItemNumber));
+	}
 }
 
 

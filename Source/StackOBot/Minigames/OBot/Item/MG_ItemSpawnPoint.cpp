@@ -31,7 +31,6 @@ AMG_ItemSpawnPoint::AMG_ItemSpawnPoint()
 void AMG_ItemSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 
@@ -50,11 +49,15 @@ void AMG_ItemSpawnPoint::Tick(float DeltaTime)
 	}
 
 
+
 }
 
 void AMG_ItemSpawnPoint::Spawn()
 {
-
+	if (!HasAuthority())
+	{
+		return;
+	}
 	if (!IsValid(SpawnClass))
 	{
 		return;
