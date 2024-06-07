@@ -160,12 +160,6 @@ void AGamePlayerState::UseBarrier()
 		FVector NewLocation = ItemUserBot->GetActorLocation() - (ItemUserBot->GetActorForwardVector() * 200.f);
 		GetWorld()->SpawnActor<AActor>(SlowBarrierBPClass, NewLocation, ItemUserBot->GetActorRotation());
 	}
-	//if (IsValid(SpawnToActor))
-	//{
-
-	//	GetWorld()->SpawnActor<AActor>(SpawnToActor, ItemUser->GetActorLocation(), ItemUser->GetActorRotation());
-
-	//}
 }
 
 void AGamePlayerState::SV_UseItem_Implementation()

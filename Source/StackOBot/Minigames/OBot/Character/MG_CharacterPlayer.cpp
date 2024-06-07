@@ -33,6 +33,9 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
 	NiagaraEffect->SetupAttachment(Jetpack);
 
+	BoosterNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BoosterNiagaraEffect"));
+	BoosterNiagaraEffect->SetupAttachment(Jetpack);
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
 	if (JetpackMeshRef.Object)
 	{
@@ -418,6 +421,7 @@ void AMG_CharacterPlayer::OnBoosterItem()
 	// 잠시 동안만...
 	GetCharacterMovement()->MaxWalkSpeed = 1500.f;
 
+	// net multicast boost effect?
 	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
 	
 }

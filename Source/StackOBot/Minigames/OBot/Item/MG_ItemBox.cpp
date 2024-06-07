@@ -57,6 +57,8 @@ AMG_ItemBox::AMG_ItemBox()
 void AMG_ItemBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void AMG_ItemBox::Tick(float DeltaTime)
@@ -87,15 +89,19 @@ void AMG_ItemBox::MulticastAddItem_Implementation()
 
 void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
-	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
-	Effect->Activate(true);
-	Mesh->SetHiddenInGame(true);
-	SetActorEnableCollision(false);
-	Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
-	//ServerAddItemFinish();
+	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
+	{
+		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
+		Effect->Activate(true);
+		Mesh->SetHiddenInGame(true);
+		SetActorEnableCollision(false);
+		Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
+		//ServerAddItemFinish();
 
-	// 아이템을 캐릭터에 추가.
-	GetNewItemTo(OtherActor);
+		// 아이템을 캐릭터에 추가.
+		GetNewItemTo(OtherActor);
+	}
+
 }
 
 void AMG_ItemBox::OnEffectFinished(UNiagaraComponent* NiagaraSystem)

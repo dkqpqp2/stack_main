@@ -124,14 +124,20 @@ private:
 	bool bIsHovering;
 
 // ---------- Item Functions ------------
+// ---------- Booster------------
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnBoosterItem();
 
 protected:
 	void OnBoosterEnd();
+
+	UPROPERTY(EditAnywhere, Category = Niagara)
+	TObjectPtr<class UNiagaraComponent> BoosterNiagaraEffect;
+
 	FTimerHandle Timer;
 
+// ---------- Barrier------------
 public:
 	void OnBarrierOverlap();
 protected:
