@@ -72,16 +72,6 @@ void AMG_ItemBox::Tick(float DeltaTime)
 	}
 }
 
-void AMG_ItemBox::ServerAddItem_Implementation()
-{
-	//MulticastAddItem();
-}
-
-void AMG_ItemBox::MulticastAddItem_Implementation()
-{
-	//Trigger->OnComponentBeginOverlap.AddDynamic(this, &AMG_ItemBox::OnOverlapBegin);
-}
-
 void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
 	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
@@ -89,7 +79,6 @@ void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* 
 	Mesh->SetHiddenInGame(true);
 	SetActorEnableCollision(false);
 	Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
-	//ServerAddItemFinish();
 }
 
 void AMG_ItemBox::OnEffectFinished(UNiagaraComponent* NiagaraSystem)
