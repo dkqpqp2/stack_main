@@ -114,7 +114,15 @@ protected:
 	void OnRep_CanAttack();
 
 	float AttackTime = 1.4667f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HoveringTime)
 	float HoveringTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HoveringTime)
+	float CurrentHoveringTime;
+
+	UFUNCTION()
+	float GetHoveringTimePercent() const;
 
 	void StartJump();
 	virtual void Jump() override;

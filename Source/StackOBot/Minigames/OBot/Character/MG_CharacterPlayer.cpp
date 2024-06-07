@@ -17,6 +17,8 @@
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
 	CameraArm->SetupAttachment(RootComponent);
 	CameraArm->TargetArmLength = 400.f;
@@ -104,6 +106,24 @@ void AMG_CharacterPlayer::BeginPlay()
 void AMG_CharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bIsHovering)
+	{
+		CurrentHoveringTime -= DeltaTime;
+		if (CurrentHoveringTime <= 0.0f)
+		{
+			ServerStopHover();
+		}
+	}
+	else if (!bIsHovering)
+	{
+		CurrentHoveringTime += DeltaTime;
+		if (CurrentHoveringTime > HoveringTime)
+		{
+			CurrentHoveringTime = HoveringTime;
+		}
+	}
+
 	
 	//글리치 현상 c++로 해결하려 했으나 오류로 우선 bp처리
 	/*FVector FirstMovement = FVector(1, 1, 0);
@@ -375,6 +395,11 @@ void AMG_CharacterPlayer::OnRep_CanAttack()
 	{
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}
+}
+
+float AMG_CharacterPlayer::GetHoveringTimePercent() const
+{
+	return 0.0f;
 }
 
 void AMG_CharacterPlayer::StartJump()
