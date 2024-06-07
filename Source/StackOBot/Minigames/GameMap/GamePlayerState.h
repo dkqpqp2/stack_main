@@ -6,6 +6,12 @@
 #include "../BasePlayerState.h"
 #include "GamePlayerState.generated.h"
 
+UENUM(BlueprintType)
+enum class EItem : uint8 {
+	E_NONE = 0 UMETA(DisplayName = "NONE"),
+	E_BOOSTER = 1 UMETA(DisplayName = "BOOSTER"),
+	E_BARRIER = 2 UMETA(DisplayName = "BARRIER"),
+};
 /**
  * 
  */
@@ -37,16 +43,15 @@ public:
 
 // --------- ITEM ----------
 protected:
-	class UItemBase* CurrentItem;
 
-	UPROPERTY(ReplicatedUsing=OnRep_CurrentItemName)
-	FString CurrentItemName;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
+	EItem CurrentItem;
 
 	UFUNCTION()
-	void OnRep_CurrentItemName();
+	void OnRep_CurrentItem();
 
 public:
-	void SetCurrentItem(class UItemBase* NewItem);
+	void SetCurrentItem(EItem NewItem);
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem();
@@ -55,4 +60,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void SV_UseItem();
 
+
+protected:
+	void UseBarrier();
 };
