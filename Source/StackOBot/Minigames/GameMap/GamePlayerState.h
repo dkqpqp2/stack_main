@@ -3,15 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Item/ItemBoxItemEnum.h"
 #include "../BasePlayerState.h"
 #include "GamePlayerState.generated.h"
 
-UENUM(BlueprintType)
-enum class EItem : uint8 {
-	E_NONE = 0 UMETA(DisplayName = "NONE"),
-	E_BOOSTER = 1 UMETA(DisplayName = "BOOSTER"),
-	E_BARRIER = 2 UMETA(DisplayName = "BARRIER"),
-};
+
 /**
  * 
  */
@@ -45,7 +41,7 @@ public:
 protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
-	EItem CurrentItem;
+	EItem CurrentItem = EItem::E_NONE;
 
 	UFUNCTION()
 	void OnRep_CurrentItem();
@@ -61,6 +57,8 @@ protected:
 	void SV_UseItem();
 
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
 protected:
 	void UseBarrier();
 };

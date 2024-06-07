@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "MiniGameGameState.h"
 #include "../OBot/Character/MG_CharacterPlayer.h"
+#include "../Item/SlowBarrier.h"
 
 void AGamePlayerState::BeginPlay()
 {
@@ -127,6 +128,8 @@ void AGamePlayerState::UseItem()
 		default:
 			break;
 		}
+
+		CurrentItem = EItem::E_NONE;
 	}
 	else
 	{
@@ -141,11 +144,21 @@ void AGamePlayerState::UseBarrier()
 	AMG_CharacterPlayer* ItemUserBot = Cast<AMG_CharacterPlayer>(Pawn);
 	if (!IsValid(ItemUserBot))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ItemUserBot Not Valid : UItemSlowBarrier::ActivateItem()"));
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ItemUserBot Not Valid : GamePS : UseBarrier()"));
 		return;
 	}
 
 	// TODO : 캐릭터의 뒤편에 배리어 스폰.
+	if (!IsValid(SlowBarrierBPClass))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SlowBarrierClass Not Valid : GamePS : UseBarrier()"));
+		return;
+	}
+
+	if (HasAuthority())
+	{
+		GetWorld()->SpawnActor<AActor>(SlowBarrierBPClass, ItemUserBot->GetActorLocation(), ItemUserBot->GetActorRotation());
+	}
 	//if (IsValid(SpawnToActor))
 	//{
 
