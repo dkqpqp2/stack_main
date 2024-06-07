@@ -45,7 +45,7 @@ public:
 protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
-	EItem CurrentItem;
+	EItem CurrentItem = EItem::E_NONE;
 
 	UFUNCTION()
 	void OnRep_CurrentItem();
@@ -61,6 +61,8 @@ protected:
 	void SV_UseItem();
 
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
 protected:
 	void UseBarrier();
 };
