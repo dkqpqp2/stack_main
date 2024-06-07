@@ -2,7 +2,6 @@
 
 
 #include "MiniGameGameState.h"
-#include "../Item/ItemClassDataTableRow.h"
 
 AMiniGameGameState::AMiniGameGameState()
 {

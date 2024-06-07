@@ -422,6 +422,11 @@ void AMG_CharacterPlayer::OnBoosterItem()
 	
 }
 
+void AMG_CharacterPlayer::OnRep_Hover()
+{
+	//부스터 게이지로 전환 함수 
+}
+
 void AMG_CharacterPlayer::OnBoosterEnd()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;

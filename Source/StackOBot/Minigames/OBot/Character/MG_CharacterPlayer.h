@@ -114,6 +114,8 @@ protected:
 	void OnRep_CanAttack();
 
 	float AttackTime = 1.4667f;
+//-------------Hover Time -----------------------------
+	UPROPERTY(ReplicatedUsing = OnRep_Hover, VisibleAnywhere)
 	float HoveringTime = 2.0f;
 
 	void StartJump();
@@ -123,10 +125,18 @@ private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
 
+public:
+	UPROPERTY(EditAnywhere)
+	float MaxHoverTime = 2.0f; // Hover 최대 시간
+
+	UFUNCTION()
+	void OnRep_Hover();
+
 // ---------- Item Functions ------------
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnBoosterItem();
+
 
 protected:
 	void OnBoosterEnd();

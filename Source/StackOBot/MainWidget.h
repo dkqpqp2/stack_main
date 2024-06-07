@@ -13,5 +13,15 @@ UCLASS()
 class STACKOBOT_API UMainWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(meta=(BindWidget))
+	class UUserWidget* HoverBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* HoverText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* MatchCountdownText;
 	
 };
