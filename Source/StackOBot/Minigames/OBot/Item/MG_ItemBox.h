@@ -24,15 +24,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-public:
-	UFUNCTION(Server, Reliable)
-	void ServerAddItem();
-	void ServerAddItem_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastAddItem();
-	void MulticastAddItem_Implementation();
-
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Trigger)
 	TObjectPtr<class USphereComponent> Trigger;

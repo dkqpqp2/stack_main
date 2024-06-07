@@ -77,16 +77,6 @@ void AMG_ItemBox::Tick(float DeltaTime)
 	}
 }
 
-void AMG_ItemBox::ServerAddItem_Implementation()
-{
-	//MulticastAddItem();
-}
-
-void AMG_ItemBox::MulticastAddItem_Implementation()
-{
-	//Trigger->OnComponentBeginOverlap.AddDynamic(this, &AMG_ItemBox::OnOverlapBegin);
-}
-
 void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
 	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
@@ -101,7 +91,6 @@ void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* 
 		// 아이템을 캐릭터에 추가.
 		GetNewItemTo(OtherActor);
 	}
-
 }
 
 void AMG_ItemBox::OnEffectFinished(UNiagaraComponent* NiagaraSystem)
