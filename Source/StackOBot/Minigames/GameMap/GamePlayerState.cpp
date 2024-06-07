@@ -3,9 +3,9 @@
 
 #include "GamePlayerState.h"
 #include "../ThirdPersonCharacter.h"
-#include "../Item/ItemBase.h"
 #include "Net/UnrealNetwork.h"
 #include "MiniGameGameState.h"
+#include "../OBot/Character/MG_CharacterPlayer.h"
 
 void AGamePlayerState::BeginPlay()
 {
@@ -81,33 +81,23 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
+	DOREPLIFETIME(AGamePlayerState, CurrentItem);
 }
 
 
-void AGamePlayerState::OnRep_CurrentItemName()
+void AGamePlayerState::OnRep_CurrentItem()
 {
 	// client ui update. find item's ui by string. only if client's local player get item.
 }
 
-void AGamePlayerState::SetCurrentItem(UItemBase* NewItem)
+void AGamePlayerState::SetCurrentItem(EItem NewItem)
 {
 	if (HasAuthority())
 	{
-		if (CurrentItem == nullptr)
+		if (CurrentItem == EItem::E_NONE && NewItem != EItem::E_NONE)
 		{
-			if (IsValid(NewItem))
-			{
-				CurrentItem = NewItem;
-				GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Item Setted"));
-
-				// ItemData Update.
-				CurrentItemName = NewItem->GetItemName();
-
-				// Server UI Update only if server's local player get item. 
-
-			}
-
+			CurrentItem = NewItem;
+			// ServerUI Update, 
 		}
 	}
 
@@ -118,26 +108,50 @@ void AGamePlayerState::UseItem()
 	if (HasAuthority())
 	{
 		APawn* Pawn = GetPawn();
-		if (!IsValid(Pawn))
+		AMG_CharacterPlayer* Player = Cast<AMG_CharacterPlayer>(Pawn);
+		if (!IsValid(Player))
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Item"));
 			return;
 		}
-		if (!IsValid(CurrentItem))
+		switch (CurrentItem)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No Item"));
-			return;
+		case EItem::E_NONE:
+			break;
+		case EItem::E_BOOSTER:
+			Player->OnBoosterItem();
+			break;
+		case EItem::E_BARRIER:
+			UseBarrier();
+			break;
+		default:
+			break;
 		}
-		CurrentItem->ActivateItem(Pawn);
-		
-		// 현재 아이템 초기화.
-		CurrentItem = nullptr;
-		CurrentItemName = TEXT("");
 	}
 	else
 	{
 		// RPC Use Item();
 		SV_UseItem();
 	}
+}
+
+void AGamePlayerState::UseBarrier()
+{
+	APawn* Pawn = GetPawn();
+	AMG_CharacterPlayer* ItemUserBot = Cast<AMG_CharacterPlayer>(Pawn);
+	if (!IsValid(ItemUserBot))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ItemUserBot Not Valid : UItemSlowBarrier::ActivateItem()"));
+		return;
+	}
+
+	// TODO : 캐릭터의 뒤편에 배리어 스폰.
+	//if (IsValid(SpawnToActor))
+	//{
+
+	//	GetWorld()->SpawnActor<AActor>(SpawnToActor, ItemUser->GetActorLocation(), ItemUser->GetActorRotation());
+
+	//}
 }
 
 void AGamePlayerState::SV_UseItem_Implementation()

@@ -131,4 +131,9 @@ public:
 protected:
 	void OnBoosterEnd();
 	FTimerHandle Timer;
+
+public:
+	void OnBarrierOverlap();
+protected:
+	void OnBarrierEnd();
 };

@@ -81,7 +81,7 @@ void AItemActor::OnBoxComponentOverlapped(
 			return;
 		}
 		
-		PS->SetCurrentItem(CoinGS->GetItem());
+		PS->SetCurrentItem(EItem::E_BOOSTER);
 
 		
 
