@@ -64,4 +64,9 @@ public:
 	{
 		SpawnPoint = Point;
 	}
+
+protected:
+	void GetNewItemTo(AActor* OtherActor);
+
+
 };
