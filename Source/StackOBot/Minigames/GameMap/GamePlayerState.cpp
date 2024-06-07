@@ -3,7 +3,6 @@
 
 #include "GamePlayerState.h"
 #include "../ThirdPersonCharacter.h"
-#include "../Item/ItemBase.h"
 #include "Net/UnrealNetwork.h"
 #include "MiniGameGameState.h"
 #include "../OBot/Character/MG_CharacterPlayer.h"

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Item/ItemBase.h"
 #include "GameFramework/GameState.h"
 #include "MiniGameGameState.generated.h"
 
