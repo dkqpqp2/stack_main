@@ -157,7 +157,8 @@ void AGamePlayerState::UseBarrier()
 
 	if (HasAuthority())
 	{
-		GetWorld()->SpawnActor<AActor>(SlowBarrierBPClass, ItemUserBot->GetActorLocation(), ItemUserBot->GetActorRotation());
+		FVector NewLocation = ItemUserBot->GetActorLocation() - (ItemUserBot->GetActorForwardVector() * 200.f);
+		GetWorld()->SpawnActor<AActor>(SlowBarrierBPClass, NewLocation, ItemUserBot->GetActorRotation());
 	}
 	//if (IsValid(SpawnToActor))
 	//{
