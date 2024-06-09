@@ -84,7 +84,9 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 	bIsJetpackActive = false;
+	bIsHovering = false;
 	bCanAttack = true;
+	CurrentHoveringTime = MaxHoveringTime;
 
 }
 
@@ -107,23 +109,7 @@ void AMG_CharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsHovering)
-	{
-		CurrentHoveringTime -= DeltaTime;
-		if (CurrentHoveringTime <= 0.0f)
-		{
-			ServerStopHover();
-		}
-	}
-	else if (!bIsHovering)
-	{
-		CurrentHoveringTime += DeltaTime;
-		if (CurrentHoveringTime > HoveringTime)
-		{
-			CurrentHoveringTime = HoveringTime;
-		}
-	}
-
+	JetPackUseTime(DeltaTime);
 	
 	//글리치 현상 c++로 해결하려 했으나 오류로 우선 bp처리
 	/*FVector FirstMovement = FVector(1, 1, 0);
@@ -172,8 +158,8 @@ void AMG_CharacterPlayer::ServerStartHover_Implementation()
 	//Server에서 StartHover 상태를 모든 플레이어에게 전파
 	MulticastStartHover();
 
-	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMG_CharacterPlayer::ServerStopHover, HoveringTime, false);
+	//FTimerHandle Handle;
+	//GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMG_CharacterPlayer::ServerStopHover, HoveringTime, false);
 }
 
 void AMG_CharacterPlayer::MulticastStartHover_Implementation()
@@ -397,10 +383,6 @@ void AMG_CharacterPlayer::OnRep_CanAttack()
 	}
 }
 
-float AMG_CharacterPlayer::GetHoveringTimePercent() const
-{
-	return 0.0f;
-}
 
 void AMG_CharacterPlayer::StartJump()
 {
@@ -435,6 +417,26 @@ void AMG_CharacterPlayer::StopJumping()
 	if (bIsJetpackActive)
 	{
 		ServerStopHover();
+	}
+}
+
+void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
+{
+	if (bIsHovering)
+	{
+		CurrentHoveringTime -= DeltaTime;
+		if (CurrentHoveringTime <= 0.0f)
+		{
+			ServerStopHover();
+		}
+	}
+	else if (!bIsHovering)
+	{
+		CurrentHoveringTime += DeltaTime;
+		if (CurrentHoveringTime >= MaxHoveringTime)
+		{
+			CurrentHoveringTime = MaxHoveringTime;
+		}
 	}
 }
 

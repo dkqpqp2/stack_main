@@ -115,14 +115,11 @@ protected:
 
 	float AttackTime = 1.4667f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HoveringTime)
-	float HoveringTime = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHoveringTime = 2.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HoveringTime)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CurrentHoveringTime;
-
-	UFUNCTION()
-	float GetHoveringTimePercent() const;
 
 	void StartJump();
 	virtual void Jump() override;
@@ -130,6 +127,9 @@ protected:
 private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
+
+	UFUNCTION()
+	void JetPackUseTime(float DeltaTime);
 
 // ---------- Item Functions ------------
 public:
