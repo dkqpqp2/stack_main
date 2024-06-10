@@ -172,12 +172,15 @@ void AGamePlayerState::UseItem()
 		switch (CurrentItemStruct->ItemEnum)
 		{
 		case EItem::E_NONE:
+			return;
 			break;
 		case EItem::E_BOOSTER:
 			Player->OnBoosterItem();
 			break;
 		case EItem::E_BARRIER:
 			UseBarrier();
+			break;
+		case EItem::E_SHIELD:
 			break;
 		default:
 			break;
