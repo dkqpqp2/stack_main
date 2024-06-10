@@ -2,8 +2,9 @@
 
 
 #include "ItemSlotWidget.h"
+#include "Components/TextBlock.h"
 
-void UItemSlotWidget::NewItemToItemSlot(EItem NewItem)
+void UItemSlotWidget::NewItemToItemSlot(const FItemStruct* const NewItemStruct)
 {
-	
+	ItemNameTextBlock->SetText(FText::FromString( NewItemStruct->ItemString ));
 }

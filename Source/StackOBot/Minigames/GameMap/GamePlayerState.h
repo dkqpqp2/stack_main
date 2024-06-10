@@ -52,9 +52,12 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CurrentItem();
+protected:
+	void SetCurrentItem(FName NewItemName);
+	void UpdateItemSlotUI();
 
 public:
-	void SetCurrentItem(EItem NewItem);
+	void SetCurrentItemToRandomItem();
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem();

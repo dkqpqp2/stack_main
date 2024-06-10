@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "../../Item/ItemBoxItemEnum.h"
+#include "../../Item/ItemStruct.h"
 #include "ItemSlotWidget.generated.h"
 
 
@@ -22,5 +23,5 @@ protected:
 	TObjectPtr<UTextBlock> ItemNameTextBlock;
 	
 public:
-	void NewItemToItemSlot(EItem NewItem);
+	void NewItemToItemSlot(const FItemStruct* const NewItemStruct);
 };

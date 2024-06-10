@@ -138,8 +138,7 @@ void AMG_ItemBox::GetNewItemTo(AActor* OtherActor)
 			return;
 		}
 
-		uint8 RandomItemNumber = (uint8)(FMath::RandRange(1, 2));
-		PS->SetCurrentItem(EItem(RandomItemNumber));
+		PS->SetCurrentItemToRandomItem();
 	}
 }
 

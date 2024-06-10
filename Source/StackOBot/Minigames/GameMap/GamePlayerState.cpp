@@ -7,12 +7,14 @@
 #include "MiniGameGameState.h"
 #include "../OBot/Character/MG_CharacterPlayer.h"
 #include "../Item/SlowBarrier.h"
+#include "GameHUD.h"
+#include "../../MainWidget.h"
+#include "UI/ItemSlotWidget.h"
 
 void AGamePlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPawnSet.AddDynamic(this, &ThisClass::SetPlayerPawn);
-
 }
 
 void AGamePlayerState::SetPlayerEnterID(int32 NewEnterID)
@@ -98,15 +100,41 @@ void AGamePlayerState::OnRep_CurrentItem()
 	if (CurrentItemName != "")
 	{
 		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
-	}
-	else
-	{
-		CurrentItemStruct = nullptr;
+		UpdateItemSlotUI();
 	}
 	// client ui update. find item's ui by string. only if client's local player get item.
 }
 
-void AGamePlayerState::SetCurrentItem(EItem NewItem)
+void AGamePlayerState::SetCurrentItem(FName NewItemName)
+{
+	if (HasAuthority())
+	{
+		if (!IsValid(ItemDataTable))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			return;
+		}
+		CurrentItemName = NewItemName;
+		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
+		
+		UpdateItemSlotUI();
+	}
+}
+
+void AGamePlayerState::UpdateItemSlotUI()
+{
+	auto PC = GetPlayerController();
+	if (IsValid(PC) && PC->IsLocalController())
+	{
+		auto HUD = PC->GetHUD<AGameHUD>();
+		if (IsValid(HUD))
+		{
+			HUD->MainWidget->ItemSlot->NewItemToItemSlot(CurrentItemStruct);
+		}
+	}
+}
+
+void AGamePlayerState::SetCurrentItemToRandomItem()
 {
 	if (HasAuthority())
 	{
@@ -117,11 +145,7 @@ void AGamePlayerState::SetCurrentItem(EItem NewItem)
 			return;
 		}
 		TArray<FName> ItemRowNames = ItemDataTable->GetRowNames();
-		CurrentItemName = ItemRowNames[FMath::RandRange(0, ItemRowNames.Num() - 1)];
-		// Find Row with RowName, Save it
-		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
-
-		//Server UI Update...
+		SetCurrentItem(ItemRowNames[FMath::RandRange(1, ItemRowNames.Num() - 1)]);
 	}
 
 }
@@ -160,8 +184,7 @@ void AGamePlayerState::UseItem()
 		}
 
 		//Empty Item...
-		CurrentItemName = "";
-		CurrentItemStruct = nullptr;
+		SetCurrentItem(FName(TEXT("NOITEM")));
 	}
 	else
 	{
