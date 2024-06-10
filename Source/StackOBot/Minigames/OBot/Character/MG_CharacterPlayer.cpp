@@ -288,6 +288,7 @@ void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	// DOREPLIFETIME 매크로 : #include "Net/UnrealNetwork.h" 헤더파일 추가해야 사용할 수 있음
 	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
+	DOREPLIFETIME(AMG_CharacterPlayer, CurrentWalkSpeed);
 }
 
 void AMG_CharacterPlayer::Attack()
@@ -416,36 +417,59 @@ void AMG_CharacterPlayer::StopJumping()
 	}
 }
 
-void AMG_CharacterPlayer::OnBoosterItem()
-{
-	// 잠시 동안만...
-	GetCharacterMovement()->MaxWalkSpeed = 1500.f;
-
-	// net multicast boost effect?
-	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
-	
-}
-
 void AMG_CharacterPlayer::OnRep_Hover()
 {
 	//부스터 게이지로 전환 함수 
 }
 
+// ------------ Item Functions. -----------
+
+void AMG_CharacterPlayer::SetCurrentWalkSpeed(float NewCurrentWalkSpeed)
+{
+	if (HasAuthority())
+	{
+		CurrentWalkSpeed = NewCurrentWalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = NewCurrentWalkSpeed;
+	}
+}
+
+void AMG_CharacterPlayer::OnRep_CurrentWalkSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
+}
+
+void AMG_CharacterPlayer::OnBoosterItem()
+{
+	if (HasAuthority())
+	{
+		// 잠시 동안만...
+		SetCurrentWalkSpeed(1500.f);
+
+		// net multicast boost effect?
+		GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+	}
+}
+
 void AMG_CharacterPlayer::OnBoosterEnd()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	SetCurrentWalkSpeed(700.f);
 
 }
 
 void AMG_CharacterPlayer::OnBarrierOverlap()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	if (HasAuthority())
+	{
+		// 잠시 동안만...
+		SetCurrentWalkSpeed(100.f);
 
-	GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBarrierEnd, 1.f, false);
+		// net multicast boost effect?
+		GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+	}
 }
 
 void AMG_CharacterPlayer::OnBarrierEnd()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	SetCurrentWalkSpeed(700.f);
 
 }
