@@ -433,7 +433,7 @@ void AMG_CharacterPlayer::OnRep_Hover()
 
 void AMG_CharacterPlayer::OnBoosterEnd()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
 }
 
@@ -446,6 +446,6 @@ void AMG_CharacterPlayer::OnBarrierOverlap()
 
 void AMG_CharacterPlayer::OnBarrierEnd()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 700.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
 }

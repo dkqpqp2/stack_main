@@ -82,12 +82,27 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGamePlayerState, CurrentItem);
+	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
 }
 
 
 void AGamePlayerState::OnRep_CurrentItem()
 {
+	// Client's Current Item Struct Set.
+	if (!IsValid(ItemDataTable))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+		return;
+	}
+
+	if (CurrentItemName != "")
+	{
+		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
+	}
+	else
+	{
+		CurrentItemStruct = nullptr;
+	}
 	// client ui update. find item's ui by string. only if client's local player get item.
 }
 
@@ -95,11 +110,18 @@ void AGamePlayerState::SetCurrentItem(EItem NewItem)
 {
 	if (HasAuthority())
 	{
-		if (CurrentItem == EItem::E_NONE && NewItem != EItem::E_NONE)
+		//From Datatable RowNames, Pick One
+		if (!IsValid(ItemDataTable))
 		{
-			CurrentItem = NewItem;
-			// ServerUI Update, 
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			return;
 		}
+		TArray<FName> ItemRowNames = ItemDataTable->GetRowNames();
+		CurrentItemName = ItemRowNames[FMath::RandRange(0, ItemRowNames.Num() - 1)];
+		// Find Row with RowName, Save it
+		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
+
+		//Server UI Update...
 	}
 
 }
@@ -115,7 +137,15 @@ void AGamePlayerState::UseItem()
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Item"));
 			return;
 		}
-		switch (CurrentItem)
+
+		if (!CurrentItemStruct)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("NoCurrent ItemStruct"));
+			return;
+		}
+
+		// use CurrentItemStructure's Enum
+		switch (CurrentItemStruct->ItemEnum)
 		{
 		case EItem::E_NONE:
 			break;
@@ -129,7 +159,9 @@ void AGamePlayerState::UseItem()
 			break;
 		}
 
-		CurrentItem = EItem::E_NONE;
+		//Empty Item...
+		CurrentItemName = "";
+		CurrentItemStruct = nullptr;
 	}
 	else
 	{
