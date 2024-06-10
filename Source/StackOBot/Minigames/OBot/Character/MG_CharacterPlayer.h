@@ -121,6 +121,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CurrentHoveringTime;
 
+	// Booster
+	TSubclassOf<UUserWidget> MainHUDClass;
+	class UMainHUD* MainHUD;
+
 	void StartJump();
 	virtual void Jump() override;
 	virtual void StopJumping() override;

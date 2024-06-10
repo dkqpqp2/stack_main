@@ -16,7 +16,7 @@ class STACKOBOT_API UMainHUD : public UUserWidget
 public:
     virtual void NativeConstruct() override;
 
-    void UpdateHoveringProgress(float Percent);
+	void UpdateHoveringProgress(float Percent);
 	
 protected:
 	UPROPERTY(meta = (BindWidget))

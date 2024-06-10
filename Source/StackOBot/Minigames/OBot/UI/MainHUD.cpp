@@ -11,4 +11,5 @@ void UMainHUD::NativeConstruct()
 
 void UMainHUD::UpdateHoveringProgress(float Percent)
 {
+	BoosterBar->SetPercent(Percent);
 }

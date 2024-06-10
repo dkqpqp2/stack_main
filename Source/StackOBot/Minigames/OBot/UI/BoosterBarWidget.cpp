@@ -2,28 +2,11 @@
 
 
 #include "BoosterBarWidget.h"
+#include "Components/Image.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
-void UBoosterBarWidget::NativeOnInitialized()
+void UBoosterBarWidget::SetPercent(float Percent)
 {
-	Super::NativeOnInitialized();
-}
-
-void UBoosterBarWidget::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-}
-
-void UBoosterBarWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
-void UBoosterBarWidget::NativeDestruct()
-{
-	Super::NativeDestruct();
-}
-
-void UBoosterBarWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	UMaterialInstanceDynamic* Dynamic = Image->GetDynamicMaterial();
+	Dynamic->SetScalarParameterValue(TEXT("Percent"), Percent);
 }

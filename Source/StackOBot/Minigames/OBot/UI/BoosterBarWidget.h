@@ -14,6 +14,15 @@ class STACKOBOT_API UBoosterBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<class UImage> Image;
+
+	UFUNCTION(BlueprintCallable)
+	void SetPercent(float Percent);
+
+
+
 protected:
 	// UPROPERTY(VisibleAnywhere, meta=(BindWidget))
 
@@ -23,13 +32,13 @@ protected:
 	// NativeDestruct 종료 시 호출됨
 
 	// 위젯이 생성될 때 딱 1번만 호출
-	virtual void NativeOnInitialized();
+	//virtual void NativeOnInitialized();
 
 	// Construct 함수들은 AddToViewport 함수를 호출하면 호출됨
-	virtual void NativePreConstruct();
-	virtual void NativeConstruct();
+	//virtual void NativePreConstruct();
+	//virtual void NativeConstruct();
 
 
-	virtual void NativeDestruct();
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
+	//virtual void NativeDestruct();
+	//virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
 };

@@ -14,6 +14,7 @@
 #include "StackOBot.h"
 #include "Animation/AnimMontage.h"
 #include "Net/UnrealNetwork.h"
+#include "Minigames/OBot/UI/MainHUD.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -80,7 +81,12 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
-	
+
+	static ConstructorHelpers::FClassFinder<UMainHUD> MainHUDRef(TEXT("/Game/Character/UI/WB_HUD.WB_HUD_C"));
+	if (MainHUDRef.Class)
+	{
+		MainHUDClass = MainHUDRef.Class;
+	}
 
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 	bIsJetpackActive = false;
@@ -100,6 +106,9 @@ void AMG_CharacterPlayer::BeginPlay()
 	{
 		EnableInput(PlayerController);
 	}
+	MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUDClass);
+	MainHUD->AddToViewport();
+	
 	SetCharacterControl(CurrentCharacterControlType);
 
 
@@ -438,6 +447,10 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 			CurrentHoveringTime = MaxHoveringTime;
 		}
 	}
+
+	float Percent = CurrentHoveringTime / MaxHoveringTime;
+	UE_LOG(LogTemp, Warning, TEXT("## Hovering Percent %.2f"), Percent);
+	MainHUD->UpdateHoveringProgress(Percent);
 }
 
 void AMG_CharacterPlayer::OnBoosterItem()
