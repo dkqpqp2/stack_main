@@ -14,15 +14,5 @@ class STACKOBOT_API AMG_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
-	AMG_PlayerController();
-private:
-	TSubclassOf<UUserWidget> PlayerHUDClass;
-	UUserWidget* PlayerHUD;
 
-protected:
-
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-	
 };
