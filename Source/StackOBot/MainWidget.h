@@ -22,6 +22,9 @@ public:
 	class UTextBlock* HoverText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* MatchCountdownText;
+	class UTextBlock* MatchCountdownText; // 줄어드는거
+
+	//UPROPERTY(meta = (BindWidget))
+	//class UTextBlock* MatchTimerText; //늘어나는 거
 	
 };
