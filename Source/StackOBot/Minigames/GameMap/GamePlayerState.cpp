@@ -181,6 +181,7 @@ void AGamePlayerState::UseItem()
 			UseBarrier();
 			break;
 		case EItem::E_SHIELD:
+			UseShield();
 			break;
 		default:
 			break;
@@ -193,6 +194,14 @@ void AGamePlayerState::UseItem()
 	{
 		// RPC Use Item();
 		SV_UseItem();
+	}
+}
+
+void AGamePlayerState::SV_UseItem_Implementation()
+{
+	if (HasAuthority())
+	{
+		UseItem();
 	}
 }
 
@@ -220,10 +229,19 @@ void AGamePlayerState::UseBarrier()
 	}
 }
 
-void AGamePlayerState::SV_UseItem_Implementation()
+void AGamePlayerState::UseShield()
 {
-	if (HasAuthority())
+	AMG_CharacterPlayer* Player = GetPawn<AMG_CharacterPlayer>();
+	if (!IsValid(Player))
 	{
-		UseItem();
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Shield"));
+		return;
 	}
+	
+	// 플레이어의 쉴드 함수 ON!
+	Player->OnShield();
+	
+
 }
+
+

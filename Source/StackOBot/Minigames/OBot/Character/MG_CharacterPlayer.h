@@ -154,11 +154,26 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Niagara)
 	TObjectPtr<class UNiagaraComponent> BoosterNiagaraEffect;
 
-	FTimerHandle Timer;
+	FTimerHandle WalkSpeedTimer;
 
 // ---------- Barrier------------
 public:
 	void OnBarrierOverlap();
 protected:
 	void OnBarrierEnd();
+
+// ---------- Shield ------------
+public:
+	void OnShield();
+protected:
+	void OnShieldEnd();
+	FTimerHandle ShieldTimer;
+
+	UPROPERTY(ReplicatedUsing = OnRep_IsShield)
+	bool bIsShield = false;
+
+	UFUNCTION()
+	void OnRep_IsShield();
+public:
+	bool GetIsShield();
 };

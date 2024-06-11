@@ -289,6 +289,7 @@ void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	// DOREPLIFETIME 매크로 : #include "Net/UnrealNetwork.h" 헤더파일 추가해야 사용할 수 있음
 	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
 	DOREPLIFETIME(AMG_CharacterPlayer, CurrentWalkSpeed);
+	DOREPLIFETIME(AMG_CharacterPlayer, bIsShield);
 }
 
 void AMG_CharacterPlayer::Attack()
@@ -446,7 +447,7 @@ void AMG_CharacterPlayer::OnBoosterItem()
 		SetCurrentWalkSpeed(1500.f);
 
 		// net multicast boost effect?
-		GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBoosterEnd, 2.f, false);
 	}
 }
 
@@ -464,7 +465,7 @@ void AMG_CharacterPlayer::OnBarrierOverlap()
 		SetCurrentWalkSpeed(100.f);
 
 		// net multicast boost effect?
-		GetWorldTimerManager().SetTimer(Timer, this, &ThisClass::OnBoosterEnd, 3.f, false);
+		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBarrierEnd, 2.f, false);
 	}
 }
 
@@ -472,4 +473,40 @@ void AMG_CharacterPlayer::OnBarrierEnd()
 {
 	SetCurrentWalkSpeed(700.f);
 
+}
+
+void AMG_CharacterPlayer::OnShield()
+{
+	if (HasAuthority())
+	{
+		bIsShield = true;
+
+		// shield effect
+
+		GetWorldTimerManager().SetTimer(ShieldTimer, this, &ThisClass::OnShieldEnd, 2.f, false);
+	}
+}
+
+void AMG_CharacterPlayer::OnShieldEnd()
+{
+	bIsShield = false;
+	// shield effect off
+}
+
+void AMG_CharacterPlayer::OnRep_IsShield()
+{
+	if (bIsShield)
+	{
+		// shield effect
+
+	}
+	else
+	{
+		// shield effect Off
+	}
+}
+
+bool AMG_CharacterPlayer::GetIsShield()
+{
+	return bIsShield;
 }
