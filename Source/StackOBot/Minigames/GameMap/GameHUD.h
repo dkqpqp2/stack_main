@@ -18,6 +18,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> MainWidgetClass;
 
+	UPROPERTY()
 	class UMainWidget* MainWidget;
 
 protected:

@@ -41,7 +41,7 @@ void AMG_PlayerController::SetHUDTime()
 	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
 	if (CountDown != SecondsLeft)
 	{
-		SetHUDMatchCountdown(MatchTime - GetWorld()->GetTimeSeconds());
+		SetHUDMatchCountdown(/*MatchTime - */GetWorld()->GetTimeSeconds());
 	}
 
 	CountDown = SecondsLeft;

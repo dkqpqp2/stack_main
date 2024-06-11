@@ -4,17 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "MG_GameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_GameMode : public AGameModeBase
+class STACKOBOT_API AMG_GameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
 	AMG_GameMode();
-	
+	virtual void Tick(float Deltatime) override; // 시간tick별 재야 하니까
+
+	UPROPERTY(EditDefaultsOnly)
+	float WarmupTime = 10.f;
+
+	float LevelStartingTime = 0.f;
+
+
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	float CountDownTime = 0.f;
 };
