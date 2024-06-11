@@ -71,4 +71,5 @@ protected:
 	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
 protected:
 	void UseBarrier();
+	void UseShield();
 };

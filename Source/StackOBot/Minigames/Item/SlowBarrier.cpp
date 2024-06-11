@@ -24,7 +24,7 @@ ASlowBarrier::ASlowBarrier()
 void ASlowBarrier::OnOverlapBarrier(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AMG_CharacterPlayer* Character = Cast<AMG_CharacterPlayer>(OtherActor);
-	if (Character && HasAuthority())
+	if (Character && HasAuthority() && !Character->GetIsShield())
 	{
 		Character->OnBarrierOverlap();
 	}
