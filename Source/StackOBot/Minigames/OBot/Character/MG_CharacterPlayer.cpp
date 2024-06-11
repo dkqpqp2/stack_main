@@ -447,14 +447,31 @@ void AMG_CharacterPlayer::OnBoosterItem()
 		SetCurrentWalkSpeed(1500.f);
 
 		// net multicast boost effect?
+		MultiCast_BoosterEffect(true);
 		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBoosterEnd, 2.f, false);
 	}
 }
 
 void AMG_CharacterPlayer::OnBoosterEnd()
 {
-	SetCurrentWalkSpeed(700.f);
+	if (HasAuthority())
+	{
+		SetCurrentWalkSpeed(700.f);
+		MultiCast_BoosterEffect(false);
+	}
 
+}
+
+void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
+{
+	if (IsActivated)
+	{
+		BoosterNiagaraEffect->Activate();
+	}
+	else
+	{
+		BoosterNiagaraEffect->Deactivate();
+	}
 }
 
 void AMG_CharacterPlayer::OnBarrierOverlap()

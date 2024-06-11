@@ -151,6 +151,9 @@ public:
 protected:
 	void OnBoosterEnd();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiCast_BoosterEffect(bool IsActivated);
+
 	UPROPERTY(EditAnywhere, Category = Niagara)
 	TObjectPtr<class UNiagaraComponent> BoosterNiagaraEffect;
 
