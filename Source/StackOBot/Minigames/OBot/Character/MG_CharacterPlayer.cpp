@@ -14,6 +14,7 @@
 #include "StackOBot.h"
 #include "Animation/AnimMontage.h"
 #include "Net/UnrealNetwork.h"
+#include "NiagaraFunctionLibrary.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -35,6 +36,10 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 
 	BoosterNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BoosterNiagaraEffect"));
 	BoosterNiagaraEffect->SetupAttachment(Jetpack);
+
+	ShieldNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ShieldNiagaraEffect"));
+	ShieldNiagaraEffect->SetupAttachment(GetMesh(), FName("ShieldSocket"));
+	ShieldNiagaraEffect->Deactivate();
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
 	if (JetpackMeshRef.Object)
@@ -443,12 +448,14 @@ void AMG_CharacterPlayer::OnBoosterItem()
 {
 	if (HasAuthority())
 	{
-		// 잠시 동안만...
-		SetCurrentWalkSpeed(1500.f);
+		// 배리어 효과 제거.
+		OnBarrierEnd();
+
+		SetCurrentWalkSpeed(BoosterSpeed);
 
 		// net multicast boost effect?
 		MultiCast_BoosterEffect(true);
-		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBoosterEnd, 2.f, false);
+		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBoosterEnd, BoosterDuration, false);
 	}
 }
 
@@ -474,14 +481,18 @@ void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivate
 	}
 }
 
+// 추후에 배리어에서 스피드와 지속시간을 받아와서 적용하는 것으로 변경.
 void AMG_CharacterPlayer::OnBarrierOverlap()
 {
 	if (HasAuthority())
 	{
+		// 부스터 취소. 
+		OnBoosterEnd();
 		// 잠시 동안만...
 		SetCurrentWalkSpeed(100.f);
 
 		// net multicast boost effect?
+		// 부스터를 쓴채로 배리어에 들어오면 타이머가 겹쳐버려서 부스터 end가 호출되지 않는다...
 		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBarrierEnd, 2.f, false);
 	}
 }
@@ -497,9 +508,8 @@ void AMG_CharacterPlayer::OnShield()
 	if (HasAuthority())
 	{
 		bIsShield = true;
-
 		// shield effect
-
+		ShieldNiagaraEffect->Activate();
 		GetWorldTimerManager().SetTimer(ShieldTimer, this, &ThisClass::OnShieldEnd, 2.f, false);
 	}
 }
@@ -508,6 +518,9 @@ void AMG_CharacterPlayer::OnShieldEnd()
 {
 	bIsShield = false;
 	// shield effect off
+	ShieldNiagaraEffect->Deactivate();
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Shield Off"));
+
 }
 
 void AMG_CharacterPlayer::OnRep_IsShield()
@@ -515,11 +528,12 @@ void AMG_CharacterPlayer::OnRep_IsShield()
 	if (bIsShield)
 	{
 		// shield effect
-
+		ShieldNiagaraEffect->Activate();
 	}
 	else
 	{
 		// shield effect Off
+		ShieldNiagaraEffect->Deactivate();
 	}
 }
 

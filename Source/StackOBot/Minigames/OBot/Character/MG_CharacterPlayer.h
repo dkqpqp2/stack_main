@@ -143,6 +143,12 @@ protected:
 	UFUNCTION()
 	void OnRep_CurrentWalkSpeed();
 // ---------- Booster------------
+protected:
+	UPROPERTY(EditAnywhere)
+	float BoosterDuration = 3.5f;	
+	
+	UPROPERTY(EditAnywhere)
+	float BoosterSpeed = 1500.f;
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnBoosterItem();
@@ -169,6 +175,9 @@ protected:
 public:
 	void OnShield();
 protected:
+	UPROPERTY(EditAnywhere, Category = Niagara)
+	TObjectPtr<class UNiagaraComponent> ShieldNiagaraEffect;
+
 	void OnShieldEnd();
 	FTimerHandle ShieldTimer;
 
