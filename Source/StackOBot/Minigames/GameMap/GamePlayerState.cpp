@@ -7,12 +7,14 @@
 #include "MiniGameGameState.h"
 #include "../OBot/Character/MG_CharacterPlayer.h"
 #include "../Item/SlowBarrier.h"
+#include "GameHUD.h"
+#include "../../MainWidget.h"
+#include "UI/ItemSlotWidget.h"
 
 void AGamePlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 	OnPawnSet.AddDynamic(this, &ThisClass::SetPlayerPawn);
-
 }
 
 void AGamePlayerState::SetPlayerEnterID(int32 NewEnterID)
@@ -82,24 +84,68 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGamePlayerState, CurrentItem);
+	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
 }
 
 
 void AGamePlayerState::OnRep_CurrentItem()
 {
+	// Client's Current Item Struct Set.
+	if (!IsValid(ItemDataTable))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+		return;
+	}
+
+	if (CurrentItemName != "")
+	{
+		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
+		UpdateItemSlotUI();
+	}
 	// client ui update. find item's ui by string. only if client's local player get item.
 }
 
-void AGamePlayerState::SetCurrentItem(EItem NewItem)
+void AGamePlayerState::SetCurrentItem(FName NewItemName)
 {
 	if (HasAuthority())
 	{
-		if (CurrentItem == EItem::E_NONE && NewItem != EItem::E_NONE)
+		if (!IsValid(ItemDataTable))
 		{
-			CurrentItem = NewItem;
-			// ServerUI Update, 
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			return;
 		}
+		CurrentItemName = NewItemName;
+		CurrentItemStruct = ItemDataTable->FindRow<FItemStruct>(CurrentItemName, TEXT(""));
+		
+		UpdateItemSlotUI();
+	}
+}
+
+void AGamePlayerState::UpdateItemSlotUI()
+{
+	auto PC = GetPlayerController();
+	if (IsValid(PC) && PC->IsLocalController())
+	{
+		auto HUD = PC->GetHUD<AGameHUD>();
+		if (IsValid(HUD))
+		{
+			HUD->MainWidget->ItemSlot->NewItemToItemSlot(CurrentItemStruct);
+		}
+	}
+}
+
+void AGamePlayerState::SetCurrentItemToRandomItem()
+{
+	if (HasAuthority())
+	{
+		//From Datatable RowNames, Pick One
+		if (!IsValid(ItemDataTable))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			return;
+		}
+		TArray<FName> ItemRowNames = ItemDataTable->GetRowNames();
+		SetCurrentItem(ItemRowNames[FMath::RandRange(1, ItemRowNames.Num() - 1)]);
 	}
 
 }
@@ -115,9 +161,18 @@ void AGamePlayerState::UseItem()
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Item"));
 			return;
 		}
-		switch (CurrentItem)
+
+		if (!CurrentItemStruct)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("NoCurrent ItemStruct"));
+			return;
+		}
+
+		// use CurrentItemStructure's Enum
+		switch (CurrentItemStruct->ItemEnum)
 		{
 		case EItem::E_NONE:
+			return;
 			break;
 		case EItem::E_BOOSTER:
 			Player->OnBoosterItem();
@@ -125,11 +180,14 @@ void AGamePlayerState::UseItem()
 		case EItem::E_BARRIER:
 			UseBarrier();
 			break;
+		case EItem::E_SHIELD:
+			break;
 		default:
 			break;
 		}
 
-		CurrentItem = EItem::E_NONE;
+		//Empty Item...
+		SetCurrentItem(FName(TEXT("NOITEM")));
 	}
 	else
 	{

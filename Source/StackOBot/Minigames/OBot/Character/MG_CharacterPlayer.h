@@ -133,6 +133,15 @@ public:
 	void OnRep_Hover();
 
 // ---------- Item Functions ------------
+
+protected:
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_CurrentWalkSpeed)
+	float CurrentWalkSpeed = 700.f;
+
+	void SetCurrentWalkSpeed(float NewCurrentWalkSpeed);
+
+	UFUNCTION()
+	void OnRep_CurrentWalkSpeed();
 // ---------- Booster------------
 public:
 	UFUNCTION(BlueprintCallable)

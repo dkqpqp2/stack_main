@@ -27,4 +27,6 @@ public:
 	//UPROPERTY(meta = (BindWidget))
 	//class UTextBlock* MatchTimerText; //늘어나는 거
 	
+	UPROPERTY(meta = (BindWidget))
+	class UItemSlotWidget* ItemSlot;
 };

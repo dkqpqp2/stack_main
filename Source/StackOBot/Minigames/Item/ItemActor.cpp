@@ -81,7 +81,7 @@ void AItemActor::OnBoxComponentOverlapped(
 			return;
 		}
 		
-		PS->SetCurrentItem(EItem::E_BARRIER);
+		PS->SetCurrentItemToRandomItem();
 
 		
 
