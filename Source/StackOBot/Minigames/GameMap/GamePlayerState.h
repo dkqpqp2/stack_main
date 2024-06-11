@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Item/ItemStruct.h"
 #include "../Item/ItemBoxItemEnum.h"
 #include "../BasePlayerState.h"
 #include "GamePlayerState.generated.h"
@@ -39,15 +40,24 @@ public:
 
 // --------- ITEM ----------
 protected:
-
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UDataTable> ItemDataTable;
+protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
-	EItem CurrentItem = EItem::E_NONE;
+	FName CurrentItemName;
+
+
+	FItemStruct* CurrentItemStruct = nullptr;
+
 
 	UFUNCTION()
 	void OnRep_CurrentItem();
+protected:
+	void SetCurrentItem(FName NewItemName);
+	void UpdateItemSlotUI();
 
 public:
-	void SetCurrentItem(EItem NewItem);
+	void SetCurrentItemToRandomItem();
 
 	UFUNCTION(BlueprintCallable)
 	void UseItem();
@@ -61,4 +71,5 @@ protected:
 	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
 protected:
 	void UseBarrier();
+	void UseShield();
 };
