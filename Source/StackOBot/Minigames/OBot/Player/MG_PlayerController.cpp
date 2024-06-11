@@ -18,6 +18,23 @@ void AMG_PlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	SetHUDTime();
+	CheckTimeSync(DeltaTime);
+}
+
+float AMG_PlayerController::GetServerTime()
+{
+	//서버 권한이 있으면 그대로 아니면 client server delta time +@
+	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
+	else return GetWorld()->GetTimeSeconds() + ClientServerDelta;
+}
+
+void AMG_PlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+	if (IsLocalController())
+	{
+		ServerRequesetServerTime(GetWorld()->GetTimeSeconds());
+	}
 }
 
 void AMG_PlayerController::SetHUDMatchCountdown(float CountdownTime)
@@ -38,13 +55,36 @@ void AMG_PlayerController::SetHUDMatchCountdown(float CountdownTime)
 
 void AMG_PlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
+	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
 	if (CountDown != SecondsLeft)
 	{
-		SetHUDMatchCountdown(/*MatchTime - */GetWorld()->GetTimeSeconds());
+		SetHUDMatchCountdown(MatchTime - GetServerTime());
 	}
 
 	CountDown = SecondsLeft;
+}
+
+void AMG_PlayerController::CheckTimeSync(float DeltaTime)
+{
+	TimeSyncRunningTime += DeltaTime; //시간 동기화 시간 계속 재설정
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequesetServerTime(GetWorld()->GetTimeSeconds());
+		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void AMG_PlayerController::ServerRequesetServerTime_Implementation(float TimeOfClientRequest)
+{
+	float ServerTimeOfRecipt = GetWorld()->GetTimeSeconds();
+	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfRecipt);
+}
+
+void AMG_PlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
+{
+	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
+	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
 }
 
 /*void AMG_PlayerController::SetHUDHover(float Hover, float MaxHover)
