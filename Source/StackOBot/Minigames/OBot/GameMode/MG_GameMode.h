@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/GameMode.h"
+#include "../../GameMap/GameMapGameMode.h"
 #include "MG_GameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_GameMode : public AGameMode
+class STACKOBOT_API AMG_GameMode : public AGameMapGameMode
 {
 	GENERATED_BODY()
 

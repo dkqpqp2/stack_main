@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "../../GameMap/GamePlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "MG_PlayerController.generated.h"
 /**
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_PlayerController : public APlayerController
+class STACKOBOT_API AMG_PlayerController : public AGamePlayerController
 {
 	GENERATED_BODY()
 	
