@@ -18,12 +18,29 @@ class STACKOBOT_API AMG_PlayerController : public AGamePlayerController
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
+	virtual float GetServerTime(); //synced with server
+	virtual void ReceivedPlayer() override; //sync with server clock as soon as possible
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDTime();
 
-	void SetHUDMatchCountUp();
+	//sync time between client and server
 
+	//Requests the current server time, passing in the client's time when the request was send
+	UFUNCTION(Server,Reliable)
+	void ServerRequesetServerTime(float TimeOfClientRequest); //클라에서 서버로 보내는 시간 
+	//Client -> Server 로 request 요청 
+	UFUNCTION(Client,Reliable)
+	void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+
+	float ClientServerDelta = 0.f; 
+
+	//시간이 동기화가 잘됬는지 실시간 체크 
+	UPROPERTY(EditAnywhere)
+	float TimeSyncFrequency = 5.f;
+
+	float TimeSyncRunningTime = 0.f;
+
+	void CheckTimeSync(float DeltaTime);
 private:
     class AGameHUD* GameHUD;
 
