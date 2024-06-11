@@ -13,7 +13,7 @@ UCLASS()
 class STACKOBOT_API AGameMapGameMode : public AGameMode
 {
 	GENERATED_BODY()
-
+public:
 	AGameMapGameMode();
 	
 public:
