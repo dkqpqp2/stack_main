@@ -13,11 +13,14 @@
 void AMG_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	/*GameHUD = Cast<AGameHUD>(GetHUD());
-	if (GameHUD)
-	{
-		GameHUD->AddAnnouncement();
+	/*if (HasAuthority()) {
+		GameHUD = Cast<AGameHUD>(GetHUD());
+		if (GameHUD)
+		{
+			GameHUD->AddAnnouncement();
+		}
 	}*/
+	GameHUD = Cast<AGameHUD>(GetHUD());
 	ServerCheckMatchState();
 }
 
@@ -77,7 +80,7 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 	if (bHUDValid)
 	{
 		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
-		int32 Seconds = WarmupTime - Minutes * 60;
+		int32 Seconds = CountDownTime - Minutes * 60;
 
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		GameHUD->Announcement->WarmUpTime->SetText(FText::FromString(CountdownText));
@@ -95,7 +98,7 @@ void AMG_PlayerController::SetHUDTime()
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountDown != SecondsLeft)
 	{
-		SetHUDMatchCountdown(GetServerTime());
+		//SetHUDMatchCountdown(GetServerTime());
 		if (MatchState == MatchState::WaitingToStart)
 		{
 			SetHUDAnnouncementCountDown(TimeLeft);
@@ -193,12 +196,11 @@ void AMG_PlayerController::ServerCheckMatchState_Implementation()
 	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
 	if (GameMode)
 	{
-		WarmupTime = GameMode->WarmupTime;
-		LevelStartingTime = GameMode->LevelStartingTime;
-		MatchState = GameMode->GetMatchState();
-		ClientJoinMidgame(MatchState, WarmupTime, LevelStartingTime);
+			WarmupTime = GameMode->WarmupTime;
+			LevelStartingTime = GameMode->LevelStartingTime;
+			MatchState = GameMode->GetMatchState();
+			ClientJoinMidgame(MatchState, WarmupTime, LevelStartingTime);
 	}
-
 }
 
 void AMG_PlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float StartingTime)
