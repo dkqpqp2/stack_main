@@ -153,7 +153,10 @@ void UMenu::HostButtonClicked()
 	HostButton->SetIsEnabled(false);
 	if (MultiplayerSessionsSubsystem)
 	{
-		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType);
+		FString ServerName = ServerNameTextBox ? ServerNameTextBox->GetText().ToString() : FString();
+		FString HostName = HostNameTextBox ? HostNameTextBox->GetText().ToString() : FString();
+		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType,ServerName,HostName);
+		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, (ServerName));
 	}
 }
 
@@ -170,6 +173,7 @@ void UMenu::JoinButtonClicked()
 		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Join Button")));
 	}
 }
+
 
 void UMenu::MenuTearDown()
 {

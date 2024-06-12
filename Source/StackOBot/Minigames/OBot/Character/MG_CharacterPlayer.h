@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MG_CharacterBase.h"
+#include "Minigames/OBot/Interface/MG_AnimationAttackInterface.h"
 #include "MG_CharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -10,7 +11,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_CharacterPlayer : public AMG_CharacterBase
+class STACKOBOT_API AMG_CharacterPlayer : public AMG_CharacterBase, public IMG_AnimationAttackInterface
 {
 	GENERATED_BODY()
 public:
@@ -23,6 +24,9 @@ protected:
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// 빙의 되었을 때 인풋매핑컨텍스트 적용해주기.
+	virtual void PossessedBy(AController* NewController) override;
 
 	bool IsHovering() const;
 	UFUNCTION(Server, Unreliable)
@@ -79,11 +83,46 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> QuaterMoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> AttackAction;
+
 	void ShoulderMove(const FInputActionValue& Value);
 	void ShoulderLook(const FInputActionValue& Value);
 	void QuaterMove(const FInputActionValue& Value);
 
 	ECharacterControlType CurrentCharacterControlType;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ActionMontage;
+
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const override;
+	void Attack();
+	virtual void AttackHitCheck() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAttack();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAttack();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CanAttack)
+	uint8 bCanAttack : 1;
+
+	UFUNCTION()
+	void OnRep_CanAttack();
+
+	float AttackTime = 1.4667f;
+//-------------Hover Time -----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHoveringTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurrentHoveringTime;
+	
+	TSubclassOf<UUserWidget> MainHUDClass;
+	class UMainHUD* MainHUD;
 
 	void StartJump();
 	virtual void Jump() override;
@@ -91,4 +130,65 @@ protected:
 private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
+
+	UFUNCTION()
+	void JetPackUseTime(float DeltaTime);
+
+
+// ---------- Item Functions ------------
+
+protected:
+	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_CurrentWalkSpeed)
+	float CurrentWalkSpeed = 700.f;
+
+	void SetCurrentWalkSpeed(float NewCurrentWalkSpeed);
+
+	UFUNCTION()
+	void OnRep_CurrentWalkSpeed();
+// ---------- Booster------------
+protected:
+	UPROPERTY(EditAnywhere)
+	float BoosterDuration = 3.5f;	
+	
+	UPROPERTY(EditAnywhere)
+	float BoosterSpeed = 1500.f;
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnBoosterItem();
+
+
+protected:
+	void OnBoosterEnd();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiCast_BoosterEffect(bool IsActivated);
+
+	UPROPERTY(EditAnywhere, Category = Niagara)
+	TObjectPtr<class UNiagaraComponent> BoosterNiagaraEffect;
+
+	FTimerHandle WalkSpeedTimer;
+
+// ---------- Barrier------------
+public:
+	void OnBarrierOverlap();
+protected:
+	void OnBarrierEnd();
+
+// ---------- Shield ------------
+public:
+	void OnShield();
+protected:
+	UPROPERTY(EditAnywhere, Category = Niagara)
+	TObjectPtr<class UNiagaraComponent> ShieldNiagaraEffect;
+
+	void OnShieldEnd();
+	FTimerHandle ShieldTimer;
+
+	UPROPERTY(ReplicatedUsing = OnRep_IsShield)
+	bool bIsShield = false;
+
+	UFUNCTION()
+	void OnRep_IsShield();
+public:
+	bool GetIsShield();
 };

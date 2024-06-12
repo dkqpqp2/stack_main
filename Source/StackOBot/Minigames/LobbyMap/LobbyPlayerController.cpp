@@ -9,6 +9,7 @@
 #include "../ThirdPersonCharacter.h"
 #include "UI/LobbyWidget.h"
 #include "Components/WrapBox.h"
+#include "Components/WidgetSwitcher.h"
 #include "LobbyGameStateBase.h"
 #include "UI/PlayerCardWidget.h"
 
@@ -67,7 +68,13 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	TSubclassOf<APawn>* NewCharacterClass = CharacterClassesMap.Find(NewCharacterName);
 	// Destroy Pawn, ReSpawn, Possess
 	auto CurrentPawn = GetPawn();
-	FTransform SpawnTransform = GetPawn()->GetTransform();
+	if (!IsValid(CurrentPawn))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid : LobbyPlayerController : ChangeCharacter"));
+
+		return;
+	}
+	FTransform SpawnTransform = CurrentPawn->GetTransform();
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -80,6 +87,18 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Done-------"));
 
 
+}
+
+const TSubclassOf<APawn>* const ALobbyPlayerController::FindCharacterClass(const FString& CharacterClassName) const
+{
+	if (CharacterClassesMap.Contains(CharacterClassName))
+	{
+		return CharacterClassesMap.Find(CharacterClassName);
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 void ALobbyPlayerController::LobbyWidgetUpdate()
@@ -98,6 +117,7 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 		return;
 	}
 
+	bool bActiveGameStartButton = true;
 	int32 NumberOfPlayers = LobbyGS->PlayerArray.Num();
 	for (int32 i = 0; i < NumberOfPlayers; ++i)
 	{
@@ -116,7 +136,17 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, FString::Printf(TEXT("Player %d card ready to edit"), LobbyPS->GetPlayerEnterID()));
 		PlayerCard->CardUpdate(LobbyPS);
+
+		// host도 아니고 레디도 안한 플레이어가 있다면 서버 스타트 버튼 잠그기.
+		if (!(LobbyPS->GetIsHost() || LobbyPS->GetIsReady()))
+		{
+			bActiveGameStartButton = false;
+		}
 	}
-	// from game state -> edit widget.
-	//LobbyWidget->PlayersListWrapBox->GetChildAt(0);
+	
+	// server's controller, start button in/activate
+	if (HasAuthority() && IsLocalController())
+	{
+		LobbyWidget->ReadyOrStartSwitcher->GetActiveWidget()->SetIsEnabled(bActiveGameStartButton);
+	}
 }

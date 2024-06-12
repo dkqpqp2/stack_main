@@ -28,11 +28,12 @@ protected:
 
 public:
 	void ChangeCharacter(const FString& NewCharacterName);
-
+	const TSubclassOf<APawn>* const FindCharacterClass(const FString& CharacterClassName) const;
 protected:
 	class ULobbyWidget* LobbyWidget;
 
 public:
 	void LobbyWidgetUpdate();
+
 
 };

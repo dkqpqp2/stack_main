@@ -20,6 +20,51 @@ ALobbyGameMode::ALobbyGameMode()
 	//PlayerStateClass = ALobbyPlayerState::StaticClass();
 }
 
+void ALobbyGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
+{
+	ABasePlayerState* PS = NewPlayer->GetPlayerState<ABasePlayerState>();
+	if (!IsValid(PS))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Is Not Valid : ALobbyGameMode::RestartPlayer()"));
+		return;
+	}
+
+	ALobbyPlayerController* PC = Cast<ALobbyPlayerController>(NewPlayer);
+	if (!IsValid(PC))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PC Is Not Valid : ALobbyGameMode::RestartPlayer()"));
+		return;
+	}
+
+	// Change Game Instance to PlayerController...
+	const TSubclassOf<APawn>* ClassOfSpawningPawn = PC->FindCharacterClass(PS->GetSelectedCharacter());
+
+	FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	auto SpawnedActor = GetWorld()->SpawnActor(*ClassOfSpawningPawn, &StartSpot->GetTransform(), SpawnParameters);
+	APawn* SpawnedPawn = Cast<APawn>(SpawnedActor);
+	if (!IsValid(SpawnedPawn))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SpawnedPawn Not Valid : ALobbyGameMode::RestartPlayer()"));
+		return;
+	}
+	NewPlayer->Possess(SpawnedPawn);
+
+
+}
+
+void ALobbyGameMode::PostSeamlessTravel()
+{
+	Super::PostSeamlessTravel();
+	auto HostLobbyPC = GetWorld()->GetFirstPlayerController<ALobbyPlayerController>();
+	if (!IsValid(HostLobbyPC))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("HOST LOBBY PC Not Valid : ALobbyGameMode::PostSeamlessTravel()"));
+		return;
+	}
+	HostLobbyPC->LobbyWidgetUpdate();
+}
+
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -46,6 +91,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		return;
 	}
 
+	// 게임을 한번 진행 한 후 로비에 들어오는 경우 문제가 생길 여지가 있겠다.
+	// 전체 플레이어 수를 가져 온 후 세팅하는게 맞을 지도 모르겠다.
 	LobbyPS->SetPlayerEnterID(PlayerIDOfNextPlayer);
 
 	if (LobbyPC->IsLocalController())	// Server's Controller
@@ -73,5 +120,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ALobbyGameMode::ServerTravelToGameMap()
 {
-	GetWorld()->ServerTravel("TempGameMap");
+	// /Script/Engine.World'/Game/Lobby/ThirdPerson/Maps/TempGameMap.TempGameMap'
+	//GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/TempGameMap");
+	GetWorld()->ServerTravel("/Game/MainGame/Level/GameMap");
 }

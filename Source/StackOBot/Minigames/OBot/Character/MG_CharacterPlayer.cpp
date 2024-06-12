@@ -11,6 +11,11 @@
 #include "MG_ControlData.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "StackOBot.h"
+#include "Animation/AnimMontage.h"
+#include "Net/UnrealNetwork.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Minigames/OBot/UI/MainHUD.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -29,6 +34,13 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 
 	NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
 	NiagaraEffect->SetupAttachment(Jetpack);
+
+	BoosterNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("BoosterNiagaraEffect"));
+	BoosterNiagaraEffect->SetupAttachment(Jetpack);
+
+	ShieldNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ShieldNiagaraEffect"));
+	ShieldNiagaraEffect->SetupAttachment(GetMesh(), FName("ShieldSocket"));
+	ShieldNiagaraEffect->Deactivate();
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
 	if (JetpackMeshRef.Object)
@@ -69,28 +81,59 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	{
 		QuaterMoveAction = InputActionQuaterMoveRef.Object;
 	}
-	
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Character/Input/IA_Attack.IA_Attack'"));
+	if (nullptr != InputActionAttackRef.Object)
+	{
+		AttackAction = InputActionAttackRef.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<UMainHUD> MainHUDRef(TEXT("/Game/Character/UI/WB_HUD.WB_HUD_C"));
+	if (MainHUDRef.Class)
+	{
+		MainHUDClass = MainHUDRef.Class;
+	}
 
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 	bIsJetpackActive = false;
+	bIsHovering = false;
+	bCanAttack = true;
+	CurrentHoveringTime = MaxHoveringTime;
 
 }
 
 
 void AMG_CharacterPlayer::BeginPlay()
 {
+
 	Super::BeginPlay();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
 	}
+
+	MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUDClass);
+	MainHUD->AddToViewport();
+
 	SetCharacterControl(CurrentCharacterControlType);
+
+
 }
 
 void AMG_CharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	JetPackUseTime(DeltaTime);
+	
+	//글리치 현상 c++로 해결하려 했으나 오류로 우선 bp처리
+	/*FVector FirstMovement = FVector(1, 1, 0);
+	FVector SecondMovement = FVector(-1, -1, 0);
+	if (GetCharacterMovement())
+		GetCharacterMovement()->MoveUpdatedComponent(FirstMovement, GetActorRotation(), true);
+		GetCharacterMovement()->MoveUpdatedComponent(SecondMovement, GetActorRotation(), true);*/
+		
 }
 
 void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -106,7 +149,20 @@ void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(ShoulderMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::ShoulderMove);
 	EnhancedInputComponent->BindAction(ShoulderLookAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::ShoulderLook);
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::QuaterMove);
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_CharacterPlayer::Attack);
 
+}
+
+void AMG_CharacterPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		EnableInput(PlayerController);
+	}
+	SetCharacterControl(CurrentCharacterControlType);
 }
 
 bool AMG_CharacterPlayer::IsHovering() const
@@ -242,6 +298,106 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
+void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// DOREPLIFETIME 매크로 : #include "Net/UnrealNetwork.h" 헤더파일 추가해야 사용할 수 있음
+	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
+	DOREPLIFETIME(AMG_CharacterPlayer, CurrentWalkSpeed);
+	DOREPLIFETIME(AMG_CharacterPlayer, bIsShield);
+}
+
+void AMG_CharacterPlayer::Attack()
+{
+	if (bCanAttack)
+	{
+		ServerAttack();
+	}
+
+}
+
+void AMG_CharacterPlayer::AttackHitCheck()
+{
+	if (HasAuthority())
+	{
+		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+		FHitResult HitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), true, this);
+
+		const float AttackRange = 10.0f;
+		const float AttackRadius = 20.0f;
+		const FVector Start = GetMesh()->GetSocketLocation(TEXT("AttackSocket")) + GetActorForwardVector();
+		const FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+		if (HitDetected)
+		{
+
+		}
+
+#if ENABLE_DRAW_DEBUG
+
+		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+		float CapsuleHalfHeight = AttackRange * 0.5f;
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+
+		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
+
+#endif
+	}
+}
+
+bool AMG_CharacterPlayer::ServerAttack_Validate()
+{
+	return true;
+}
+
+void AMG_CharacterPlayer::ServerAttack_Implementation()
+{
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+	MulticastAttack();
+}
+
+void AMG_CharacterPlayer::MulticastAttack_Implementation()
+{
+	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
+
+	if (HasAuthority())
+	{
+		bCanAttack = false;
+		OnRep_CanAttack();
+
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]
+			{
+				bCanAttack = true;
+				OnRep_CanAttack();
+			}
+		), AttackTime, false, -1.0f);
+	}
+
+	// Animation은 Server와 Client 모두 보여야함
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(ActionMontage);
+}
+
+// Server에선 호출이안됨, Client에선 자동으로 호출됨
+void AMG_CharacterPlayer::OnRep_CanAttack()
+{
+	if (!bCanAttack)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
+}
+
 void AMG_CharacterPlayer::StartJump()
 {
 	if (GetCharacterMovement()->MovementMode == EMovementMode::MOVE_Walking)
@@ -276,4 +432,145 @@ void AMG_CharacterPlayer::StopJumping()
 	{
 		ServerStopHover();
 	}
+}
+
+void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
+{
+	if (bIsHovering)
+	{
+        CurrentHoveringTime -= DeltaTime;
+		if (CurrentHoveringTime <= 0.0f)
+		{
+			ServerStopHover();
+		}
+	}
+	else if (!bIsHovering)
+	{
+		CurrentHoveringTime += DeltaTime;
+		if (CurrentHoveringTime >= MaxHoveringTime)
+		{
+			CurrentHoveringTime = MaxHoveringTime;
+		}
+	}
+
+	float Percent = CurrentHoveringTime / MaxHoveringTime;
+	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
+	MainHUD->UpdateHoveringProgress(Percent);
+}
+
+
+
+// ------------ Item Functions. -----------
+
+void AMG_CharacterPlayer::SetCurrentWalkSpeed(float NewCurrentWalkSpeed)
+{
+	if (HasAuthority())
+	{
+		CurrentWalkSpeed = NewCurrentWalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = NewCurrentWalkSpeed;
+	}
+}
+
+void AMG_CharacterPlayer::OnRep_CurrentWalkSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
+}
+
+void AMG_CharacterPlayer::OnBoosterItem()
+{
+	if (HasAuthority())
+	{
+		// 배리어 효과 제거.
+		OnBarrierEnd();
+
+		SetCurrentWalkSpeed(BoosterSpeed);
+
+		// net multicast boost effect?
+		MultiCast_BoosterEffect(true);
+		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBoosterEnd, BoosterDuration, false);
+	}
+}
+
+void AMG_CharacterPlayer::OnBoosterEnd()
+{
+	if (HasAuthority())
+	{
+		SetCurrentWalkSpeed(700.f);
+		MultiCast_BoosterEffect(false);
+	}
+}
+
+
+void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
+{
+	if (IsActivated)
+	{
+		BoosterNiagaraEffect->Activate();
+	}
+	else
+	{
+		BoosterNiagaraEffect->Deactivate();
+	}
+}
+
+
+// 추후에 배리어에서 스피드와 지속시간을 받아와서 적용하는 것으로 변경.
+void AMG_CharacterPlayer::OnBarrierOverlap()
+{
+	if (HasAuthority())
+	{
+		// 부스터 취소. 
+		OnBoosterEnd();
+		// 잠시 동안만...
+		SetCurrentWalkSpeed(100.f);
+
+		// net multicast boost effect?
+		// 부스터를 쓴채로 배리어에 들어오면 타이머가 겹쳐버려서 부스터 end가 호출되지 않는다...
+		GetWorldTimerManager().SetTimer(WalkSpeedTimer, this, &ThisClass::OnBarrierEnd, 2.f, false);
+	}
+}
+
+void AMG_CharacterPlayer::OnBarrierEnd()
+{
+	SetCurrentWalkSpeed(700.f);
+
+}
+
+void AMG_CharacterPlayer::OnShield()
+{
+	if (HasAuthority())
+	{
+		bIsShield = true;
+		// shield effect
+		ShieldNiagaraEffect->Activate();
+		GetWorldTimerManager().SetTimer(ShieldTimer, this, &ThisClass::OnShieldEnd, 2.f, false);
+	}
+}
+
+void AMG_CharacterPlayer::OnShieldEnd()
+{
+	bIsShield = false;
+	// shield effect off
+	ShieldNiagaraEffect->Deactivate();
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Shield Off"));
+
+}
+
+void AMG_CharacterPlayer::OnRep_IsShield()
+{
+	if (bIsShield)
+	{
+		// shield effect
+		ShieldNiagaraEffect->Activate();
+	}
+	else
+	{
+		// shield effect Off
+		ShieldNiagaraEffect->Deactivate();
+	}
+}
+
+bool AMG_CharacterPlayer::GetIsShield()
+{
+	return bIsShield;
 }

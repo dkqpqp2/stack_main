@@ -2,11 +2,17 @@
 
 
 #include "MG_GameMode.h"
+#include "GameFramework/GameMode.h"
+#include "GameFramework/GameModeBase.h"
 #include "Minigames/OBot/Player/MG_PlayerController.h"
+#include "Minigames/GameMap/GamePlayerState.h"
+
 
 AMG_GameMode::AMG_GameMode()
 {
-	static ConstructorHelpers::FClassFinder<APawn> OBotClassRef(TEXT("/Script/StackOBot.MG_CharacterPlayer"));
+	bDelayedStart = true; // 처음에 대기 상태 <날라다니기>
+
+	static ConstructorHelpers::FClassFinder<APawn> OBotClassRef(TEXT("/Game/Character/Animation/BPMG_CharacterPlayer.BPMG_CharacterPlayer_C"));
 	if (OBotClassRef.Class)
 	{
 		DefaultPawnClass = OBotClassRef.Class;
@@ -17,4 +23,41 @@ AMG_GameMode::AMG_GameMode()
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
+	
 }
+
+void AMG_GameMode::Tick(float Deltatime)
+{
+	Super::Tick(Deltatime);
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		CountDownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountDownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+}
+
+void AMG_GameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AMG_PlayerController* MGPlayer = Cast<AMG_PlayerController>(*It);
+		if (MGPlayer)
+		{
+			MGPlayer->OnMatchStateSet(MatchState);
+		}
+	}
+}
+
+
+void AMG_GameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
