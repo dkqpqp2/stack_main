@@ -48,7 +48,7 @@ protected:
 	UFUNCTION(Server,Reliable)
 	void ServerCheckMatchState();
 
-	UFUNCTION(Client, Reliable)
+	UFUNCTION(Client,Reliable)
 	void ClientJoinMidgame(FName StateOfMatch, float Warmup, float StartingTime); //match 제외
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState) //rpc 작업 매치상태 실시간 방송
@@ -63,6 +63,9 @@ private:
 
 	UPROPERTY()
 	class UMainWidget* MainWidget;
+
+	UPROPERTY()
+	class UAnnouncement* Announcement;
 
 public:
 	void OnMatchStateSet(FName State); //match모드 설정
