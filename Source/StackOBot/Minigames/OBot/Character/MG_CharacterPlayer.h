@@ -100,9 +100,19 @@ protected:
 	TObjectPtr<class UAnimMontage> ActionMontage;
 
 protected:
+	UPROPERTY(EditAnywhere)
+	float DashCoolTime = 2.f;
+
+	UPROPERTY(Replicated)
+	bool bCanDash = true;
+
 	void Dash();
+
 	UFUNCTION(Server, Reliable)
 	void ServerDash();
+
+	FTimerHandle DashDelayTimer;
+	void OnDashDelayEnd();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const override;

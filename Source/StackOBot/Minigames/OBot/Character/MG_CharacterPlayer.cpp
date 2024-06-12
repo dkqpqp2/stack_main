@@ -296,19 +296,44 @@ void AMG_CharacterPlayer::Dash()
 {
 	if (HasAuthority())
 	{
-		FVector LaunchVector = GetVelocity() * 10.f;
-		LaunchVector.Z = 0.f;
-		LaunchCharacter(LaunchVector, false, false);
+		if (bCanDash)
+		{
+			FVector LaunchVector = GetVelocity() * 10.f;
+			LaunchVector.Z = 0.f;
+			LaunchCharacter(LaunchVector, false, false);
+
+			bCanDash = false;
+			// dash timer
+			GetWorldTimerManager().SetTimer(
+				DashDelayTimer, 
+				this, 
+				&ThisClass::OnDashDelayEnd,
+				DashCoolTime,
+				false
+			);
+
+		}
 	}
 	else
 	{
-		ServerDash();
+		if (bCanDash)
+		{
+			ServerDash();
+		}
 	}
 }
 
 void AMG_CharacterPlayer::ServerDash_Implementation()
 {
 	Dash();
+}
+
+void AMG_CharacterPlayer::OnDashDelayEnd()
+{
+	if (HasAuthority())
+	{
+		bCanDash = true;
+	}
 }
 
 void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -319,6 +344,7 @@ void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
 	DOREPLIFETIME(AMG_CharacterPlayer, CurrentWalkSpeed);
 	DOREPLIFETIME(AMG_CharacterPlayer, bIsShield);
+	DOREPLIFETIME(AMG_CharacterPlayer, bCanDash);
 }
 
 void AMG_CharacterPlayer::Attack()
