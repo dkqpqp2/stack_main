@@ -115,8 +115,14 @@ protected:
 
 	float AttackTime = 1.4667f;
 //-------------Hover Time -----------------------------
-	UPROPERTY(ReplicatedUsing = OnRep_Hover, VisibleAnywhere)
-	float HoveringTime = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHoveringTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurrentHoveringTime;
+	
+	TSubclassOf<UUserWidget> MainHUDClass;
+	class UMainHUD* MainHUD;
 
 	void StartJump();
 	virtual void Jump() override;
@@ -125,12 +131,9 @@ private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
 
-public:
-	UPROPERTY(EditAnywhere)
-	float MaxHoverTime = 2.0f; // Hover 최대 시간
-
 	UFUNCTION()
-	void OnRep_Hover();
+	void JetPackUseTime(float DeltaTime);
+
 
 // ---------- Item Functions ------------
 
