@@ -8,7 +8,6 @@
 void AGameHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	AddMainWidget();
 
 }
 
@@ -21,3 +20,14 @@ void AGameHUD::AddMainWidget()
 		MainWidget->AddToViewport();
 	}
 }
+
+void AGameHUD::AddAnnouncement()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && AnnouncementClass)
+	{
+		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
+		Announcement->AddToViewport();
+	}
+}
+

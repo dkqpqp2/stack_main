@@ -18,10 +18,12 @@ class STACKOBOT_API AMG_PlayerController : public AGamePlayerController
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual float GetServerTime(); //synced with server
 	virtual void ReceivedPlayer() override; //sync with server clock as soon as possible
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDTime();
+	void PollInit();
 
 	//sync time between client and server
 
@@ -41,9 +43,32 @@ protected:
 	float TimeSyncRunningTime = 0.f;
 
 	void CheckTimeSync(float DeltaTime);
+
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState) //rpc 작업 매치상태 실시간 방송
+	FName MatchState;
+
+
 private:
     class AGameHUD* GameHUD;
 
-	float MatchTime = 10.0f; // 골인 지점 도착 후 시간 측정 
+	float MatchTime = 5.0f; // 골인 지점 도착 후 시간 측정 
 	uint32 CountDown = 0;
+
+	UPROPERTY()
+	class UMainWidget* MainWidget;
+
+public:
+	void OnMatchStateSet(FName State); //match모드 설정
+
+	UFUNCTION()
+	void OnRep_MatchState(FName State); //Server 연결
+
+	void HandleMatchHasStarted();
+
+	UFUNCTION(Server,Reliable)
+	void ServerCheckMatchState();
+
+	float WarmupTime = 0.f;
+	float LevelStartingTime = 0.f;
+
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Announcement.h"
 #include "GameHUD.generated.h"
 
 /**
@@ -17,11 +18,17 @@ class STACKOBOT_API AGameHUD : public AHUD
 public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> MainWidgetClass;
+	void AddMainWidget(); //따로 viewport추가 해주는 함수 
 
 	UPROPERTY()
 	class UMainWidget* MainWidget;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAnnouncement> AnnouncementClass;
+
+	UPROPERTY()
+	class UAnnouncement* Announcement;
+	void AddAnnouncement();
 protected:
 	virtual void BeginPlay() override;
-	void AddMainWidget();
 };
