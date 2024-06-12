@@ -498,8 +498,21 @@ void AMG_CharacterPlayer::OnBoosterEnd()
 		SetCurrentWalkSpeed(700.f);
 		MultiCast_BoosterEffect(false);
 	}
-
 }
+
+
+void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
+{
+	if (IsActivated)
+	{
+		BoosterNiagaraEffect->Activate();
+	}
+	else
+	{
+		BoosterNiagaraEffect->Deactivate();
+	}
+}
+
 
 void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
 {
