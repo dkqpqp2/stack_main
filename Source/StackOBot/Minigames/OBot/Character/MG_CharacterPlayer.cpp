@@ -15,6 +15,7 @@
 #include "Animation/AnimMontage.h"
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Minigames/OBot/UI/MainHUD.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -86,11 +87,18 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
-	
+
+	static ConstructorHelpers::FClassFinder<UMainHUD> MainHUDRef(TEXT("/Game/Character/UI/WB_HUD.WB_HUD_C"));
+	if (MainHUDRef.Class)
+	{
+		MainHUDClass = MainHUDRef.Class;
+	}
 
 	CurrentCharacterControlType = ECharacterControlType::Shoulder;
 	bIsJetpackActive = false;
+	bIsHovering = false;
 	bCanAttack = true;
+	CurrentHoveringTime = MaxHoveringTime;
 
 }
 
@@ -104,6 +112,10 @@ void AMG_CharacterPlayer::BeginPlay()
 	{
 		EnableInput(PlayerController);
 	}
+
+	MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUDClass);
+	MainHUD->AddToViewport();
+
 	SetCharacterControl(CurrentCharacterControlType);
 
 
@@ -112,6 +124,8 @@ void AMG_CharacterPlayer::BeginPlay()
 void AMG_CharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	JetPackUseTime(DeltaTime);
 	
 	//글리치 현상 c++로 해결하려 했으나 오류로 우선 bp처리
 	/*FVector FirstMovement = FVector(1, 1, 0);
@@ -159,9 +173,6 @@ void AMG_CharacterPlayer::ServerStartHover_Implementation()
 {
 	//Server에서 StartHover 상태를 모든 플레이어에게 전파
 	MulticastStartHover();
-
-	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMG_CharacterPlayer::ServerStopHover, HoveringTime, false);
 }
 
 void AMG_CharacterPlayer::MulticastStartHover_Implementation()
@@ -423,10 +434,31 @@ void AMG_CharacterPlayer::StopJumping()
 	}
 }
 
-void AMG_CharacterPlayer::OnRep_Hover()
+void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 {
-	//부스터 게이지로 전환 함수 
+	if (bIsHovering)
+	{
+        CurrentHoveringTime -= DeltaTime;
+		if (CurrentHoveringTime <= 0.0f)
+		{
+			ServerStopHover();
+		}
+	}
+	else if (!bIsHovering)
+	{
+		CurrentHoveringTime += DeltaTime;
+		if (CurrentHoveringTime >= MaxHoveringTime)
+		{
+			CurrentHoveringTime = MaxHoveringTime;
+		}
+	}
+
+	float Percent = CurrentHoveringTime / MaxHoveringTime;
+	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
+	MainHUD->UpdateHoveringProgress(Percent);
 }
+
+
 
 // ------------ Item Functions. -----------
 
@@ -466,8 +498,21 @@ void AMG_CharacterPlayer::OnBoosterEnd()
 		SetCurrentWalkSpeed(700.f);
 		MultiCast_BoosterEffect(false);
 	}
-
 }
+
+
+void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
+{
+	if (IsActivated)
+	{
+		BoosterNiagaraEffect->Activate();
+	}
+	else
+	{
+		BoosterNiagaraEffect->Deactivate();
+	}
+}
+
 
 void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
 {
