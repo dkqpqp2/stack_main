@@ -82,15 +82,20 @@ void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* 
 	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
 	{
 		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
-		Effect->Activate(true);
-		Mesh->SetHiddenInGame(true);
-		SetActorEnableCollision(false);
+		NetMulticast_ItemBoxEffect();
 		Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
 		//ServerAddItemFinish();
 
 		// 아이템을 캐릭터에 추가.
 		GetNewItemTo(OtherActor);
 	}
+}
+
+void AMG_ItemBox::NetMulticast_ItemBoxEffect_Implementation()
+{
+	Effect->Activate(true);
+	Mesh->SetHiddenInGame(true);
+	SetActorEnableCollision(false);
 }
 
 void AMG_ItemBox::OnEffectFinished(UNiagaraComponent* NiagaraSystem)

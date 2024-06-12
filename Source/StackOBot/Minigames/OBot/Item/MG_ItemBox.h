@@ -38,6 +38,9 @@ protected:
 	void OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_ItemBoxEffect();
+
 	UFUNCTION()
 	void OnEffectFinished(class UNiagaraComponent* NiagaraSystem);
 
