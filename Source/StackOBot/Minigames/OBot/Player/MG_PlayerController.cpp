@@ -13,11 +13,12 @@
 void AMG_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	GameHUD = Cast<AGameHUD>(GetHUD());
+	/*GameHUD = Cast<AGameHUD>(GetHUD());
 	if (GameHUD)
 	{
 		GameHUD->AddAnnouncement();
-	}
+	}*/
+	ServerCheckMatchState();
 }
 
 void AMG_PlayerController::Tick(float DeltaTime)
@@ -26,7 +27,7 @@ void AMG_PlayerController::Tick(float DeltaTime)
 
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
-	PollInit();
+	//PollInit();
 }
 
 void AMG_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -67,17 +68,45 @@ void AMG_PlayerController::SetHUDMatchCountdown(float CountdownTime)
 	}
 }
 
+void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
+{
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	bool bHUDValid = GameHUD &&
+		GameHUD->Announcement &&
+		GameHUD->Announcement->WarmUpTime;
+	if (bHUDValid)
+	{
+		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
+		int32 Seconds = WarmupTime - Minutes * 60;
+
+		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		GameHUD->Announcement->WarmUpTime->SetText(FText::FromString(CountdownText));
+	}
+}
+
 void AMG_PlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = GetServerTime();
-	//FMath::CeilToInt(MatchTime - GetServerTime()); 카운트 다운
+	float TimeLeft = 0.f;
+	if (MatchState == MatchState::WaitingToStart)
+		TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress)
+		TimeLeft = GetServerTime() - WarmupTime + LevelStartingTime;
+	
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountDown != SecondsLeft)
 	{
 		SetHUDMatchCountdown(GetServerTime());
+		if (MatchState == MatchState::WaitingToStart)
+		{
+			SetHUDAnnouncementCountDown(TimeLeft);
+		}
+		if (MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountdown(TimeLeft);
+		}
 	}
-
-	CountDown = SecondsLeft;
 }
+
 
 void AMG_PlayerController::PollInit()
 {
@@ -100,6 +129,8 @@ void AMG_PlayerController::CheckTimeSync(float DeltaTime)
 		TimeSyncRunningTime = 0.f;
 	}
 }
+
+
 
 
 
@@ -133,10 +164,9 @@ void AMG_PlayerController::OnMatchStateSet(FName State)
 	}
 
 }
-
-void AMG_PlayerController::OnRep_MatchState(FName State)
+//On_Rep 버그 해결 -> 멀티 함수 까지 매개변수를 가져올 필요는 x
+void AMG_PlayerController::OnRep_MatchState()
 {
-	MatchState = State;
 	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
@@ -165,6 +195,20 @@ void AMG_PlayerController::ServerCheckMatchState_Implementation()
 	{
 		WarmupTime = GameMode->WarmupTime;
 		LevelStartingTime = GameMode->LevelStartingTime;
+		MatchState = GameMode->GetMatchState();
+		ClientJoinMidgame(MatchState, WarmupTime, LevelStartingTime);
 	}
 
+}
+
+void AMG_PlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float StartingTime)
+{
+	WarmupTime = Warmup;
+	LevelStartingTime = StartingTime;
+	MatchState = StateOfMatch;
+	OnMatchStateSet(MatchState);
+	if (GameHUD && MatchState == MatchState::WaitingToStart)
+	{
+		GameHUD->AddAnnouncement();
+	}
 }
