@@ -514,18 +514,6 @@ void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivate
 }
 
 
-void AMG_CharacterPlayer::MultiCast_BoosterEffect_Implementation(bool IsActivated)
-{
-	if (IsActivated)
-	{
-		BoosterNiagaraEffect->Activate();
-	}
-	else
-	{
-		BoosterNiagaraEffect->Deactivate();
-	}
-}
-
 // 추후에 배리어에서 스피드와 지속시간을 받아와서 적용하는 것으로 변경.
 void AMG_CharacterPlayer::OnBarrierOverlap()
 {
