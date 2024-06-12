@@ -137,6 +137,11 @@ void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::QuaterMove);
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_CharacterPlayer::Attack);
 
+	if (IsValid(DashAction))
+	{
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMG_CharacterPlayer::Dash);
+	}
+
 }
 
 void AMG_CharacterPlayer::PossessedBy(AController* NewController)
@@ -285,6 +290,25 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, MovementVectorSize);
+}
+
+void AMG_CharacterPlayer::Dash()
+{
+	if (HasAuthority())
+	{
+		FVector LaunchVector = GetVelocity() * 10.f;
+		LaunchVector.Z = 0.f;
+		LaunchCharacter(LaunchVector, false, false);
+	}
+	else
+	{
+		ServerDash();
+	}
+}
+
+void AMG_CharacterPlayer::ServerDash_Implementation()
+{
+	Dash();
 }
 
 void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
