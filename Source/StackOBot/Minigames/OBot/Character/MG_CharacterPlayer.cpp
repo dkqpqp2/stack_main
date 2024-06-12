@@ -151,6 +151,11 @@ void AMG_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInputComponent->BindAction(QuaterMoveAction, ETriggerEvent::Triggered, this, &AMG_CharacterPlayer::QuaterMove);
 	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_CharacterPlayer::Attack);
 
+	if (IsValid(DashAction))
+	{
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &AMG_CharacterPlayer::Dash);
+	}
+
 }
 
 void AMG_CharacterPlayer::PossessedBy(AController* NewController)
@@ -298,6 +303,50 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	AddMovementInput(MoveDirection, MovementVectorSize);
 }
 
+void AMG_CharacterPlayer::Dash()
+{
+	if (HasAuthority())
+	{
+		if (bCanDash)
+		{
+			FVector LaunchVector = GetVelocity() * 10.f;
+			LaunchVector.Z = 0.f;
+			LaunchCharacter(LaunchVector, false, false);
+
+			bCanDash = false;
+			// dash timer
+			GetWorldTimerManager().SetTimer(
+				DashDelayTimer, 
+				this, 
+				&ThisClass::OnDashDelayEnd,
+				DashCoolTime,
+				false
+			);
+
+		}
+	}
+	else
+	{
+		if (bCanDash)
+		{
+			ServerDash();
+		}
+	}
+}
+
+void AMG_CharacterPlayer::ServerDash_Implementation()
+{
+	Dash();
+}
+
+void AMG_CharacterPlayer::OnDashDelayEnd()
+{
+	if (HasAuthority())
+	{
+		bCanDash = true;
+	}
+}
+
 void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -306,6 +355,7 @@ void AMG_CharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AMG_CharacterPlayer, bCanAttack);
 	DOREPLIFETIME(AMG_CharacterPlayer, CurrentWalkSpeed);
 	DOREPLIFETIME(AMG_CharacterPlayer, bIsShield);
+	DOREPLIFETIME(AMG_CharacterPlayer, bCanDash);
 }
 
 void AMG_CharacterPlayer::Attack()
