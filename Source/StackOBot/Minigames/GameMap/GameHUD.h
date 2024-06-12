@@ -29,6 +29,13 @@ public:
 	UPROPERTY()
 	class UAnnouncement* Announcement;
 	void AddAnnouncement();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> MainHUDClass;
+
+	class UMainHUD* MainHUD;
+
 protected:
 	virtual void BeginPlay() override;
+
 };

@@ -30,6 +30,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnMatchStateSet() override;
 
+	virtual void HandleMatchHasEnded() override;
+
 private:
 	float CountDownTime = 0.f;
 };

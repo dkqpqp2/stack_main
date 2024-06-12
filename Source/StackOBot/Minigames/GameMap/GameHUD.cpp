@@ -4,6 +4,7 @@
 #include "GameHUD.h"
 #include "GameFramework/PlayerController.h"
 #include "MainWidget.h"
+#include "Minigames/OBot/UI/MainHUD.h"
 
 void AGameHUD::BeginPlay()
 {
@@ -18,6 +19,9 @@ void AGameHUD::AddMainWidget()
 	{
 		MainWidget = CreateWidget<UMainWidget>(PlayerController, MainWidgetClass);
 		MainWidget->AddToViewport();
+
+		MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUDClass);
+		MainHUD->AddToViewport();
 	}
 }
 

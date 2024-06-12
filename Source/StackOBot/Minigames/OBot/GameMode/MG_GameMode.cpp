@@ -4,6 +4,7 @@
 #include "MG_GameMode.h"
 #include "GameFramework/GameMode.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameState.h"
 #include "Minigames/OBot/Player/MG_PlayerController.h"
 #include "Minigames/GameMap/GamePlayerState.h"
 
@@ -51,6 +52,18 @@ void AMG_GameMode::OnMatchStateSet()
 			MGPlayer->OnMatchStateSet(MatchState);
 		}
 	}
+}
+
+void AMG_GameMode::HandleMatchHasEnded()
+{
+	Super::HandleMatchHasEnded();
+
+	// 모든 캐릭터 플레이어를 가져와서
+	//GetGameState<AGameState>()->PlayerArray[0]->GetPawn();
+	
+	// 각각 캐릭터의 (시상식으로 (등수에 맞게) 이동시키고 카메라를 전환시키고, 입력비활성화하는)함수를 호출
+
+	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
 }
 
 
