@@ -16,6 +16,7 @@
 #include "Net/UnrealNetwork.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
+#include "Minigames/GameMap/GameHUD.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -113,8 +114,6 @@ void AMG_CharacterPlayer::BeginPlay()
 		EnableInput(PlayerController);
 	}
 
-	MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUDClass);
-	MainHUD->AddToViewport();
 
 	SetCharacterControl(CurrentCharacterControlType);
 
@@ -167,6 +166,7 @@ void AMG_CharacterPlayer::PossessedBy(AController* NewController)
 	{
 		EnableInput(PlayerController);
 	}
+
 	SetCharacterControl(CurrentCharacterControlType);
 }
 
@@ -505,7 +505,19 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
 	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
-	MainHUD->UpdateHoveringProgress(Percent);
+	auto PC = GetController<APlayerController>();
+	if (IsValid(PC))
+	{
+		auto HUD = PC->GetHUD<AGameHUD>();
+		if (IsValid(HUD))
+		{
+			auto GaugeWidget = HUD->MainHUD;
+			if (IsValid(GaugeWidget))
+			{
+				GaugeWidget->UpdateHoveringProgress(Percent);
+			}
+		}
+	}
 }
 
 
