@@ -93,7 +93,7 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	bIsHovering = false;
 	bCanAttack = true;
 	CurrentHoveringTime = MaxHoveringTime;
-
+	// commit test
 }
 
 
