@@ -41,6 +41,7 @@ void AMG_GameMode::Tick(float Deltatime)
 			StartMatch();
 		}
 	}
+
 }
 
 void AMG_GameMode::OnMatchStateSet()
@@ -54,6 +55,12 @@ void AMG_GameMode::OnMatchStateSet()
 		{
 			MGPlayer->OnMatchStateSet(MatchState);
 		}
+	}
+
+	if (MatchState == MatchState::InProgress)
+	{
+		// 시작.
+		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true);
 	}
 }
 
@@ -112,14 +119,15 @@ void AMG_GameMode::UpdatePlayersRank()
 	AGameState* GS = GetGameState<AGameState>();
 	if (!IsValid(GS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
 		return;
 	}
 
-	int i = 0;
-	//StrArr.Sort([](const FString& A, const FString& B) {
-	//	return A.Len() < B.Len();
-	//	});
+	if (!IsValid(FinishActor))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FinishActor is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
+		return;
+	}
 
 	TArray<TTuple<TObjectPtr<APlayerState>, float>> PlayerStateWithDistance;
 	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
@@ -135,10 +143,15 @@ void AMG_GameMode::UpdatePlayersRank()
 		}
 	);
 
+	int i = 1;
 	for (TTuple<TObjectPtr<APlayerState>, float> PSTuple : PlayerStateWithDistance)
 	{
-		
+		auto PS = PSTuple.Key;
+		Cast<AGamePlayerState>(PS)->SetRank(i);
+		i++;
 	}
+
+	// 순위UI업데이트...
 }
 
 
@@ -152,7 +165,11 @@ void AMG_GameMode::BeginPlay()
 	// 지금은 임시 액터로 대체 해놓자.
 	TArray<AActor*> FinishActors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("Finish"), FinishActors);
-	FinishActor = FinishActors[0];
+	if (FinishActors.Num() > 0)
+	{
+		FinishActor = FinishActors[0];
+
+	}
 
 
 }

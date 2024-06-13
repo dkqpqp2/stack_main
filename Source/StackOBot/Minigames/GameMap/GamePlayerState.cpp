@@ -87,9 +87,15 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
 }
 
+void AGamePlayerState::OnRep_Rank()
+{
+	// 캐릭터 위에 띄우는 순위ui업데이트
+}
+
 void AGamePlayerState::SetRank(int32 NewRank)
 {
 	Rank = NewRank;
+	// 캐릭터 위에 띄우는 순위ui업데이트
 }
 
 int32 AGamePlayerState::GetRank()
