@@ -17,6 +17,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
+#include "Minigames/Item/FinishLineBox.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -116,7 +117,8 @@ void AMG_CharacterPlayer::BeginPlay()
 
 
 	SetCharacterControl(CurrentCharacterControlType);
-
+	//충돌이벤트 바인딩
+	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
 
 }
 
@@ -635,4 +637,11 @@ void AMG_CharacterPlayer::OnRep_IsShield()
 bool AMG_CharacterPlayer::GetIsShield()
 {
 	return bIsShield;
+}
+
+void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor->IsA<AFinishLineBox>())
+		OnFinishLineReached.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달 
+	UE_LOG(LogTemp, Warning, TEXT("OVERlAP"));
 }
