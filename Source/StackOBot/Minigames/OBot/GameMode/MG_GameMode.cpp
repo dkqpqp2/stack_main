@@ -70,14 +70,12 @@ void AMG_GameMode::HandleMatchHasEnded()
 	APodium* PodiumActor = Cast<APodium>(UGameplayStatics::GetActorOfClass(GetWorld(), APodium::StaticClass()));
 	if (!IsValid(PodiumActor))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Podium is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
 		return;
 	}
 
 	AGameState* GS = GetGameState<AGameState>();
 	if (!IsValid(GS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
 		return;
 	}
 

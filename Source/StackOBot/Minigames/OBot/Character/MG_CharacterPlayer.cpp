@@ -521,7 +521,6 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 	}
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
-	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
 	auto PC = GetController<APlayerController>();
 	if (IsValid(PC))
 	{
@@ -631,7 +630,6 @@ void AMG_CharacterPlayer::OnShieldEnd()
 	bIsShield = false;
 	// shield effect off
 	ShieldNiagaraEffect->Deactivate();
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Shield Off"));
 
 }
 
