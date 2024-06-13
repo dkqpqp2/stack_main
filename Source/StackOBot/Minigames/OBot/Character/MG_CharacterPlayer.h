@@ -54,6 +54,11 @@ protected:
 	void SetCharacterControl(ECharacterControlType NewCharacterControlType);
 	virtual void SetCharacterControlData(const UMG_ControlData* CharacterControlData) override;
 
+	UFUNCTION(Client, Reliable)
+	void Client_OnDisableInput();
+public:
+	void OnDisableInput();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraArm;

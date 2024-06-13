@@ -19,20 +19,4 @@ void UMG_AnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 
 	}
 
-	/*if (MeshComp && MeshComp->GetOwner())
-	{
-		FVector SocketLocation = MeshComp->GetSocketLocation(TEXT("AttackSocket"));
-		FRotator SocketRotation = MeshComp->GetSocketRotation(TEXT("AttackSocket"));
-
-		UWorld* World = MeshComp->GetWorld();
-		if (World)
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = MeshComp->GetOwner();
-			SpawnParams.Instigator = MeshComp->GetOwner()->GetInstigator();
-
-			World->SpawnActor<AMG_PlayerProjectile>(AMG_PlayerProjectile::StaticClass(), SocketLocation, SocketRotation, SpawnParams);
-		}
-
-	}*/
 }

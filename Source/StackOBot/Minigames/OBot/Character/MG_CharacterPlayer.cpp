@@ -263,6 +263,23 @@ void AMG_CharacterPlayer::SetCharacterControlData(const UMG_ControlData* Charact
 	CameraArm->bDoCollisionTest = CharacterControlData->bDoCollisionTest;
 }
 
+void AMG_CharacterPlayer::Client_OnDisableInput_Implementation()
+{
+	DisableInput(GetLocalViewingPlayerController());
+}
+
+void AMG_CharacterPlayer::OnDisableInput()
+{
+	if (IsLocallyControlled())
+	{
+		DisableInput(GetLocalViewingPlayerController());
+	}
+	else
+	{
+		Client_OnDisableInput();
+	}
+}
+
 void AMG_CharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -506,7 +523,6 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 	}
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
-	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
 	auto PC = GetController<APlayerController>();
 	if (IsValid(PC))
 	{
@@ -616,7 +632,6 @@ void AMG_CharacterPlayer::OnShieldEnd()
 	bIsShield = false;
 	// shield effect off
 	ShieldNiagaraEffect->Deactivate();
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Shield Off"));
 
 }
 

@@ -13,13 +13,6 @@
 void AMG_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	/*if (HasAuthority()) {
-		GameHUD = Cast<AGameHUD>(GetHUD());
-		if (GameHUD)
-		{
-			GameHUD->AddAnnouncement();
-		}
-	}*/
 	GameHUD = Cast<AGameHUD>(GetHUD());
 	ServerCheckMatchState();
 }
@@ -149,14 +142,6 @@ void AMG_PlayerController::ClientReportServerTime_Implementation(float TimeOfCli
 	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
 }
-
-/*void AMG_PlayerController::SetHUDHover(float Hover, float MaxHover)
-{
-	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
-	bool bHUDValid = GameHUD && 
-		GameHUD -> 
-}
-*/
 
 void AMG_PlayerController::OnMatchStateSet(FName State)
 {
