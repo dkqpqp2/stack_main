@@ -10,7 +10,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "../Actors/Podium.h"
 #include "Minigames/OBot/Character/MG_CharacterPlayer.h"
+#include "Minigames/Item/FinishLineBox.h"
 
+namespace MatchState
+{
+	const FName Cooldown = FName("CoolDown");
+}
 
 AMG_GameMode::AMG_GameMode()
 {
@@ -27,12 +32,13 @@ AMG_GameMode::AMG_GameMode()
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
-	
+
 }
 
 void AMG_GameMode::Tick(float Deltatime)
 {
 	Super::Tick(Deltatime);
+
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		CountDownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
@@ -50,10 +56,15 @@ void AMG_GameMode::OnMatchStateSet()
 
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
+		AMG_CharacterPlayer* PlayerCharacter = Cast<AMG_CharacterPlayer>((*It)->GetPawn());
 		AMG_PlayerController* MGPlayer = Cast<AMG_PlayerController>(*It);
 		if (MGPlayer)
 		{
 			MGPlayer->OnMatchStateSet(MatchState);
+		}
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->OnFinishLineReached.AddDynamic(this, &AMG_GameMode::OnPlayerFinishLineReached);
 		}
 	}
 
@@ -77,14 +88,12 @@ void AMG_GameMode::HandleMatchHasEnded()
 	APodium* PodiumActor = Cast<APodium>(UGameplayStatics::GetActorOfClass(GetWorld(), APodium::StaticClass()));
 	if (!IsValid(PodiumActor))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Podium is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
 		return;
 	}
 
 	AGameState* GS = GetGameState<AGameState>();
 	if (!IsValid(GS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
 		return;
 	}
 
@@ -174,3 +183,10 @@ void AMG_GameMode::BeginPlay()
 
 }
 
+void AMG_GameMode::OnPlayerFinishLineReached()
+{
+	// 플레이어가 결승선에 도달했을 때의 처리를 여기에 추가합니다.
+	// 매치 상태를 쿨다운으로 변경하거나 추가 작업을 수행할 수 있습니다.
+	//SetMatchState(MatchState::Cooldown);
+	UE_LOG(LogTemp, Warning, TEXT("CoolDown"));
+}

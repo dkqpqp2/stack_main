@@ -81,10 +81,8 @@ void AMG_ItemBox::OnOverlapBegin(UPrimitiveComponent* OverlapComponent, AActor* 
 {
 	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
 	{
-		MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("??"));
 		NetMulticast_ItemBoxEffect();
 		Effect->OnSystemFinished.AddDynamic(this, &AMG_ItemBox::OnEffectFinished);
-		//ServerAddItemFinish();
 
 		// 아이템을 캐릭터에 추가.
 		GetNewItemTo(OtherActor);
@@ -135,11 +133,9 @@ void AMG_ItemBox::GetNewItemTo(AActor* OtherActor)
 {
 	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
 		AGamePlayerState* PS = Cast<AMG_CharacterBase>(OtherActor)->GetPlayerState<AGamePlayerState>();
 		if (!IsValid(PS))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
 			return;
 		}
 

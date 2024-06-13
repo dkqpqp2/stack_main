@@ -16,24 +16,24 @@ void UTeamSelectWidget::OnIsRedTeamSettedTo(bool bIsChecked)
 {
 	if (bIsChecked)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Clicked to Red"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Clicked to Red"));
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Clicked to Blue"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Clicked to Blue"));
 	}
 
 
 	auto PS = GetOwningPlayerState();
 	if (!IsValid( PS ))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerState Not Valid"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerState Not Valid"));
 		return;
 	}
 	auto LobbyPS = Cast<ALobbyPlayerState>(PS);
 	if (!IsValid(LobbyPS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPlayerState Not Valid"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPlayerState Not Valid"));
 		return;
 	}
 

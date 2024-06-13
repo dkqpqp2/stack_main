@@ -88,7 +88,7 @@ void AThirdPersonCharacter::BeginPlay()
 
 void AThirdPersonCharacter::SetMaterialToTeamColor(bool IsTeamRed)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted Start"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted Start"));
 
 	// Why Not Valid?
 	if (IsValid(MeshMID))
@@ -102,7 +102,7 @@ void AThirdPersonCharacter::SetMaterialToTeamColor(bool IsTeamRed)
 		{
 			MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(0.0, 0.0, 1.0, 1.0));
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted"));
 	}
 }
 
@@ -121,12 +121,12 @@ void AThirdPersonCharacter::PossessedBy(AController* NewController)
 		auto PS = PlayerController->GetPlayerState<ABasePlayerState>();
 		if (!IsValid(PS))
 		{
-			GEngine->AddOnScreenDebugMessage(
+			/*GEngine->AddOnScreenDebugMessage(
 				-1, 
 				10.f, 
 				FColor::Red, 
 				TEXT("PlayerState Not Valid : AMinigameTemplateCharacter::PossessedBY()")
-			);
+			);*/
 			return;
 		}
 		SetMaterialToTeamColor(PS->GetIsRedTeam());
@@ -158,7 +158,7 @@ void AThirdPersonCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	}
 	else
 	{
-		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		//UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 

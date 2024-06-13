@@ -67,7 +67,7 @@ void AItemActor::OnBoxComponentOverlapped(
 		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
 		if (!IsValid(PS))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));
 			return;
 		}
 		////player score add.
@@ -77,7 +77,7 @@ void AItemActor::OnBoxComponentOverlapped(
 		auto* CoinGS = GetWorld()->GetGameState<ACoinGameState>();
 		if (!IsValid(CoinGS))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GS Not Valid : ItemActor Overlapped"));
 			return;
 		}
 		

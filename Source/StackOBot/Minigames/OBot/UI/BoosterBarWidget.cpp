@@ -9,6 +9,5 @@
 void UBoosterBarWidget::SetPercent(float Percent)
 {
 	UMaterialInstanceDynamic* Dynamic = Image->GetDynamicMaterial();
-	UE_LOG(LogMiniGame, Warning, TEXT("Percent : %.2f"), Percent);
 	Dynamic->SetScalarParameterValue(TEXT("Percent"), Percent);
 }

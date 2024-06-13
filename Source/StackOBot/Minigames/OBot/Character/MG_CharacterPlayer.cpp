@@ -17,6 +17,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
+#include "Minigames/Item/FinishLineBox.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -95,7 +96,7 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 		MainHUDClass = MainHUDRef.Class;
 	}
 
-	CurrentCharacterControlType = ECharacterControlType::Shoulder;
+	CurrentCharacterControlType = ECharacterControlType::Quater;
 	bIsJetpackActive = false;
 	bIsHovering = false;
 	bCanAttack = true;
@@ -116,7 +117,8 @@ void AMG_CharacterPlayer::BeginPlay()
 
 
 	SetCharacterControl(CurrentCharacterControlType);
-
+	//충돌이벤트 바인딩
+	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
 
 }
 
@@ -521,7 +523,7 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 	}
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
-	//UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
+
 	auto PC = GetController<APlayerController>();
 	if (IsValid(PC))
 	{
@@ -631,7 +633,6 @@ void AMG_CharacterPlayer::OnShieldEnd()
 	bIsShield = false;
 	// shield effect off
 	ShieldNiagaraEffect->Deactivate();
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, TEXT("Shield Off"));
 
 }
 
@@ -652,4 +653,10 @@ void AMG_CharacterPlayer::OnRep_IsShield()
 bool AMG_CharacterPlayer::GetIsShield()
 {
 	return bIsShield;
+}
+
+void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor->IsA<AFinishLineBox>())
+		OnFinishLineReached.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달 
 }

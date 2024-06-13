@@ -66,15 +66,6 @@ void AMG_ItemSpawnPoint::Spawn()
 
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	/*AMG_ItemBox* DefaultObj = Cast<AMG_ItemBox>(SpawnClass->GetDefaultObject());
-	
-	FVector HalfHeight;
-
-	if (IsValid(DefaultObj))
-	{
-		HalfHeight = DefaultObj->GetActorLocation();
-	}*/
-
 	SpawnBox = GetWorld()->SpawnActor<AMG_ItemBox>(SpawnClass, GetActorLocation(), GetActorRotation(), SpawnParam);
 	SpawnBox->SetItemSpawnPoint(this);
 }

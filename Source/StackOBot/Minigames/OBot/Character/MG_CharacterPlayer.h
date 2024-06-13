@@ -6,7 +6,10 @@
 #include "Minigames/OBot/Interface/MG_AnimationAttackInterface.h"
 #include "MG_CharacterPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishLineReached); //데디케이트 브로드캐스트 가능한 함수 정의
+
 struct FInputActionValue;
+
 /**
  * 
  */
@@ -214,4 +217,11 @@ protected:
 	void OnRep_IsShield();
 public:
 	bool GetIsShield();
+//------Character begin Overlap ------
+	// 충돌 이벤트를 처리하기 위한 이벤트 디스패처
+	UPROPERTY(BlueprintAssignable)
+	FOnFinishLineReached OnFinishLineReached;
+
+	UFUNCTION()
+	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 };

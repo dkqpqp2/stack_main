@@ -60,19 +60,19 @@ void ABasePlayerState::OnRep_SelectedCharacter()
 void ABasePlayerState::CopyProperties(APlayerState* PlayerState)
 {
 	Super::CopyProperties(PlayerState);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("--------------------CopyProperties========="));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("--------------------CopyProperties========="));
 
 	ABasePlayerState* NewPlayerState = Cast<ABasePlayerState>(PlayerState);
 	if (!IsValid(NewPlayerState))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CopyProperties Error : ABasePlayerState"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CopyProperties Error : ABasePlayerState"));
 		return;
 	}
 	NewPlayerState->SetIsRedTeamTo(IsRedTeam);
 	NewPlayerState->SetSelectedCharacter(SelectedCharacter);
 	NewPlayerState->SetPlayerEnterID(PlayerEnterID);
 	NewPlayerState->SetIsHost(bIsHost);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, SelectedCharacter);
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, SelectedCharacter);
 }
 
 void ABasePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -59,7 +59,7 @@ void ALobbyPlayerState::OnIsRedTeamChanged()
 	ITeamChangeInterface* Pawn = Cast<ITeamChangeInterface>( GetPawn() );
 	if (Pawn == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 		return;
 	}
 	Pawn->SetMaterialToTeamColor(IsRedTeam);
@@ -99,7 +99,7 @@ void ALobbyPlayerState::OnChangeCharacter()
 	ALobbyPlayerController* LobbyPC = Cast<ALobbyPlayerController>(GetPlayerController());
 	if (!IsValid(LobbyPC))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerController Not Available : OnChangeCharacter()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerController Not Available : OnChangeCharacter()"));
 		return;
 	}
 	LobbyPC->ChangeCharacter(SelectedCharacter);
@@ -165,7 +165,7 @@ void ALobbyPlayerState::UpdatePlayerListWidget()
 
 	if (PC == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No Controller : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No Controller : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
 		return;
 	}
 
@@ -173,7 +173,7 @@ void ALobbyPlayerState::UpdatePlayerListWidget()
 	ALobbyPlayerController* LobbyPC = Cast<ALobbyPlayerController>(PC);
 	if (!IsValid(LobbyPC))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPC Is Not Valid : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPC Is Not Valid : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
 		return;
 	}
 	LobbyPC->LobbyWidgetUpdate();
@@ -196,18 +196,18 @@ void ALobbyPlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APaw
 		ITeamChangeInterface* LobbyPawn = Cast<ITeamChangeInterface>(NewPawn);
 		if (LobbyPawn == nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 			return;
 		}
 		LobbyPawn->SetMaterialToTeamColor(IsRedTeam);
 		
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPawnSet"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPawnSet"));
 	}
 
 	ALobbyPlayerController* LobbyPC = Cast<ALobbyPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (!IsValid(LobbyPC))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPC Is Not Valid : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPC Is Not Valid : LobbyPS -> UpdatePlayerListWidget()")); //BP.... (No StaticClass(). It Returns Pawn
 		return;
 	}
 	LobbyPC->LobbyWidgetUpdate();

@@ -26,16 +26,16 @@ void ALobbyPlayerController::BeginPlay()
 	if (IsLocalController())
 	{
 		
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---LobbyPC BeginPlay()---"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---LobbyPC BeginPlay()---"));
 		if (!IsValid(LobbyWidgetClass))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidgetClass Error : LobbyPlayerController BeginPlay()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidgetClass Error : LobbyPlayerController BeginPlay()"));
 			return;
 		}
 
 		if (!IsValid(GetPawn()))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Not Controlling. : LobbyPlayerController BeginPlay()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Not Controlling. : LobbyPlayerController BeginPlay()"));
 			return;
 		}
 
@@ -44,7 +44,7 @@ void ALobbyPlayerController::BeginPlay()
 		if (!IsValid(LobbyWidget))
 		{
 			// After Server Travel. Why This Message Pops up?. Even This Controller is not the controller of gamemap.
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidget Error : LobbyPlayerController BeginPlay()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidget Error : LobbyPlayerController BeginPlay()"));
 			return;
 		}
 
@@ -70,7 +70,7 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	auto CurrentPawn = GetPawn();
 	if (!IsValid(CurrentPawn))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid : LobbyPlayerController : ChangeCharacter"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid : LobbyPlayerController : ChangeCharacter"));
 
 		return;
 	}
@@ -79,12 +79,12 @@ void ALobbyPlayerController::ChangeCharacter(const FString& NewCharacterName)
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	GetPawn()->Destroy();
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Spawn Actor Start-------"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Spawn Actor Start-------"));
 	APawn* NewPawn = Cast<APawn>( GetWorld()->SpawnActor(*NewCharacterClass, &SpawnTransform, SpawnParameters) );
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Spawn Actor Done-------"));
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Start-------"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Spawn Actor Done-------"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Start-------"));
 	Possess(NewPawn);
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Done-------"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Emerald, TEXT("------------Possess Actor Done-------"));
 
 
 }
@@ -105,7 +105,7 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 {
 	if (!IsValid(LobbyWidget))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidget Error : LobbyPlayerController LobbyWidgetUpdate()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyWidget Error : LobbyPlayerController LobbyWidgetUpdate()"));
 		return;
 	}
 
@@ -113,7 +113,7 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 	auto LobbyGS = GetWorld()->GetGameState<ALobbyGameStateBase>();
 	if (!IsValid(LobbyGS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GameState Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GameState Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
 		return;
 	}
 
@@ -124,17 +124,17 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 		ALobbyPlayerState* LobbyPS = Cast<ALobbyPlayerState>(LobbyGS->PlayerArray[i]);
 		if (!IsValid(LobbyPS))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPS Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("LobbyPS Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
 			continue;
 		}
 		auto PlayerCard = Cast<UPlayerCardWidget>( LobbyWidget->PlayersListWrapBox->GetChildAt( LobbyPS->GetPlayerEnterID() ));
 		if (!IsValid(PlayerCard))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerCard Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PlayerCard Not Valid : LobbyPlayerController LobbyWidgetUpdate()"));
 			continue;
 		}
 
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, FString::Printf(TEXT("Player %d card ready to edit"), LobbyPS->GetPlayerEnterID()));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, FString::Printf(TEXT("Player %d card ready to edit"), LobbyPS->GetPlayerEnterID()));
 		PlayerCard->CardUpdate(LobbyPS);
 
 		// host도 아니고 레디도 안한 플레이어가 있다면 서버 스타트 버튼 잠그기.

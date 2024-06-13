@@ -5,9 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/GameMode.h"
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 #include "../../GameMap/GameMapGameMode.h"
 #include "MG_GameMode.generated.h"
 
+namespace MatchState
+{
+	extern UMG_API const FName CoolDown; // begin coolTimer
+}
 /**
  * 
  */
@@ -21,15 +26,19 @@ public:
 	virtual void Tick(float Deltatime) override; // 시간tick별 재야 하니까
 
 	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime = 10.f;
+	float WarmupTime = 1.f;
 	float LevelStartingTime = 0.f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float CoolDownTime = 10.f;
+
+	UFUNCTION()
+	void OnPlayerFinishLineReached();
 
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnMatchStateSet() override;
-
 	virtual void HandleMatchHasEnded() override;
 
 	// 모든 플레이어들의 결승선까지의 거리를 재고 그에 따라 각 플레이어의 순위 결정.
