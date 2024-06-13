@@ -433,6 +433,10 @@ void AMG_CharacterPlayer::MulticastAttack_Implementation()
 	// Animation은 Server와 Client 모두 보여야함
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(ActionMontage);
+
+	// Missile Spawn
+
+
 }
 
 // Server에선 호출이안됨, Client에선 자동으로 호출됨
