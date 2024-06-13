@@ -183,6 +183,9 @@ void AGamePlayerState::UseItem()
 		case EItem::E_SHIELD:
 			UseShield();
 			break;
+		case EItem::E_MISSILE:
+			// use missile item
+			break;
 		default:
 			break;
 		}
