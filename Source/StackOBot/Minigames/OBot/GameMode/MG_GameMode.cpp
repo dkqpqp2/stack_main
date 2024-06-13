@@ -107,11 +107,53 @@ void AMG_GameMode::HandleMatchHasEnded()
 	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
 }
 
+void AMG_GameMode::UpdatePlayersRank()
+{
+	AGameState* GS = GetGameState<AGameState>();
+	if (!IsValid(GS))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::HandleMatchHasEnded())"));
+		return;
+	}
+
+	int i = 0;
+	//StrArr.Sort([](const FString& A, const FString& B) {
+	//	return A.Len() < B.Len();
+	//	});
+
+	TArray<TTuple<TObjectPtr<APlayerState>, float>> PlayerStateWithDistance;
+	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
+	{
+		float Distance = PlayerState->GetPawn()->GetSquaredDistanceTo(FinishActor);
+		PlayerStateWithDistance.Add(MakeTuple(PlayerState, Distance));
+	}
+
+	PlayerStateWithDistance.Sort(
+		[](const TTuple<TObjectPtr<APlayerState>, float> A, const TTuple<TObjectPtr<APlayerState>, float> B) 
+		{
+			return A.Value < B.Value;
+		}
+	);
+
+	for (TTuple<TObjectPtr<APlayerState>, float> PSTuple : PlayerStateWithDistance)
+	{
+		
+	}
+}
+
 
 void AMG_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
+
+	// 결승선 찾아놓기.
+	// 지금은 임시 액터로 대체 해놓자.
+	TArray<AActor*> FinishActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("Finish"), FinishActors);
+	FinishActor = FinishActors[0];
+
+
 }
 

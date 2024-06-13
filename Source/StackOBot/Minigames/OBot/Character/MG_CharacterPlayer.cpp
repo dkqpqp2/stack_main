@@ -521,7 +521,7 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 	}
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
-	UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
+	//UE_LOG(LogMiniGame, Warning, TEXT("## Hovering Percent %.2f"), Percent);
 	auto PC = GetController<APlayerController>();
 	if (IsValid(PC))
 	{

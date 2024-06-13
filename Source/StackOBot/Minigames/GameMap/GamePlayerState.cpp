@@ -87,6 +87,16 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
 }
 
+void AGamePlayerState::SetRank(int32 NewRank)
+{
+	Rank = NewRank;
+}
+
+int32 AGamePlayerState::GetRank()
+{
+	return Rank;
+}
+
 
 void AGamePlayerState::OnRep_CurrentItem()
 {

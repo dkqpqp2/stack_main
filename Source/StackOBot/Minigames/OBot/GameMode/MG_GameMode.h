@@ -32,6 +32,10 @@ protected:
 
 	virtual void HandleMatchHasEnded() override;
 
+	// 모든 플레이어들의 결승선까지의 거리를 재고 그에 따라 각 플레이어의 순위 결정.
+	// 각 플레이어들의 UI업데이트는?
+	void UpdatePlayersRank();
+	AActor* FinishActor;
 private:
 	float CountDownTime = 0.f;
 };

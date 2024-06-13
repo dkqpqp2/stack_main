@@ -38,6 +38,16 @@ public:
 	void SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+// ---------- 순위 ------------
+protected:
+	UPROPERTY(Replicated)
+	int32 Rank;
+
+public:
+	void SetRank(int32 NewRank);
+	int32 GetRank();
+
+
 // --------- ITEM ----------
 protected:
 	UPROPERTY(EditAnywhere)
