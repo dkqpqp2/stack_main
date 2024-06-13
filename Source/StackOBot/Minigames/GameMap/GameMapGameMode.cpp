@@ -68,7 +68,7 @@ void AGameMapGameMode::HandleMatchHasEnded()
 {
 	Super::HandleMatchHasEnded();
 
-	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+	//GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
 }
 
 
