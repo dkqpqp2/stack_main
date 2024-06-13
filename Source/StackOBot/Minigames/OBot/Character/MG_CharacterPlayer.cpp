@@ -261,6 +261,23 @@ void AMG_CharacterPlayer::SetCharacterControlData(const UMG_ControlData* Charact
 	CameraArm->bDoCollisionTest = CharacterControlData->bDoCollisionTest;
 }
 
+void AMG_CharacterPlayer::Client_OnDisableInput_Implementation()
+{
+	DisableInput(GetLocalViewingPlayerController());
+}
+
+void AMG_CharacterPlayer::OnDisableInput()
+{
+	if (IsLocallyControlled())
+	{
+		DisableInput(GetLocalViewingPlayerController());
+	}
+	else
+	{
+		Client_OnDisableInput();
+	}
+}
+
 void AMG_CharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
