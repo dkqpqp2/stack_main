@@ -23,7 +23,7 @@ void ACoinGameState::OnChangeTeamScore(bool IsRed)
 	ACoinGamePlayerController* CoinPC = GetWorld()->GetFirstPlayerController<ACoinGamePlayerController>();
 	if (!IsValid(CoinPC))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinPC Is Not Valid : ACoinGameState::OnChangeTeamScore"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinPC Is Not Valid : ACoinGameState::OnChangeTeamScore"));
 		return;
 	}
 	if (IsRed)

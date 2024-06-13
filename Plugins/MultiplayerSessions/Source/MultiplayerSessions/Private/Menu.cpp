@@ -117,7 +117,7 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 	{
 		JoinButton->SetIsEnabled(true);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("SearchResults, Server Count : %d"), SessionResults.Num()); // server count 스팀할 때 되는지 확인해야함.. 근데 이거 흠 null로 일단해야하나 싶긴하다  
+	// server count 스팀할 때 되는지 확인해야함.. 근데 이거 흠 null로 일단해야하나 싶긴하다  
 }
 
 void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
@@ -156,7 +156,6 @@ void UMenu::HostButtonClicked()
 		FString ServerName = ServerNameTextBox ? ServerNameTextBox->GetText().ToString() : FString();
 		FString HostName = HostNameTextBox ? HostNameTextBox->GetText().ToString() : FString();
 		MultiplayerSessionsSubsystem->CreateSession(NumPublicConnections, MatchType,ServerName,HostName);
-		//GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, (ServerName));
 	}
 }
 
@@ -166,11 +165,9 @@ void UMenu::JoinButtonClicked()
 	if (MultiplayerSessionsSubsystem)
 	{
 		MultiplayerSessionsSubsystem->FindSessions(10000);
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Find Session Clear")));
 	}
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("Join Button")));
 	}
 }
 

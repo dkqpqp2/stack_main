@@ -96,7 +96,7 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 		MainHUDClass = MainHUDRef.Class;
 	}
 
-	CurrentCharacterControlType = ECharacterControlType::Shoulder;
+	CurrentCharacterControlType = ECharacterControlType::Quater;
 	bIsJetpackActive = false;
 	bIsHovering = false;
 	bCanAttack = true;
@@ -658,5 +658,4 @@ void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherA
 {
 	if (OtherActor->IsA<AFinishLineBox>())
 		OnFinishLineReached.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달 
-	UE_LOG(LogTemp, Warning, TEXT("OVERlAP"));
 }

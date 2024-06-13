@@ -14,13 +14,13 @@ void ACoinGamePlayerController::BeginPlay()
 	{
 		if (!IsValid(CoinGameWidgetClass))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinGameWidgetClass NOt Valid : ACoinGamePlayerController BeginPlay()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinGameWidgetClass NOt Valid : ACoinGamePlayerController BeginPlay()"));
 			return;
 		}
 		CoinGameWidget = CreateWidget<UCoinGameWidget>(this, CoinGameWidgetClass);
 		if (!IsValid(CoinGameWidget))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinGameWidget NOt Valid : ACoinGamePlayerController BeginPlay()"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CoinGameWidget NOt Valid : ACoinGamePlayerController BeginPlay()"));
 			return;
 		}
 		CoinGameWidget->AddToViewport();

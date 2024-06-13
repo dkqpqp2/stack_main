@@ -25,14 +25,14 @@ void ALobbyGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* 
 	ABasePlayerState* PS = NewPlayer->GetPlayerState<ABasePlayerState>();
 	if (!IsValid(PS))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Is Not Valid : ALobbyGameMode::RestartPlayer()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Is Not Valid : ALobbyGameMode::RestartPlayer()"));
 		return;
 	}
 
 	ALobbyPlayerController* PC = Cast<ALobbyPlayerController>(NewPlayer);
 	if (!IsValid(PC))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PC Is Not Valid : ALobbyGameMode::RestartPlayer()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PC Is Not Valid : ALobbyGameMode::RestartPlayer()"));
 		return;
 	}
 
@@ -45,7 +45,7 @@ void ALobbyGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* 
 	APawn* SpawnedPawn = Cast<APawn>(SpawnedActor);
 	if (!IsValid(SpawnedPawn))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SpawnedPawn Not Valid : ALobbyGameMode::RestartPlayer()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SpawnedPawn Not Valid : ALobbyGameMode::RestartPlayer()"));
 		return;
 	}
 	NewPlayer->Possess(SpawnedPawn);

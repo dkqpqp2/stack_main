@@ -11,6 +11,6 @@ void ATestGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("GameMode BeginPlay"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("GameMode BeginPlay"));
 
 }

@@ -77,7 +77,7 @@ void AMG_CharacterBase::BeginPlay()
     auto PS = GetPlayerState<ABasePlayerState>();
     if (IsValid(PS))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
+        //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
         SetMaterialToTeamColor(PS->GetIsRedTeam());
     }
 }
@@ -97,12 +97,12 @@ void AMG_CharacterBase::PossessedBy(AController* NewController)
         auto PS = PlayerController->GetPlayerState<ABasePlayerState>();
         if (!IsValid(PS))
         {
-            GEngine->AddOnScreenDebugMessage(
+            /*GEngine->AddOnScreenDebugMessage(
                 -1,
                 10.f,
                 FColor::Red,
                 TEXT("PlayerState Not Valid : AMG_Character_Base::PossessedBY()")
-            );
+            );*/
             return;
         }
         SetMaterialToTeamColor(PS->GetIsRedTeam());
@@ -114,7 +114,7 @@ void AMG_CharacterBase::SetMaterialToTeamColor(bool IsTeamRed)
 {
     if (!IsValid(MaterialDynamicInstance))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("DYNAMIC MATERIAL NOT VALID : AMG_CharacterBase::SetMaterialToTeamColor"));
+        //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("DYNAMIC MATERIAL NOT VALID : AMG_CharacterBase::SetMaterialToTeamColor"));
         return;
     }
 

@@ -24,7 +24,7 @@ void AGamePlayerState::SetPlayerEnterID(int32 NewEnterID)
 
 void AGamePlayerState::SetIsRedTeamTo(bool IsChecked)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, TEXT("GamePlayerState's IsRedTeam Setted"));
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Black, TEXT("GamePlayerState's IsRedTeam Setted"));
 	IsRedTeam = IsChecked;
 }
 void AGamePlayerState::SetSelectedCharacter(FString NewCharacter)
@@ -71,7 +71,7 @@ void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn
 		ITeamChangeInterface* GamePawn = Cast<ITeamChangeInterface>(NewPawn);
 		if (GamePawn == nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 			return;
 		}
 		GamePawn->SetMaterialToTeamColor(IsRedTeam);
@@ -93,7 +93,7 @@ void AGamePlayerState::OnRep_CurrentItem()
 	// Client's Current Item Struct Set.
 	if (!IsValid(ItemDataTable))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
 		return;
 	}
 
@@ -111,7 +111,7 @@ void AGamePlayerState::SetCurrentItem(FName NewItemName)
 	{
 		if (!IsValid(ItemDataTable))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
 			return;
 		}
 		CurrentItemName = NewItemName;
@@ -141,7 +141,7 @@ void AGamePlayerState::SetCurrentItemToRandomItem()
 		//From Datatable RowNames, Pick One
 		if (!IsValid(ItemDataTable))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Item DataTable Not Valid"));
 			return;
 		}
 		TArray<FName> ItemRowNames = ItemDataTable->GetRowNames();
@@ -158,13 +158,13 @@ void AGamePlayerState::UseItem()
 		AMG_CharacterPlayer* Player = Cast<AMG_CharacterPlayer>(Pawn);
 		if (!IsValid(Player))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Item"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Not Valid When Use Item"));
 			return;
 		}
 
 		if (!CurrentItemStruct)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("NoCurrent ItemStruct"));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("NoCurrent ItemStruct"));
 			return;
 		}
 
@@ -214,14 +214,14 @@ void AGamePlayerState::UseBarrier()
 	AMG_CharacterPlayer* ItemUserBot = Cast<AMG_CharacterPlayer>(Pawn);
 	if (!IsValid(ItemUserBot))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ItemUserBot Not Valid : GamePS : UseBarrier()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ItemUserBot Not Valid : GamePS : UseBarrier()"));
 		return;
 	}
 
 	// TODO : 캐릭터의 뒤편에 배리어 스폰.
 	if (!IsValid(SlowBarrierBPClass))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SlowBarrierClass Not Valid : GamePS : UseBarrier()"));
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("SlowBarrierClass Not Valid : GamePS : UseBarrier()"));
 		return;
 	}
 

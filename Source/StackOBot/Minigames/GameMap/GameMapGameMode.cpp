@@ -47,9 +47,9 @@ void AGameMapGameMode::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor
 
 void AGameMapGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---SwapPlayerController"));
-	GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Blue, OldPC->GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Red, NewPC->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("---SwapPlayerController"));
+	//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Blue, OldPC->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 100.f, FColor::Red, NewPC->GetName());
 	// OldPC will be destroy...
 	Super::SwapPlayerControllers(OldPC, NewPC);
 
