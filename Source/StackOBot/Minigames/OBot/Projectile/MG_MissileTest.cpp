@@ -3,6 +3,8 @@
 
 #include "Minigames/OBot/Projectile/MG_MissileTest.h"
 #include "Engine.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 
 // Sets default values
 AMG_MissileTest::AMG_MissileTest()
@@ -14,12 +16,13 @@ AMG_MissileTest::AMG_MissileTest()
 	RootComponent = CollisionComp;
 
 	MissileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MissileMesh"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT(""));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("/Script/Engine.StaticMesh'/Game/LearningKit_Robots/StaticMeshes/MergedActors/MA_Robot_A2.MA_Robot_A2'"));
 	if (MeshObj.Object)
 	{
 		MissileMesh->SetStaticMesh(MeshObj.Object);
 	}
 	MissileMesh->SetupAttachment(RootComponent);
+	MissileMesh->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
@@ -49,44 +52,201 @@ AMG_MissileTest::AMG_MissileTest()
 void AMG_MissileTest::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!HasTarget)
+	{
+		ProjectileMovement->Velocity = GetActorUpVector() * 300.0f;
+
+		this->SetActorEnableCollision(false);
+	}
 	
+}
+
+
+void AMG_MissileTest::FindPlayer()
+{
+	class UWorld* const World = GetWorld();
+
+	if (World)
+	{
+		for (TActorIterator<AMG_CharacterPlayer> ObstacleItr(World); ObstacleItr; ++ObstacleItr)
+		{
+			FName PlayerTagName = FName(TEXT("Player"));
+			class AMG_CharacterPlayer* FoundPlayer = *ObstacleItr;
+
+			if (FoundPlayer != nullptr)
+			{
+				if (FoundPlayer->ActorHasTag(PlayerTagName))
+				{
+					if (PlayerInWorld != FoundPlayer)
+					{
+						PlayerInWorld = FoundPlayer;
+					}
+
+				}
+			}
+		}
+	}
+}
+
+void AMG_MissileTest::UpdateTarget()
+{
+	if (!HasTarget)
+	{
+		if (PlayerInWorld != NULL)
+		{
+			if (PlayerInWorld->IsValidLowLevel())
+			{
+				Target = PlayerInWorld;
+				HasTarget = true;
+				HasNoTarget = false;
+
+				FRotator RotVal = MissileMesh->GetComponentRotation();
+				RotVal.Roll = 0.f;
+				RotVal.Pitch = -90.f;
+				RotVal.Yaw = 0.f;
+				MissileMesh->SetRelativeRotation(RotVal);
+			}
+			else
+			{
+				Target = nullptr;
+				HasTarget = true;
+				HasNoTarget = true;
+			}
+		}
+		else
+		{
+			Target = nullptr;
+			HasTarget = true;
+			HasNoTarget = true;
+		}
+	}
+}
+
+void AMG_MissileTest::DelayLogic(float DeltaTime)
+{
+	if (!HasFinishedDelay)
+	{
+		DelayTimer += 1 * DeltaTime;
+		if (DelayTimer > 1.f)
+		{
+			UpdateTarget();
+			this->SetActorEnableCollision(true);
+			HasFinishedDelay = true;
+		}
+	}
 }
 
 // Called every frame
 void AMG_MissileTest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (!HasFinishedDelay)
+	{
+		DelayLogic(DeltaTime);
+	}
+	else
+	{
+		if (HasTarget)
+		{
+			if (Target != NULL)
+			{
+				if (Target->IsValidLowLevel())
+				{
+					FVector WantedDir = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+					WantedDir += Target->GetVelocity() * WantedDir.Size() / 200.f;
+					ProjectileMovement->Velocity += WantedDir * 200.f * DeltaTime;
+					ProjectileMovement->Velocity = ProjectileMovement->Velocity.GetSafeNormal() * 200.f;
+				}
+				else
+				{
+					if (!this->IsPendingKill())
+					{
+						if (this->IsValidLowLevel())
+						{
+							K2_DestroyActor();
+						}
+					}
+				}
+			}
+			else
+			{
+				if (HasNoTarget)
+				{
+					ProjectileMovement->Velocity = GetActorUpVector() * 200.f;
+					HasNoTarget = false;
+				}
+			}
+		}
 
+		LifeTimeCountDown -= 1 * DeltaTime;
+
+		if (LifeTimeCountDown < 0.f)
+		{
+			if (!CanBeDestroyed)
+			{
+				CanBeDestroyed = true;
+				Target = nullptr;
+				Explode();
+			}
+		}
+	}
 }
 
-void AMG_MissileTest::DelayLogic(float DeltaTiem)
+void AMG_MissileTest::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
-}
+	class AMG_CharacterPlayer* PlayerCharacter = Cast<AMG_CharacterPlayer>(OtherActor);
+	class AStaticMeshActor* GroundActor = Cast<AStaticMeshActor>(OtherActor);
 
-void AMG_MissileTest::FindPlayer()
-{
-}
-
-void AMG_MissileTest::UpdateTarget()
-{
-}
-
-void AMG_MissileTest::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActro, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
-{
+	if (PlayerCharacter != nullptr)
+	{
+		PlayExplosion(ExplosionSystem);
+		PlayExplosionSound(ExplosionSound);
+		if (this->IsValidLowLevel())
+		{
+			Destroy();
+		}
+	}
 }
 
 void AMG_MissileTest::Explode()
 {
+	PlayExplosion(ExplosionSystem);
+	PlayExplosionSound(ExplosionSound);
+	if (this->IsValidLowLevel())
+	{
+		Destroy();
+	}
 }
 
 
 TObjectPtr<class UNiagaraComponent> AMG_MissileTest::PlayExplosion(UNiagaraSystem* Explosion)
 {
-	return TObjectPtr<class UNiagaraComponent>();
+	class UNiagaraComponent* RetVal = NULL;
+	if (Explosion)
+	{
+		class UWorld* const World = GetWorld();
+
+		if (World)
+		{
+			FVector myPos = GetActorLocation();
+			FRotator myRot = GetActorRotation();
+
+			RetVal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, Explosion, myPos, myRot);
+		}
+	}
+	return RetVal;
 }
 
 TObjectPtr<class UAudioComponent> AMG_MissileTest::PlayExplosionSound(USoundCue* Sound)
 {
-	return TObjectPtr<class UAudioComponent>();
+	class UAudioComponent* RetVal = NULL;
+
+	if (Sound)
+	{
+		RetVal = UGameplayStatics::SpawnSoundAttached(Sound, this->GetRootComponent());
+	}
+
+	return RetVal;
 }
 

@@ -43,7 +43,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void DelayLogic(float DeltaTiem);
+	void DelayLogic(float DeltaTime);
 
 	void FindPlayer();
 	void UpdateTarget();
