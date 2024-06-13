@@ -523,6 +523,7 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 	}
 
 	float Percent = CurrentHoveringTime / MaxHoveringTime;
+
 	auto PC = GetController<APlayerController>();
 	if (IsValid(PC))
 	{

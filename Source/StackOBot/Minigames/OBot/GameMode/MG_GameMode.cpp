@@ -48,10 +48,6 @@ void AMG_GameMode::Tick(float Deltatime)
 		}
 	}
 
-	if (MatchState == MatchState::InProgress) //조건을 다르게 해야됨 진행중인 상태에서 overlap이벤트 설정  Matchstate = Inprogress && overlap이벤트 발생시 cooldown으로 
-	{
-		CoolDownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime; // 쿨다운 타임 설정 -> 오버랩이벤트 설정  
-	}
 }
 
 void AMG_GameMode::OnMatchStateSet()
@@ -70,6 +66,12 @@ void AMG_GameMode::OnMatchStateSet()
 		{
 			PlayerCharacter->OnFinishLineReached.AddDynamic(this, &AMG_GameMode::OnPlayerFinishLineReached);
 		}
+	}
+
+	if (MatchState == MatchState::InProgress)
+	{
+		// 시작.
+		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true);
 	}
 }
 
@@ -121,12 +123,64 @@ void AMG_GameMode::HandleMatchHasEnded()
 	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
 }
 
+void AMG_GameMode::UpdatePlayersRank()
+{
+	AGameState* GS = GetGameState<AGameState>();
+	if (!IsValid(GS))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GameState is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
+		return;
+	}
+
+	if (!IsValid(FinishActor))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FinishActor is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
+		return;
+	}
+
+	TArray<TTuple<TObjectPtr<APlayerState>, float>> PlayerStateWithDistance;
+	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
+	{
+		float Distance = PlayerState->GetPawn()->GetSquaredDistanceTo(FinishActor);
+		PlayerStateWithDistance.Add(MakeTuple(PlayerState, Distance));
+	}
+
+	PlayerStateWithDistance.Sort(
+		[](const TTuple<TObjectPtr<APlayerState>, float> A, const TTuple<TObjectPtr<APlayerState>, float> B) 
+		{
+			return A.Value < B.Value;
+		}
+	);
+
+	int i = 1;
+	for (TTuple<TObjectPtr<APlayerState>, float> PSTuple : PlayerStateWithDistance)
+	{
+		auto PS = PSTuple.Key;
+		Cast<AGamePlayerState>(PS)->SetRank(i);
+		i++;
+	}
+
+	// 순위UI업데이트...
+}
+
 
 void AMG_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
+
+	// 결승선 찾아놓기.
+	// 지금은 임시 액터로 대체 해놓자.
+	TArray<AActor*> FinishActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("Finish"), FinishActors);
+	if (FinishActors.Num() > 0)
+	{
+		FinishActor = FinishActors[0];
+
+	}
+
+
 }
 
 void AMG_GameMode::OnPlayerFinishLineReached()
