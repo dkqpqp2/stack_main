@@ -9,6 +9,7 @@
 #include "Minigames/GameMap/GamePlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Actors/Podium.h"
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 
 
 AMG_GameMode::AMG_GameMode()
@@ -81,31 +82,27 @@ void AMG_GameMode::HandleMatchHasEnded()
 	}
 
 	int i = 0;
-	for (TObjectPtr<APlayerState> Player : GS->PlayerArray)
+	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
 	{
 		if (i >= PodiumActor->PlayerLocations.Num())
 		{
 			i = PodiumActor->PlayerLocations.Num() - 1;
 		}
-		Player->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[i]->GetComponentTransform());
-		// 각 폰의 함수 호출...(포디움의 위치정보 전달..., 카메라의 위치정보 또는 포인터 전달...)
-		//Player->GetPlayerController()->SetViewTarget();
-		auto PC = Player->GetPlayerController();
+		// 폰 위치 이동.
+		// 왜 클라이언트와 서버의 위치가 살짝 다르지? (2등위치)
+		PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[i]->GetComponentTransform());		
+
+		auto PC = PlayerState->GetPlayerController();
 		if (IsValid(PC))
 		{
 			// 알아서 PodiumActor안에 있는 카메라 컴포넌트를 찾아서 하는 viewtarget을 바꾸는듯...
 			PC->SetViewTarget(PodiumActor);
+			PlayerState->GetPawn<AMG_CharacterPlayer>()->OnDisableInput();
 		}
 
 		// 각 플레이어의 등수에 맞게 이동시켜야겠다.(TODO)
 		i++;
 	}
-
-
-	// 모든 캐릭터 플레이어를 가져와서
-	//GetGameState<AGameState>()->PlayerArray[0]->GetPawn();
-	
-	// 각각 캐릭터의 (시상식으로 (등수에 맞게) 이동시키고 카메라를 전환시키고, 입력비활성화하는)함수를 호출
 
 	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
 }
