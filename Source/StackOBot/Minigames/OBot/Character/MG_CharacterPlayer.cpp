@@ -187,6 +187,7 @@ void AMG_CharacterPlayer::MulticastStartHover_Implementation()
 	NiagaraEffect->Activate();
 	bIsHovering = true;
 	GetCharacterMovement()->AirControl = 5.f;
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 14.0f);
 }
 
 void AMG_CharacterPlayer::ServerLaunchCharacter_Implementation()
@@ -208,6 +209,8 @@ void AMG_CharacterPlayer::MulticastStopHover_Implementation()
 	NiagaraEffect->Deactivate();
 	bIsHovering = false;
 	GetCharacterMovement()->AirControl = 1.f;
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 12.0f);
+
 }
 
 void AMG_CharacterPlayer::ChangeCharacterControl()
@@ -272,6 +275,16 @@ void AMG_CharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardDirection, MovementVector.X);
 	AddMovementInput(RightDirection, MovementVector.Y);
+
+	if (HasAuthority())
+	{
+		if (GetCharacterMovement()->IsFalling() == false && !bIsHovering && !bCanDash)
+		{
+			GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 0.0f);
+		}
+	}
+
+	
 }
 
 void AMG_CharacterPlayer::ShoulderLook(const FInputActionValue& Value)
@@ -301,6 +314,13 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, MovementVectorSize);
+	if (HasAuthority())
+	{
+		if (GetCharacterMovement()->IsFalling() == false && !bIsHovering && !bCanDash)
+		{
+			GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 0.0f);
+		}
+	}
 }
 
 void AMG_CharacterPlayer::Dash()
@@ -312,7 +332,8 @@ void AMG_CharacterPlayer::Dash()
 			FVector LaunchVector = GetVelocity() * 10.f;
 			LaunchVector.Z = 0.f;
 			LaunchCharacter(LaunchVector, false, false);
-
+			float Random = FMath::RandRange(4, 11);
+			GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), Random);
 			bCanDash = false;
 			// dash timer
 			GetWorldTimerManager().SetTimer(
@@ -439,6 +460,11 @@ void AMG_CharacterPlayer::MulticastAttack_Implementation()
 
 }
 
+bool AMG_CharacterPlayer::IsHitAttack() const
+{
+	return bHitAttack;
+}
+
 // Server에선 호출이안됨, Client에선 자동으로 호출됨
 void AMG_CharacterPlayer::OnRep_CanAttack()
 {
@@ -448,7 +474,7 @@ void AMG_CharacterPlayer::OnRep_CanAttack()
 	}
 	else
 	{
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); 
 	}
 }
 

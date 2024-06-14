@@ -29,6 +29,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	bool IsHovering() const;
+	bool IsHitAttack() const;
+
 	UFUNCTION(Server, Unreliable)
 	void ServerStartHover();
 
@@ -148,6 +150,7 @@ protected:
 private:
 	bool bIsJetpackActive;
 	bool bIsHovering;
+	bool bHitAttack;
 
 	UFUNCTION()
 	void JetPackUseTime(float DeltaTime);
