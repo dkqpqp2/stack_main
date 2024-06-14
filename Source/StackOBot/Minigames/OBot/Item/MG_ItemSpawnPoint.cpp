@@ -16,11 +16,12 @@ AMG_ItemSpawnPoint::AMG_ItemSpawnPoint()
 #if WITH_EDITORONLY_DATA
 	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	Arrow->SetupAttachment(Root);
+	Root->bVisualizeComponent = true;
 #endif
 
 	RootComponent = Root;
 
-	Root->bVisualizeComponent = true;
+
 
 	SpawnBox = nullptr;
 	AccTime = 0.f;
