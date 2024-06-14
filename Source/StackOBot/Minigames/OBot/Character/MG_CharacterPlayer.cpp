@@ -17,6 +17,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
+#include "Components/SceneCaptureComponent2D.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -42,6 +43,17 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	ShieldNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ShieldNiagaraEffect"));
 	ShieldNiagaraEffect->SetupAttachment(GetMesh(), FName("ShieldSocket"));
 	ShieldNiagaraEffect->Deactivate();
+
+	FaceCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("FaceCapture"));
+	FaceCapture->SetupAttachment(GetMesh());
+	FaceCapture->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
+	FaceCapture->CaptureSource = ESceneCaptureSource::SCS_SceneColorSceneDepth;
+
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> FaceTargetRef(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/Character/Animation/RT_PlayerFace.RT_PlayerFace'"));
+	if (FaceTargetRef.Object)
+	{
+		FaceCapture->TextureTarget = FaceTargetRef.Object;
+	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
 	if (JetpackMeshRef.Object)
@@ -112,12 +124,13 @@ void AMG_CharacterPlayer::BeginPlay()
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
+		
 	}
 
+	FaceCapture->ShowOnlyActors.Add(this);
 
 	SetCharacterControl(CurrentCharacterControlType);
-
-
+	
 }
 
 void AMG_CharacterPlayer::Tick(float DeltaTime)
@@ -543,7 +556,7 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 			auto GaugeWidget = HUD->MainHUD;
 			if (IsValid(GaugeWidget))
 			{
-				GaugeWidget->UpdateHoveringProgress(Percent);
+				GaugeWidget->UpdateHoveringProgress(Percent);	
 			}
 		}
 	}
