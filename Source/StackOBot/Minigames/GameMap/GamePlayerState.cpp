@@ -85,17 +85,33 @@ void AGamePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGamePlayerState, CurrentItemName);
+	DOREPLIFETIME(AGamePlayerState, Rank);
+
 }
 
 void AGamePlayerState::OnRep_Rank()
 {
+	UpdateRankUI();
+}
+
+void AGamePlayerState::UpdateRankUI()
+{
 	// 캐릭터 위에 띄우는 순위ui업데이트
+	AMG_CharacterPlayer* Character = GetPawn<AMG_CharacterPlayer>();
+	if (IsValid(Character))
+	{
+		Character->SetPlayerRankWidget(Rank);
+	}
 }
 
 void AGamePlayerState::SetRank(int32 NewRank)
 {
+	if (Rank == NewRank)
+	{
+		return;
+	}
 	Rank = NewRank;
-	// 캐릭터 위에 띄우는 순위ui업데이트
+	UpdateRankUI();
 }
 
 int32 AGamePlayerState::GetRank()

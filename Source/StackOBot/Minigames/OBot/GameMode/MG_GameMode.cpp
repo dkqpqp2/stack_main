@@ -48,6 +48,8 @@ void AMG_GameMode::Tick(float Deltatime)
 		}
 	}
 
+
+
 }
 
 void AMG_GameMode::OnMatchStateSet()
@@ -138,6 +140,7 @@ void AMG_GameMode::UpdatePlayersRank()
 		return;
 	}
 
+
 	TArray<TTuple<TObjectPtr<APlayerState>, float>> PlayerStateWithDistance;
 	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
 	{
@@ -187,6 +190,7 @@ void AMG_GameMode::OnPlayerFinishLineReached()
 {
 	// 플레이어가 결승선에 도달했을 때의 처리를 여기에 추가합니다.
 	// 매치 상태를 쿨다운으로 변경하거나 추가 작업을 수행할 수 있습니다.
-	//SetMatchState(MatchState::Cooldown);
+	//EndMatch();
+	SetMatchState(MatchState::WaitingPostMatch);
 	UE_LOG(LogTemp, Warning, TEXT("CoolDown"));
 }
