@@ -25,7 +25,7 @@ AMG_CharacterBase::AMG_CharacterBase()
     GetCharacterMovement()->MaxWalkSpeed = 500.0f;
     GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
     GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
-
+    GetCharacterMovement()->GravityScale = 1.0f;
     GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -60.0), FRotator(0.0, -90.0, 0.0));
     GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
     GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));

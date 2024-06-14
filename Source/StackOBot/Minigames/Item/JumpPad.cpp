@@ -4,6 +4,7 @@
 #include "JumpPad.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 #include "GameFramework/Character.h"
 // Sets default values
 AJumpPad::AJumpPad()

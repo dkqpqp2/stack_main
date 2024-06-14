@@ -20,6 +20,7 @@
 #include "Minigames/Item/FinishLineBox.h"
 #include "Components/WidgetComponent.h"
 #include "Minigames/OBot/UI/PlayerRankWidget.h"
+#include "Minigames/Item/RollingStone.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -308,7 +309,7 @@ void AMG_CharacterPlayer::ShoulderLook(const FInputActionValue& Value)
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	AddControllerYawInput(LookAxisVector.X);
-	AddControllerPitchInput(LookAxisVector.Y);
+	AddControllerPitchInput(-LookAxisVector.Y);
 }
 
 void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
@@ -686,4 +687,14 @@ void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherA
 		OnFinishLineReached.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달 
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Overlapped with AFinishLIneBox"));
 	}
+
+	else if (OtherActor->IsA<ARollingStone>())
+	{
+		ARollingStone* Stone = Cast<ARollingStone>(OtherActor);
+		float StoneBounceForce = Stone->BounceForce;
+		FVector LaunchDirection = GetActorLocation() - OtherActor->GetActorLocation();
+		LaunchDirection.Normalize();
+		LaunchCharacter(LaunchDirection * StoneBounceForce, true, true);
+	}
+	
 }

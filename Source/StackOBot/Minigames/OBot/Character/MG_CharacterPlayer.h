@@ -151,6 +151,7 @@ protected:
 	TSubclassOf<UUserWidget> MainHUDClass;
 	class UMainHUD* MainHUD;
 
+public:
 	void StartJump();
 	virtual void Jump() override;
 	virtual void StopJumping() override;

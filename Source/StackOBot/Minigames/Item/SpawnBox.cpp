@@ -40,11 +40,14 @@ void ASpawnBox::OnOverlapbegin(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	//다른 물체가 닿으면 start 위치로 location 설정
 	ACharacter* PlayerCharacter = Cast<ACharacter>(OtherActor);
 	UE_LOG(LogTemp, Display, TEXT("overlap"));
-	FVector DeathLocation = PlayerCharacter->GetActorLocation();
-	if(DeathLocation.X < -12602)
-	    PlayerCharacter->SetActorLocation(PlayerStart->GetActorLocation());
-	else
-		PlayerCharacter->SetActorLocation(HalfSpawn);
+	if (PlayerCharacter)
+	{
+		FVector DeathLocation = PlayerCharacter->GetActorLocation();
+		if (DeathLocation.X < -12602)
+			PlayerCharacter->SetActorLocation(PlayerStart->GetActorLocation());
+		else
+			PlayerCharacter->SetActorLocation(HalfSpawn);
+	}
 	  	
 }
 
