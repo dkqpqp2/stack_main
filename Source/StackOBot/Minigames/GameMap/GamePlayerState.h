@@ -45,6 +45,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Rank();
+
+	void UpdateRankUI();
 public:
 	void SetRank(int32 NewRank);
 	int32 GetRank();

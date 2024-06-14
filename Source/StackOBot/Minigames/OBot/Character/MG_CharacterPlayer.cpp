@@ -18,6 +18,8 @@
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
 #include "Minigames/Item/FinishLineBox.h"
+#include "Components/WidgetComponent.h"
+#include "Minigames/OBot/UI/PlayerRankWidget.h"
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -43,6 +45,14 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	ShieldNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ShieldNiagaraEffect"));
 	ShieldNiagaraEffect->SetupAttachment(GetMesh(), FName("ShieldSocket"));
 	ShieldNiagaraEffect->Deactivate();
+
+	PlayerRankWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerRankWidgetComponent"));
+	PlayerRankWidgetComponent->SetupAttachment(RootComponent);
+	//PlayerRankWidgetComponent->SetTwoSided(true);
+	if (IsValid(PlayerRankWidgetClass))
+	{
+		PlayerRankWidgetComponent->SetWidgetClass(PlayerRankWidgetClass->StaticClass());
+	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
 	if (JetpackMeshRef.Object)
@@ -540,9 +550,23 @@ void AMG_CharacterPlayer::JetPackUseTime(float DeltaTime)
 }
 
 
+void AMG_CharacterPlayer::RotateWidget()
+{
+	GetWorld()->GetFirstPlayerController();
+	
+}
+
+void AMG_CharacterPlayer::SetPlayerRankWidget(int32 NewRank)
+{
+	UPlayerRankWidget* Widget = Cast<UPlayerRankWidget>(PlayerRankWidgetComponent->GetWidget());
+	if (IsValid(Widget))
+	{
+		Widget->SetPlayerRankTextBlock(NewRank);
+	}
+}
+
 
 // ------------ Item Functions. -----------
-
 void AMG_CharacterPlayer::SetCurrentWalkSpeed(float NewCurrentWalkSpeed)
 {
 	if (HasAuthority())
@@ -657,6 +681,9 @@ bool AMG_CharacterPlayer::GetIsShield()
 
 void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 {
-	if (OtherActor->IsA<AFinishLineBox>())
+	if (OtherActor->IsA<AFinishLineBox>() && HasAuthority())
+	{
 		OnFinishLineReached.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달 
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Overlapped with AFinishLIneBox"));
+	}
 }

@@ -9,7 +9,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishLineReached); //데디케이트 브로드캐스트 가능한 함수 정의
 
 struct FInputActionValue;
-
+class UPlayerRankWidget;
+class UWidgetComponent;
 /**
  * 
  */
@@ -159,6 +160,19 @@ private:
 
 	UFUNCTION()
 	void JetPackUseTime(float DeltaTime);
+
+
+// -------------playerrank widget---------
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerRankWidget> PlayerRankWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UWidgetComponent> PlayerRankWidgetComponent;
+
+	void RotateWidget();
+public:
+	void SetPlayerRankWidget(int32 NewRank);
 
 
 // ---------- Item Functions ------------
