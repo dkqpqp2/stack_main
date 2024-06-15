@@ -31,6 +31,9 @@ public:
 	bool IsHovering() const;
 	bool IsHitAttack() const;
 
+	//UFUNCTION(NetMulticast, Unreliable)
+	//void MulticastSetCaptureSettings();
+
 	UFUNCTION(Server, Unreliable)
 	void ServerStartHover();
 
@@ -71,6 +74,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<class USceneCaptureComponent2D> FaceCapture;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UTextureRenderTarget2D> RenderTarget;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))

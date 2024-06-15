@@ -59,7 +59,7 @@ void AMG_MissileTest::BeginPlay()
 
 		this->SetActorEnableCollision(false);
 	}
-	
+	FindPlayer();
 }
 
 
