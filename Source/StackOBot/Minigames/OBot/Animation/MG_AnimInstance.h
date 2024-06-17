@@ -48,5 +48,8 @@ protected:
 	uint8 bIsHovering : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 bIsHitAttack : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	float JumpingThreshould;
 };

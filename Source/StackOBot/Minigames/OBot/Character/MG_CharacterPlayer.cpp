@@ -17,10 +17,15 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
+<<<<<<< HEAD
 #include "Minigames/Item/FinishLineBox.h"
 #include "Components/WidgetComponent.h"
 #include "Minigames/OBot/UI/PlayerRankWidget.h"
 #include "Minigames/Item/RollingStone.h"
+=======
+#include "Components/SceneCaptureComponent2D.h"
+#include "EngineUtils.h"
+>>>>>>> Projectile/Missile
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -53,6 +58,16 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 	if (IsValid(PlayerRankWidgetClass))
 	{
 		PlayerRankWidgetComponent->SetWidgetClass(PlayerRankWidgetClass->StaticClass());
+	}
+	FaceCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("FaceCapture"));
+	FaceCapture->SetupAttachment(GetMesh());
+	FaceCapture->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
+	FaceCapture->CaptureSource = ESceneCaptureSource::SCS_SceneColorSceneDepth;
+
+	static ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> FaceTargetRef(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/Character/Animation/RT_PlayerFace.RT_PlayerFace'"));
+	if (FaceTargetRef.Object)
+	{
+		FaceCapture->TextureTarget = FaceTargetRef.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> JetpackMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/StackOBot/Characters/Backpack/Mesh/SKM_Backpack.SKM_Backpack'"));
@@ -118,20 +133,21 @@ AMG_CharacterPlayer::AMG_CharacterPlayer()
 
 void AMG_CharacterPlayer::BeginPlay()
 {
-
 	Super::BeginPlay();
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
-	}
 
+	}
 
 	SetCharacterControl(CurrentCharacterControlType);
 	//충돌이벤트 바인딩
 	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
 	//OnActorHit.AddDynamic(this, &AMG_CharacterPlayer::OnHit);
 
+	
+	FaceCapture->ShowOnlyActors.Add(this);
 }
 
 void AMG_CharacterPlayer::Tick(float DeltaTime)
@@ -201,6 +217,7 @@ void AMG_CharacterPlayer::MulticastStartHover_Implementation()
 	NiagaraEffect->Activate();
 	bIsHovering = true;
 	GetCharacterMovement()->AirControl = 5.f;
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 13.0f);
 }
 
 void AMG_CharacterPlayer::ServerLaunchCharacter_Implementation()
@@ -222,6 +239,8 @@ void AMG_CharacterPlayer::MulticastStopHover_Implementation()
 	NiagaraEffect->Deactivate();
 	bIsHovering = false;
 	GetCharacterMovement()->AirControl = 1.f;
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 0.0f);
+
 }
 
 void AMG_CharacterPlayer::ChangeCharacterControl()
@@ -303,6 +322,7 @@ void AMG_CharacterPlayer::ShoulderMove(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardDirection, MovementVector.X);
 	AddMovementInput(RightDirection, MovementVector.Y);
+
 }
 
 void AMG_CharacterPlayer::ShoulderLook(const FInputActionValue& Value)
@@ -332,6 +352,7 @@ void AMG_CharacterPlayer::QuaterMove(const FInputActionValue& Value)
 	FVector MoveDirection = FVector(MovementVector.X, MovementVector.Y, 0.0f);
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, MovementVectorSize);
+
 }
 
 void AMG_CharacterPlayer::Dash()
@@ -343,7 +364,6 @@ void AMG_CharacterPlayer::Dash()
 			FVector LaunchVector = GetVelocity() * 10.f;
 			LaunchVector.Z = 0.f;
 			LaunchCharacter(LaunchVector, false, false);
-
 			bCanDash = false;
 			// dash timer
 			GetWorldTimerManager().SetTimer(
@@ -438,15 +458,11 @@ bool AMG_CharacterPlayer::ServerAttack_Validate()
 
 void AMG_CharacterPlayer::ServerAttack_Implementation()
 {
-	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
-
 	MulticastAttack();
 }
 
 void AMG_CharacterPlayer::MulticastAttack_Implementation()
 {
-	MG_LOG(LogMiniGame, Log, TEXT("%s"), TEXT("Begin"));
-
 	if (HasAuthority())
 	{
 		bCanAttack = false;
@@ -460,11 +476,45 @@ void AMG_CharacterPlayer::MulticastAttack_Implementation()
 			}
 		), AttackTime, false, -1.0f);
 	}
-
 	// Animation은 Server와 Client 모두 보여야함
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(ActionMontage);
 }
+
+bool AMG_CharacterPlayer::IsHitAttack() const
+{
+	return bHitAttack;
+}
+
+//void AMG_CharacterPlayer::MulticastSetCaptureSettings_Implementation()
+//{
+//		FaceCapture->ShowOnlyActors.Add(this);
+//
+//		for (TActorIterator<AMG_CharacterPlayer> It(GetWorld()); It; ++It)
+//		{
+//			AMG_CharacterPlayer* OtherPlayer = *It;
+//			if (OtherPlayer && OtherPlayer != this)
+//			{
+//				FaceCapture->HideActorComponents(OtherPlayer);
+//			}
+//		}
+//
+//		FaceCapture->TextureTarget = RenderTarget;
+//
+//		if (IsLocallyControlled())
+//		{
+//			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+//			if (PlayerController)
+//			{
+//				AGameHUD* GameHUD = Cast<AGameHUD>(PlayerController->GetHUD());
+//				if (GameHUD)
+//				{
+//					GameHUD->MainHUD->UpdateCaptureTexture(RenderTarget);
+//				}
+//			}
+//		}
+//}
+
 
 // Server에선 호출이안됨, Client에선 자동으로 호출됨
 void AMG_CharacterPlayer::OnRep_CanAttack()
@@ -475,7 +525,7 @@ void AMG_CharacterPlayer::OnRep_CanAttack()
 	}
 	else
 	{
-		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking); 
 	}
 }
 
