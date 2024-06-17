@@ -34,5 +34,7 @@ void UMG_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bIsFalling = Movement->IsFalling();
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
 		bIsHovering = Owner->IsHovering();
+		bIsHitAttack = Owner->IsHitAttack();
 	}
+
 }
