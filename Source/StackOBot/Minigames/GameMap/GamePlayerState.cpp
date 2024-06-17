@@ -10,6 +10,7 @@
 #include "GameHUD.h"
 #include "../../MainWidget.h"
 #include "UI/ItemSlotWidget.h"
+#include "Minigames/OBot/Projectile/MG_MissileTest.h"
 
 void AGamePlayerState::BeginPlay()
 {
@@ -217,6 +218,7 @@ void AGamePlayerState::UseItem()
 			break;
 		case EItem::E_MISSILE:
 			// use missile item
+			UseMissile();
 			break;
 		default:
 			break;
@@ -276,6 +278,35 @@ void AGamePlayerState::UseShield()
 	// 플레이어의 쉴드 함수 ON!
 	Player->OnShield();
 	
+
+}
+
+void AGamePlayerState::UseMissile()
+{
+	if (Rank == 1)
+	{
+		return;
+	}
+	int32 FindRank = Rank - 1;
+	AActor* Actor = GetWorld()->SpawnActor(AMG_MissileTest::StaticClass(), &GetPawn()->GetActorTransform());
+	AMG_MissileTest* Missile = Cast< AMG_MissileTest>(Actor);
+
+	auto Players = GetWorld()->GetGameState()->PlayerArray;
+
+	for (auto Player : Players)
+	{
+		AGamePlayerState* PS = Cast<AGamePlayerState>(Player);
+		if (IsValid(PS))
+		{
+			if (PS->GetRank() == FindRank)
+			{
+				Missile->FindPlayer(PS->GetPawn<AMG_CharacterBase>());
+				
+				break;
+			}
+		}
+
+	}
 
 }
 
