@@ -17,15 +17,15 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
-<<<<<<< HEAD
+
 #include "Minigames/Item/FinishLineBox.h"
 #include "Components/WidgetComponent.h"
 #include "Minigames/OBot/UI/PlayerRankWidget.h"
 #include "Minigames/Item/RollingStone.h"
-=======
+
 #include "Components/SceneCaptureComponent2D.h"
 #include "EngineUtils.h"
->>>>>>> Projectile/Missile
+
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
