@@ -17,15 +17,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
-<<<<<<< HEAD
 #include "Minigames/Item/FinishLineBox.h"
 #include "Components/WidgetComponent.h"
 #include "Minigames/OBot/UI/PlayerRankWidget.h"
 #include "Minigames/Item/RollingStone.h"
-=======
 #include "Components/SceneCaptureComponent2D.h"
 #include "EngineUtils.h"
->>>>>>> Projectile/Missile
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -144,7 +141,7 @@ void AMG_CharacterPlayer::BeginPlay()
 	SetCharacterControl(CurrentCharacterControlType);
 	//충돌이벤트 바인딩
 	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
-	//OnActorHit.AddDynamic(this, &AMG_CharacterPlayer::OnHit);
+	//OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 
 	
 	FaceCapture->ShowOnlyActors.Add(this);
@@ -739,27 +736,14 @@ void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherA
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Overlapped with AFinishLIneBox"));
 	}
 
-/*	else if (OtherActor->IsA<ARollingStone>())
+	/*else if (OtherActor->IsA<ARollingStone>())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Overlapped with Ball"));
-		ARollingStone* Stone = Cast<ARollingStone>(OtherActor);
-		float StoneBounceForce = Stone->BounceForce;
-		FVector LaunchDirection = GetActorLocation() - OtherActor->GetActorLocation() ;
-		LaunchDirection.Normalize();
-		LaunchCharacter(LaunchDirection * StoneBounceForce, true, true);
-	}
-	*/
-}
-
-void AMG_CharacterPlayer::OnHit(AActor* HitActor, AActor* OtherActor)
-{
-	if (OtherActor->IsA<ARollingStone>())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Hit with Ball"));
 		ARollingStone* Stone = Cast<ARollingStone>(OtherActor);
 		float StoneBounceForce = Stone->BounceForce;
 		FVector LaunchDirection = GetActorLocation() - OtherActor->GetActorLocation();
 		LaunchDirection.Normalize();
 		LaunchCharacter(LaunchDirection * StoneBounceForce, true, true);
 	}
+	*/
 }
