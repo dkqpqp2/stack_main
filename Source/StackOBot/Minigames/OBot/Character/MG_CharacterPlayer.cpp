@@ -130,7 +130,7 @@ void AMG_CharacterPlayer::BeginPlay()
 	SetCharacterControl(CurrentCharacterControlType);
 	//충돌이벤트 바인딩
 	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
-	OnActorHit.AddDynamic(this, &AMG_CharacterPlayer::OnHit);
+	//OnActorHit.AddDynamic(this, &AMG_CharacterPlayer::OnHit);
 
 }
 
