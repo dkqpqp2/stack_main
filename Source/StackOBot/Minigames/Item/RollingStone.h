@@ -35,5 +35,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Character Settings")
 	float BounceForce = 1000.0f;
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+
 
 };

@@ -252,6 +252,5 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 
-	UFUNCTION()
-	void OnHit(AActor* HitActor, AActor* OtherActor);
+
 };
