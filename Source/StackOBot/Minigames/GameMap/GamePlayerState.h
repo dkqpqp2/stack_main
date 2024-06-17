@@ -86,4 +86,5 @@ protected:
 protected:
 	void UseBarrier();
 	void UseShield();
+	void UseMissile();
 };

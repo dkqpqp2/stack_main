@@ -17,12 +17,14 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Minigames/OBot/UI/MainHUD.h"
 #include "Minigames/GameMap/GameHUD.h"
+
 #include "Minigames/Item/FinishLineBox.h"
 #include "Components/WidgetComponent.h"
 #include "Minigames/OBot/UI/PlayerRankWidget.h"
 #include "Minigames/Item/RollingStone.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "EngineUtils.h"
+
 
 AMG_CharacterPlayer::AMG_CharacterPlayer()
 {
@@ -141,7 +143,6 @@ void AMG_CharacterPlayer::BeginPlay()
 	SetCharacterControl(CurrentCharacterControlType);
 	//충돌이벤트 바인딩
 	OnActorBeginOverlap.AddDynamic(this, &AMG_CharacterPlayer::OnOverlapBegin);
-	//OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 
 	
 	FaceCapture->ShowOnlyActors.Add(this);

@@ -46,6 +46,9 @@ AMG_MissileTest::AMG_MissileTest()
 	LifeTimeCountDown = 15.f;
 	CanBeDestroyed = false;
 	PlayerInWorld = NULL;
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -59,34 +62,37 @@ void AMG_MissileTest::BeginPlay()
 
 		this->SetActorEnableCollision(false);
 	}
-	FindPlayer();
+	//FindPlayer();
 }
 
 
-void AMG_MissileTest::FindPlayer()
+void AMG_MissileTest::FindPlayer(AMG_CharacterBase* TargetActor)
 {
-	class UWorld* const World = GetWorld();
+	//class UWorld* const World = GetWorld();
 
-	if (World)
-	{
-		for (TActorIterator<AMG_CharacterPlayer> ObstacleItr(World); ObstacleItr; ++ObstacleItr)
-		{
-			FName PlayerTagName = FName(TEXT("Player"));
-			class AMG_CharacterPlayer* FoundPlayer = *ObstacleItr;
+	//if (World)
+	//{
+	//	for (TActorIterator<AMG_CharacterPlayer> ObstacleItr(World); ObstacleItr; ++ObstacleItr)
+	//	{
+	//		FName PlayerTagName = FName(TEXT("Player"));
+	//		class AMG_CharacterPlayer* FoundPlayer = *ObstacleItr;
 
-			if (FoundPlayer != nullptr)
-			{
-				if (FoundPlayer->ActorHasTag(PlayerTagName))
-				{
-					if (PlayerInWorld != FoundPlayer)
-					{
-						PlayerInWorld = FoundPlayer;
-					}
+	//		if (FoundPlayer != nullptr)
+	//		{
+	//			if (FoundPlayer->ActorHasTag(PlayerTagName))
+	//			{
+	//				if (PlayerInWorld != FoundPlayer)
+	//				{
+	//					PlayerInWorld = FoundPlayer;
+	//				}
 
-				}
-			}
-		}
-	}
+	//			}
+	//		}
+	//	}
+	//}
+
+	PlayerInWorld = TargetActor;
+	Target = PlayerInWorld;
 }
 
 void AMG_MissileTest::UpdateTarget()
@@ -103,7 +109,7 @@ void AMG_MissileTest::UpdateTarget()
 
 				FRotator RotVal = MissileMesh->GetComponentRotation();
 				RotVal.Roll = 0.f;
-				RotVal.Pitch = -90.f;
+				RotVal.Pitch = 0.f;
 				RotVal.Yaw = 0.f;
 				MissileMesh->SetRelativeRotation(RotVal);
 			}

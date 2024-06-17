@@ -45,7 +45,7 @@ public:
 
 	void DelayLogic(float DeltaTime);
 
-	void FindPlayer();
+	void FindPlayer(AMG_CharacterBase* TargetActor);
 	void UpdateTarget();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision)
