@@ -3,6 +3,7 @@
 
 #include "RollingStone.h"
 #include "Components/BoxComponent.h"
+#include "Minigames/Obot/Character/MG_CharacterPlayer.h"
 #include "GameFramework/Character.h"
 
 // Sets default values
@@ -24,6 +25,8 @@ ARollingStone::ARollingStone()
 void ARollingStone::BeginPlay()
 {
 	Super::BeginPlay();
+
+	StoneMesh->OnComponentHit.AddDynamic(this, &ARollingStone::OnHit);
 	
 }
 
@@ -42,5 +45,25 @@ void ARollingStone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARollingStone::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Display, TEXT("HIT"));
+	AMG_CharacterPlayer* Player = Cast<AMG_CharacterPlayer>(OtherActor);
+	if (OtherActor && OtherActor != this)
+	{
+		// Apply impulse to the OtherActor
+		UPrimitiveComponent* OtherPrimitive = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
+		if (OtherPrimitive)
+		{
+			//ARollingStone* Stone = Cast<ARollingStone>(HitComp);
+			float StoneBounceForce = BounceForce;
+			FVector LaunchDirection = OtherActor->GetActorLocation() - GetActorLocation();
+			LaunchDirection.Normalize();
+			Player -> LaunchCharacter(LaunchDirection * StoneBounceForce, true, true);
+			Player -> GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 12.0f);
+		}
+	}
 }
 
