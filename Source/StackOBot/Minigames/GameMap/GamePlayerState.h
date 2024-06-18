@@ -40,7 +40,7 @@ public:
 
 // ---------- 순위 ------------
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_Rank, VisibleAnywhere)
+	UPROPERTY(ReplicatedUsing = OnRep_Rank, BlueprintReadWrite)
 	int32 Rank;
 
 	UFUNCTION()

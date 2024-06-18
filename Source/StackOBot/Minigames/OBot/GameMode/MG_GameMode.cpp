@@ -108,7 +108,13 @@ void AMG_GameMode::HandleMatchHasEnded()
 		}
 		// 폰 위치 이동.
 		// 왜 클라이언트와 서버의 위치가 살짝 다르지? (2등위치)
-		PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[i]->GetComponentTransform());		
+		auto GamePS = Cast<AGamePlayerState>(PlayerState);
+		if (!IsValid(GamePS))
+		{
+			return;
+		}
+		int32 RankIndex = FMath::Clamp( GamePS->GetRank() - 1, 0, PodiumActor->PlayerLocations.Num() - 1);
+		PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[RankIndex]->GetComponentTransform());		
 
 		auto PC = PlayerState->GetPlayerController();
 		if (IsValid(PC))
@@ -182,7 +188,6 @@ void AMG_GameMode::BeginPlay()
 		FinishActor = FinishActors[0];
 
 	}
-
 
 }
 
