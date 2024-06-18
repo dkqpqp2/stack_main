@@ -11,6 +11,7 @@
 #include "../Actors/Podium.h"
 #include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 #include "Minigames/Item/FinishLineBox.h"
+#include "Minigames/OBot/PlayerState/MG_PlayerState.h"
 
 namespace MatchState
 {
@@ -159,7 +160,7 @@ void AMG_GameMode::UpdatePlayersRank()
 	for (TTuple<TObjectPtr<APlayerState>, float> PSTuple : PlayerStateWithDistance)
 	{
 		auto PS = PSTuple.Key;
-		Cast<AGamePlayerState>(PS)->SetRank(i);
+		Cast<AMG_PlayerState>(PS)->SetRank(i);
 		i++;
 	}
 

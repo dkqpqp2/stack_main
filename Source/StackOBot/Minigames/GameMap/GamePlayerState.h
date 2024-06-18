@@ -36,55 +36,5 @@ public:
 	// Call when OnPawnSet Done. Since TeamColor is not replicated, Do Initial Paint.
 	UFUNCTION()
 	void SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-// ---------- 순위 ------------
-protected:
-	UPROPERTY(ReplicatedUsing = OnRep_Rank, VisibleAnywhere)
-	int32 Rank;
-
-	UFUNCTION()
-	void OnRep_Rank();
-
-	void UpdateRankUI();
-public:
-	void SetRank(int32 NewRank);
-	int32 GetRank();
-
-
-// --------- ITEM ----------
-protected:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UDataTable> ItemDataTable;
-protected:
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentItem)
-	FName CurrentItemName;
-
-
-	FItemStruct* CurrentItemStruct = nullptr;
-
-
-	UFUNCTION()
-	void OnRep_CurrentItem();
-protected:
-	void SetCurrentItem(FName NewItemName);
-	void UpdateItemSlotUI();
-
-public:
-	void SetCurrentItemToRandomItem();
-
-	UFUNCTION(BlueprintCallable)
-	void UseItem();
-
-protected:
-	UFUNCTION(Server, Reliable)
-	void SV_UseItem();
-
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class ASlowBarrier> SlowBarrierBPClass;
-protected:
-	void UseBarrier();
-	void UseShield();
-	void UseMissile();
 };
