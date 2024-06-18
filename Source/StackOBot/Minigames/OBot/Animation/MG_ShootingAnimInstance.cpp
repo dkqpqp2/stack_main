@@ -33,5 +33,20 @@ void UMG_ShootingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bIsFalling = Movement->IsFalling();
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
 		bIsCrouching = Movement->IsCrouching();
+
+		FVector VelocityUnitVector = Velocity.GetSafeNormal2D();
+		FVector ForwardVector = Owner->GetActorForwardVector();
+		Owner->GetActorUpVector().Z;
+		float Angle = FMath::Acos(FVector::DotProduct(VelocityUnitVector, ForwardVector));
+		Angle *= (180.f / PI);
+		if (FVector::CrossProduct(VelocityUnitVector, ForwardVector).Z * Owner->GetActorUpVector().Z >= 0)
+		{
+			Dir = -Angle;
+		}
+		else
+		{
+			Dir = Angle;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Dir %f"), Dir));
 	}
 }
