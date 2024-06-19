@@ -54,13 +54,6 @@ void AMG_ShootingCharacterPlayer::Tick(float DeltaTime)
 
 }
 
-<<<<<<< HEAD
-void AMG_ShootingCharacterPlayer::SetHudCrossHairs(float Deltatime)
-{
-}
-=======
->>>>>>> 8f5b5940aab73a4ad9a71521e37d69836f25e1e1
-
 
 void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
