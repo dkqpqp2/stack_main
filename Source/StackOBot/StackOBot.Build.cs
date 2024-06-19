@@ -22,7 +22,8 @@ public class StackOBot : ModuleRules
 			"EnhancedInput",
 			"Niagara",
 			"NavigationSystem",
-			"AIModule"
+			"AIModule",
+			"GamePlayTasks"
 
         });
 

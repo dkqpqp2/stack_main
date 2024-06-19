@@ -34,7 +34,18 @@ void AMG_EnemyBase::BeginPlay()
 void AMG_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+}
 
+void AMG_EnemyBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!IsPlayerControlled())
+	{
+		CurrentMonsterType = EMonsterType::Goblin;
+		GetCharacterMovement()->MaxWalkSpeed = 230.0f;
+	}
 }
 
 

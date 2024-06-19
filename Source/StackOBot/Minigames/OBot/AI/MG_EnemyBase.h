@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "MG_EnemyBase.generated.h"
 
+enum class EMonsterType
+{
+	Goblin,
+	Ghoul,
+	Skeleton,
+	Zombie,
+	Lich
+};
+
 UCLASS()
 class STACKOBOT_API AMG_EnemyBase : public ACharacter
 {
@@ -17,8 +26,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	EMonsterType CurrentMonsterType;
 
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void PossessedBy(AController* NewController) override;
 };

@@ -17,12 +17,21 @@ class STACKOBOT_API AMG_NPCController : public AAIController
 public:
 	AMG_NPCController();
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void OnUnPossess() override;
+	//virtual void OnUnPossess() override;
 
+	static const FName HomePosKey;
+	static const FName PatrolPosKey;
+	static const FName TargetKey;
 private:
-	void OnRepeatTimer();
+	/*void OnRepeatTimer();
 
 	FTimerHandle RepeatTimerHandle;
-	float RepeatInterval;
+	float RepeatInterval;*/
+
+	UPROPERTY()
+	TObjectPtr<class UBehaviorTree> BTAsset;
+
+	UPROPERTY()
+	TObjectPtr<class UBlackboardData> BBAsset;
 	
 };
