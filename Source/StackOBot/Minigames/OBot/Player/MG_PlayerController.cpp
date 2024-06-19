@@ -21,7 +21,7 @@ void AMG_PlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetHUDTime();
+	SetHUDTime(DeltaTime);
 	CheckTimeSync(DeltaTime);
 	//PollInit();
 }
@@ -50,6 +50,7 @@ void AMG_PlayerController::ReceivedPlayer()
 
 void AMG_PlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
+	//게임 진행중 시간 실시간 체크 
 	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
 	bool bHUDValid = GameHUD &&
 		GameHUD->MainWidget &&
@@ -66,12 +67,18 @@ void AMG_PlayerController::SetHUDMatchCountdown(float CountdownTime)
 
 void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 {
+	//게임 시작전 announcement
 	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
 	bool bHUDValid = GameHUD &&
 		GameHUD->Announcement &&
 		GameHUD->Announcement->WarmUpTime;
 	if (bHUDValid)
 	{
+		if (CountDownTime < 0.f)
+		{
+			GameHUD->Announcement->WarmUpTime->SetText(FText());
+			return;
+		}
 		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
 		int32 Seconds = CountDownTime - Minutes * 60;
 
@@ -80,19 +87,32 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 	}
 }
 
-void AMG_PlayerController::SetHUDTime()
+void AMG_PlayerController::SetHUDTime(float DeltaTime)
 {
+	//실시간 시간 세팅 
+	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
+	float GetTimeSeconds = GetWorld()->GetTimeSeconds();
 	float TimeLeft = 0.f;
+	float RunTime = GameMode->ServerTimeAtCoolDown;
 	if (MatchState == MatchState::WaitingToStart)
-		TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+		TimeLeft = WarmupTime - GetServerTime();
 	else if (MatchState == MatchState::InProgress)
-		TimeLeft = GetServerTime() - WarmupTime + LevelStartingTime;
-	
+		TimeLeft = GetServerTime() - WarmupTime;
+	else if (MatchState == MatchState::CoolDown && GameMode->bCoolDown == true) {
+		TimeLeft = CoolDownTime +  RunTime - GetServerTime();
+		/*TimeSinceLastLog += DeltaTime;
+		if (TimeSinceLastLog >= 1.0f)
+		{
+			CoolDownTime -= DecreaseTime;
+			TimeSinceLastLog = 0.0f;
+		}
+		*/
+	}
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountDown != SecondsLeft)
 	{
 		//SetHUDMatchCountdown(GetServerTime());
-		if (MatchState == MatchState::WaitingToStart)
+		if (MatchState == MatchState::WaitingToStart or MatchState == MatchState::CoolDown)
 		{
 			SetHUDAnnouncementCountDown(TimeLeft);
 		}
@@ -106,6 +126,7 @@ void AMG_PlayerController::SetHUDTime()
 
 void AMG_PlayerController::PollInit()
 {
+	//hud 실시간 갱신 
 	if (MainWidget == nullptr)
 	{
 		if (GameHUD && GameHUD->MainWidget)
@@ -150,6 +171,10 @@ void AMG_PlayerController::OnMatchStateSet(FName State)
 	{
 		HandleMatchHasStarted();
 	}
+	if (MatchState == MatchState::CoolDown)
+	{
+		HandleCoolDown();
+	}
 
 }
 //On_Rep 버그 해결 -> 멀티 함수 까지 매개변수를 가져올 필요는 x
@@ -176,6 +201,24 @@ void AMG_PlayerController::HandleMatchHasStarted()
 	}
 }
 
+void AMG_PlayerController::HandleCoolDown()
+{
+	//cooldown상태면 -> ui 변경 
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	if (GameHUD)
+	{
+		GameHUD->MainWidget->RemoveFromParent(); //굳이 제거 할 필요 있나 ?
+		if (GameHUD->Announcement && GameHUD->Announcement->AnnouncementText && GameHUD->Announcement->InfoText)
+		{
+			GameHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
+			FString AnnouncementText("Hurry up!");
+			GameHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
+			GameHUD->Announcement->InfoText->SetText(FText::FromString(""));
+		}
+	}
+}
+
+
 void AMG_PlayerController::ServerCheckMatchState_Implementation()
 {
 	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
@@ -183,12 +226,13 @@ void AMG_PlayerController::ServerCheckMatchState_Implementation()
 	{
 			WarmupTime = GameMode->WarmupTime;
 			LevelStartingTime = GameMode->LevelStartingTime;
+			CoolDownTime = GameMode->CoolDownTime;
 			MatchState = GameMode->GetMatchState();
-			ClientJoinMidgame(MatchState, WarmupTime, LevelStartingTime);
+			ClientJoinMidgame(MatchState, WarmupTime, CoolDownTime,LevelStartingTime);
 	}
 }
 
-void AMG_PlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float StartingTime)
+void AMG_PlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float CoolDown, float StartingTime)
 {
 	WarmupTime = Warmup;
 	LevelStartingTime = StartingTime;
@@ -199,3 +243,4 @@ void AMG_PlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, 
 		GameHUD->AddAnnouncement();
 	}
 }
+

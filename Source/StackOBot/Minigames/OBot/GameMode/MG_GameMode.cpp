@@ -15,7 +15,7 @@
 
 namespace MatchState
 {
-	const FName Cooldown = FName("CoolDown");
+	const FName CoolDown = FName("CoolDown"); // 카운트다운
 }
 
 AMG_GameMode::AMG_GameMode()
@@ -42,14 +42,31 @@ void AMG_GameMode::Tick(float Deltatime)
 
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		CountDownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		float GetTimeSeconds = GetWorld()->GetTimeSeconds();
+		CountDownTime = WarmupTime - GetTimeSeconds;
 		if (CountDownTime <= 0.f)
 		{
 			StartMatch();
 		}
 	}
-
-
+	else if (MatchState == MatchState::CoolDown)
+	{
+		if (bCoolDown == false)
+		{
+			float GetTimeSeconds = GetWorld()->GetTimeSeconds();
+			// 한 번만 저장하도록 플래그를 사용하여 체크
+			ServerTimeAtCoolDown = GetTimeSeconds;
+			bCoolDown = true; // 플래그 설정
+		}
+		if(bCoolDown == true)
+		CountDownTime = CoolDownTime + ServerTimeAtCoolDown/*게임진행시간*/ - GetWorld()->GetTimeSeconds();
+		if (CountDownTime <= 0.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("post"));
+			SetMatchState(MatchState::WaitingPostMatch);
+		}
+	}
+	//결승전에 도착하는건 broadcast로 처리 할 것
 
 }
 
@@ -192,6 +209,6 @@ void AMG_GameMode::OnPlayerFinishLineReached()
 	// 플레이어가 결승선에 도달했을 때의 처리를 여기에 추가합니다.
 	// 매치 상태를 쿨다운으로 변경하거나 추가 작업을 수행할 수 있습니다.
 	//EndMatch();
-	SetMatchState(MatchState::WaitingPostMatch);
+	SetMatchState(MatchState::CoolDown);//여기서 HasMatchEnded -> 쿨타운 으로 바꾼다음에 끝나면 postmatch로 해야함 
 	UE_LOG(LogTemp, Warning, TEXT("CoolDown"));
 }

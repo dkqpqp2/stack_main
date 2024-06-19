@@ -11,7 +11,7 @@
 
 namespace MatchState
 {
-	extern UMG_API const FName CoolDown; // begin coolTimer
+	extern STACKOBOT_API const FName CoolDown; // begin coolTimer
 }
 /**
  * 
@@ -26,14 +26,17 @@ public:
 	virtual void Tick(float Deltatime) override; // 시간tick별 재야 하니까
 
 	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime = 1.f;
-	float LevelStartingTime = 0.f;
+	float WarmupTime = 5.f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float CoolDownTime = 10.f;
+	float CoolDownTime = 5.f;
 
 	UFUNCTION()
 	void OnPlayerFinishLineReached();
+
+	float LevelStartingTime = 0.f;
+	bool bCoolDown = false; // 플래그
+	float ServerTimeAtCoolDown = 0.f;
 
 
 protected:
