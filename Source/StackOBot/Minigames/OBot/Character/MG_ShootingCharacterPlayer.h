@@ -24,7 +24,7 @@ protected:
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraArm;
@@ -55,5 +55,12 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void OnCrouch(const FInputActionValue& Value);
 	void OffCrouch(const FInputActionValue& Value);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	bool HasWeapon = false;
+
+
+
 
 };

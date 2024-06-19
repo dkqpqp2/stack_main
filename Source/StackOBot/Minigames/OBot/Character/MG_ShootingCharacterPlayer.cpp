@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Net/UnrealNetwork.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
@@ -78,6 +79,13 @@ void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* Pla
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::OnCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::OffCrouch);
 
+}
+
+void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, HasWeapon);
 }
 
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
