@@ -8,6 +8,7 @@
 #include "../Source/StackOBot/MainWidget.h"	
 #include "Net/UnrealNetwork.h"
 #include "Minigames/OBot/GameMode/MG_GameMode.h" //state 상태 받기 위함 
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
 #include "Kismet/GameplayStatics.h"
 
 void AMG_PlayerController::BeginPlay()
@@ -90,16 +91,22 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 void AMG_PlayerController::SetHUDTime(float DeltaTime)
 {
 	//실시간 시간 세팅 
-	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
+
+	//AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
 	float GetTimeSeconds = GetWorld()->GetTimeSeconds();
 	float TimeLeft = 0.f;
-	float RunTime = GameMode->ServerTimeAtCoolDown;
 	if (MatchState == MatchState::WaitingToStart)
 		TimeLeft = WarmupTime - GetServerTime();
 	else if (MatchState == MatchState::InProgress)
 		TimeLeft = GetServerTime() - WarmupTime;
-	else if (MatchState == MatchState::CoolDown && GameMode->bCoolDown == true) {
-		TimeLeft = CoolDownTime +  RunTime - GetServerTime();
+	else if (MatchState == MatchState::CoolDown && bCoolDown == false)
+	{
+		float GetTime = GetWorld()->GetTimeSeconds();
+		ServerTimeAtCoolDown = GetTime;
+		bCoolDown = true; // 플래그 설정
+	}
+	else if (MatchState == MatchState::CoolDown && bCoolDown == true) {
+		TimeLeft = CoolDownTime + ServerTimeAtCoolDown - GetServerTime();
 		/*TimeSinceLastLog += DeltaTime;
 		if (TimeSinceLastLog >= 1.0f)
 		{
@@ -175,6 +182,10 @@ void AMG_PlayerController::OnMatchStateSet(FName State)
 	{
 		HandleCoolDown();
 	}
+	if (MatchState == MatchState::WaitingPostMatch)
+	{
+		HandleMatchHasEnded();
+	}
 
 }
 //On_Rep 버그 해결 -> 멀티 함수 까지 매개변수를 가져올 필요는 x
@@ -183,6 +194,14 @@ void AMG_PlayerController::OnRep_MatchState()
 	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
+	}
+	if (MatchState == MatchState::CoolDown)
+	{
+		HandleCoolDown();
+	}
+	if (MatchState == MatchState::WaitingPostMatch)
+	{
+		HandleMatchHasEnded();
 	}
 }
 
@@ -197,6 +216,20 @@ void AMG_PlayerController::HandleMatchHasStarted()
 		if (GameHUD->Announcement)
 		{
 			GameHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+void AMG_PlayerController::HandleMatchHasEnded()
+{
+	GameHUD = GameHUD == nullptr ? Cast<AGameHUD>(GetHUD()) : GameHUD;
+	//AMG_CharacterPlayer* player = Cast<AMG_CharacterPlayer>(GetPawn());
+	if (GameHUD)
+	{
+		if (GameHUD->Announcement)
+		{
+			GameHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+			//player->MainHUD->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
@@ -217,6 +250,7 @@ void AMG_PlayerController::HandleCoolDown()
 		}
 	}
 }
+
 
 
 void AMG_PlayerController::ServerCheckMatchState_Implementation()

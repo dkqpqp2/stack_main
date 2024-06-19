@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "../../GameMap/GamePlayerController.h"
+#include "../StackOBot/Minigames/Obot/UI/MainHUD.h"
 #include "Net/UnrealNetwork.h"
 #include "MG_PlayerController.generated.h"
 /**
@@ -57,6 +58,7 @@ protected:
 
 private:
     class AGameHUD* GameHUD;
+	class AMainHUD* MainHUD;
 
 	float MatchTime = 0.f; // 골인 지점 도착 후 시간 측정 
 	uint32 CountDown = 0;
@@ -76,11 +78,15 @@ public:
 
 	void HandleMatchHasStarted();
 	void HandleCoolDown();
+	void HandleMatchHasEnded();
 
 	float WarmupTime = 5.f;
 	float LevelStartingTime = 0.f;
 
 	float CoolDownTime = 5.0f;
-	float RaceTIme = 0.f;
+	float RaceTIme = 0.f; // 러닝 타임 
+
+	bool bCoolDown = false; // 플래그
+	float ServerTimeAtCoolDown = 0.f; 
 
 };
