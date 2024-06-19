@@ -53,6 +53,11 @@ void AMG_ShootingCharacterPlayer::Tick(float DeltaTime)
 
 }
 
+void AMG_ShootingCharacterPlayer::SetHudCrossHairs(float Deltatime)
+{
+}
+
+
 void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -110,3 +115,4 @@ void AMG_ShootingCharacterPlayer::OffCrouch(const FInputActionValue& Value)
 {
 	UnCrouch(false);
 }
+
