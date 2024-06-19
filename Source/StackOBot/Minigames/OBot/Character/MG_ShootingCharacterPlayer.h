@@ -51,6 +51,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> CrouchAction;
 
+	UPROPERTY(EditAnywhere,Category = CrossHairs)
+	class UTexture2D* CrosshairsCenter;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	class UTexture2D* CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	class UTexture2D* CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	class UTexture2D* CrosshairsTop;
+
+	UPROPERTY(EditAnywhere, Category = CrossHairs)
+	class UTexture2D* CrosshairsBottome;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void OnCrouch(const FInputActionValue& Value);
