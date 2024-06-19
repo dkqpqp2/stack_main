@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	/** Returns the properties used for network replication, this needs to be overridden by all actor classes with native replicated properties */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	// 1
 protected:
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
 	class UTexture2D* CrosshairsCenter;
