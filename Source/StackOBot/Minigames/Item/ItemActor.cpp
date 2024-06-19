@@ -6,6 +6,7 @@
 #include "../GameMap/CoinGame/CoinGameState.h"
 #include "../GameMap/GameMapGameMode.h"
 #include "StackOBot.h"
+#include "Minigames/OBot/PlayerState/MG_PlayerState.h"
 //게임 모드랑 게임 스테이트 추가 해야 함 
 // 
 // Sets default values
@@ -64,7 +65,7 @@ void AItemActor::OnBoxComponentOverlapped(
 	if (OtherActor->IsA<ACharacter>() && HasAuthority())
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Box Overlapped with character"));
-		AGamePlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		AMG_PlayerState* PS = Cast<ACharacter>(OtherActor)->GetPlayerState<AMG_PlayerState>();
 		if (!IsValid(PS))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("PS Not Valid : ItemActor Overlapped"));

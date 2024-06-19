@@ -11,6 +11,7 @@
 #include "StackOBot.h"
 #include "../../GameMap/GamePlayerState.h"
 #include "../Character/MG_CharacterBase.h"
+#include "Minigames/OBot/PlayerState/MG_PlayerState.h"
 
 
 // Sets default values
@@ -133,7 +134,7 @@ void AMG_ItemBox::GetNewItemTo(AActor* OtherActor)
 {
 	if (OtherActor->IsA<AMG_CharacterBase>() && HasAuthority())
 	{
-		AGamePlayerState* PS = Cast<AMG_CharacterBase>(OtherActor)->GetPlayerState<AGamePlayerState>();
+		AMG_PlayerState* PS = Cast<AMG_CharacterBase>(OtherActor)->GetPlayerState<AMG_PlayerState>();
 		if (!IsValid(PS))
 		{
 			return;

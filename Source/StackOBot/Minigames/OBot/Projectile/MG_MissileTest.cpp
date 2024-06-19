@@ -26,8 +26,8 @@ AMG_MissileTest::AMG_MissileTest()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile"));
 	ProjectileMovement->UpdatedComponent = CollisionComp;
-	ProjectileMovement->InitialSpeed = 200.0f;
-	ProjectileMovement->MaxSpeed = 300.0f;
+	ProjectileMovement->InitialSpeed = 5000.0f;
+	ProjectileMovement->MaxSpeed = 30000.0f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bInitialVelocityInLocalSpace = true;
 	ProjectileMovement->bShouldBounce = false;
@@ -58,7 +58,7 @@ void AMG_MissileTest::BeginPlay()
 
 	if (!HasTarget)
 	{
-		ProjectileMovement->Velocity = GetActorUpVector() * 300.0f;
+		ProjectileMovement->Velocity = GetActorUpVector() * 150.0f;
 
 		this->SetActorEnableCollision(false);
 	}
@@ -160,9 +160,9 @@ void AMG_MissileTest::Tick(float DeltaTime)
 				if (Target->IsValidLowLevel())
 				{
 					FVector WantedDir = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-					WantedDir += Target->GetVelocity() * WantedDir.Size() / 200.f;
-					ProjectileMovement->Velocity += WantedDir * 200.f * DeltaTime;
-					ProjectileMovement->Velocity = ProjectileMovement->Velocity.GetSafeNormal() * 200.f;
+					//WantedDir += Target->GetVelocity() * WantedDir.Size() / 200.f;
+					ProjectileMovement->Velocity = WantedDir * 30000.f * DeltaTime;
+					//ProjectileMovement->Velocity = ProjectileMovement->Velocity.GetSafeNormal() * 200.f;
 				}
 				else
 				{
