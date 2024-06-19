@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Net/UnrealNetwork.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
@@ -53,9 +54,12 @@ void AMG_ShootingCharacterPlayer::Tick(float DeltaTime)
 
 }
 
+<<<<<<< HEAD
 void AMG_ShootingCharacterPlayer::SetHudCrossHairs(float Deltatime)
 {
 }
+=======
+>>>>>>> 8f5b5940aab73a4ad9a71521e37d69836f25e1e1
 
 
 void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -85,6 +89,14 @@ void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* Pla
 
 }
 
+void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, HasWeapon);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentWeaponBase);
+}
+
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -108,7 +120,10 @@ void AMG_ShootingCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AMG_ShootingCharacterPlayer::OnCrouch(const FInputActionValue& Value)
 {
-	Crouch(false);
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		Crouch(false);
+	}
 }
 
 void AMG_ShootingCharacterPlayer::OffCrouch(const FInputActionValue& Value)

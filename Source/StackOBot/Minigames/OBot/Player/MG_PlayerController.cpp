@@ -91,10 +91,11 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 void AMG_PlayerController::SetHUDTime(float DeltaTime)
 {
 	//실시간 시간 세팅 
-
 	//AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
+	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
 	float GetTimeSeconds = GetWorld()->GetTimeSeconds();
 	float TimeLeft = 0.f;
+	float RunTime = GameMode->ServerTimeAtCoolDown;
 	if (MatchState == MatchState::WaitingToStart)
 		TimeLeft = WarmupTime - GetServerTime();
 	else if (MatchState == MatchState::InProgress)
@@ -107,6 +108,9 @@ void AMG_PlayerController::SetHUDTime(float DeltaTime)
 	}
 	else if (MatchState == MatchState::CoolDown && bCoolDown == true) {
 		TimeLeft = CoolDownTime + ServerTimeAtCoolDown - GetServerTime();
+	}
+	else if (MatchState == MatchState::CoolDown && GameMode->bCoolDown == true) {
+		TimeLeft = CoolDownTime +  RunTime - GetServerTime();
 		/*TimeSinceLastLog += DeltaTime;
 		if (TimeSinceLastLog >= 1.0f)
 		{
@@ -186,7 +190,6 @@ void AMG_PlayerController::OnMatchStateSet(FName State)
 	{
 		HandleMatchHasEnded();
 	}
-
 }
 //On_Rep 버그 해결 -> 멀티 함수 까지 매개변수를 가져올 필요는 x
 void AMG_PlayerController::OnRep_MatchState()
@@ -250,7 +253,6 @@ void AMG_PlayerController::HandleCoolDown()
 		}
 	}
 }
-
 
 
 void AMG_PlayerController::ServerCheckMatchState_Implementation()
