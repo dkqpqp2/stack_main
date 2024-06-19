@@ -103,7 +103,11 @@ void AMG_ShootingCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AMG_ShootingCharacterPlayer::OnCrouch(const FInputActionValue& Value)
 {
-	Crouch(false);
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		Crouch(false);
+	}
+	
 }
 
 void AMG_ShootingCharacterPlayer::OffCrouch(const FInputActionValue& Value)
