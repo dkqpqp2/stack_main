@@ -23,7 +23,7 @@ protected:
 	virtual void ReceivedPlayer() override; //sync with server clock as soon as possible
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDAnnouncementCountDown(float CountDownTime);
-	void SetHUDTime();
+	void SetHUDTime(float Deltatime);
 	void PollInit();
 
 	//sync time between client and server
@@ -49,7 +49,7 @@ protected:
 	void ServerCheckMatchState();
 
 	UFUNCTION(Client,Reliable)
-	void ClientJoinMidgame(FName StateOfMatch, float Warmup, float StartingTime); //match 제외
+	void ClientJoinMidgame(FName StateOfMatch,float Warmup,float CoolDown,float StartingTime); //match 제외
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState) //rpc 작업 매치상태 실시간 방송
 	FName MatchState;
@@ -67,6 +67,7 @@ private:
 	UPROPERTY()
 	class UAnnouncement* Announcement;
 
+
 public:
 	void OnMatchStateSet(FName State); //match모드 설정
 
@@ -74,8 +75,12 @@ public:
 	void OnRep_MatchState(); //Server 연결
 
 	void HandleMatchHasStarted();
+	void HandleCoolDown();
 
-	float WarmupTime = 0.f;
+	float WarmupTime = 5.f;
 	float LevelStartingTime = 0.f;
+
+	float CoolDownTime = 5.0f;
+	float RaceTIme = 0.f;
 
 };
