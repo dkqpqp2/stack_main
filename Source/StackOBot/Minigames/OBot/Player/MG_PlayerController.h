@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "../../GameMap/GamePlayerController.h"
+#include "../StackOBot/Minigames/Obot/UI/MainHUD.h"
 #include "Net/UnrealNetwork.h"
 #include "MG_PlayerController.generated.h"
 /**
@@ -14,7 +15,7 @@ UCLASS()
 class STACKOBOT_API AMG_PlayerController : public AGamePlayerController
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -29,13 +30,13 @@ protected:
 	//sync time between client and server
 
 	//Requests the current server time, passing in the client's time when the request was send
-	UFUNCTION(Server,Reliable)
+	UFUNCTION(Server, Reliable)
 	void ServerRequesetServerTime(float TimeOfClientRequest); //클라에서 서버로 보내는 시간 
 	//Client -> Server 로 request 요청 
-	UFUNCTION(Client,Reliable)
+	UFUNCTION(Client, Reliable)
 	void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
 
-	float ClientServerDelta = 0.f; 
+	float ClientServerDelta = 0.f;
 
 	//시간이 동기화가 잘됬는지 실시간 체크 
 	UPROPERTY(EditAnywhere)
@@ -45,18 +46,19 @@ protected:
 
 	void CheckTimeSync(float DeltaTime);
 
-	UFUNCTION(Server,Reliable)
+	UFUNCTION(Server, Reliable)
 	void ServerCheckMatchState();
 
-	UFUNCTION(Client,Reliable)
-	void ClientJoinMidgame(FName StateOfMatch,float Warmup,float CoolDown,float StartingTime); //match 제외
+	UFUNCTION(Client, Reliable)
+	void ClientJoinMidgame(FName StateOfMatch, float Warmup, float CoolDown, float StartingTime); //match 제외
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState) //rpc 작업 매치상태 실시간 방송
-	FName MatchState;
+		FName MatchState;
 
 
 private:
-    class AGameHUD* GameHUD;
+	class AGameHUD* GameHUD;
+	class AMainHUD* MainHUD;
 
 	float MatchTime = 0.f; // 골인 지점 도착 후 시간 측정 
 	uint32 CountDown = 0;
@@ -76,11 +78,15 @@ public:
 
 	void HandleMatchHasStarted();
 	void HandleCoolDown();
+	void HandleMatchHasEnded();
+
 
 	float WarmupTime = 5.f;
 	float LevelStartingTime = 0.f;
 
 	float CoolDownTime = 5.0f;
-	float RaceTIme = 0.f;
+	float RaceTIme = 0.f; // 러닝 타임 
 
+	bool bCoolDown = false; // 플래그
+	float ServerTimeAtCoolDown = 0.f;
 };
