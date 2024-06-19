@@ -54,9 +54,6 @@ void AMG_ShootingCharacterPlayer::Tick(float DeltaTime)
 
 }
 
-void AMG_ShootingCharacterPlayer::SetHudCrossHairs(float Deltatime)
-{
-}
 
 
 void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -91,6 +88,7 @@ void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, HasWeapon);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentWeaponBase);
 }
 
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
@@ -116,7 +114,10 @@ void AMG_ShootingCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AMG_ShootingCharacterPlayer::OnCrouch(const FInputActionValue& Value)
 {
-	Crouch(false);
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		Crouch(false);
+	}
 }
 
 void AMG_ShootingCharacterPlayer::OffCrouch(const FInputActionValue& Value)

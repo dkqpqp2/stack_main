@@ -75,7 +75,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	bool HasWeapon = false;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	TObjectPtr<class AWeaponBase> CurrentWeaponBase;
 
 
 };
