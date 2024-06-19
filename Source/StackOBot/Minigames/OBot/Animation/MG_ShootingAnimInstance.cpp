@@ -47,6 +47,5 @@ void UMG_ShootingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		{
 			Dir = Angle;
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Dir %f"), Dir));
 	}
 }
