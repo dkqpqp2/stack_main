@@ -20,9 +20,12 @@ public class StackOBot : ModuleRules
 			"OnlineSubsystem",
 			"OnlineSubsystemSteam",
 			"EnhancedInput",
-			"Niagara"
-		
-		});
+			"Niagara",
+			"NavigationSystem",
+			"AIModule",
+			"GamePlayTasks"
+
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
