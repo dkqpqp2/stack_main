@@ -16,7 +16,7 @@ const FName AMG_NPCController::TargetKey(TEXT("Target"));
 
 AMG_NPCController::AMG_NPCController()
 {
-
+	//test
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBObjectRef(TEXT("/Script/AIModule.BlackboardData'/Game/Character/AI/BB_NPCCharacter.BB_NPCCharacter'"));
 	if (nullptr != BBObjectRef.Object)
 	{
