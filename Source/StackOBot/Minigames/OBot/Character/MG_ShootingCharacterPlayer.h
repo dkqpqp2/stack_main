@@ -87,4 +87,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int32 TotalAmmos = 0;
+
+	float CrosshairVelocityFactor;
 };

@@ -16,6 +16,7 @@ public:
 	UTexture2D* CrosshairsRight;
 	UTexture2D* CrosshairsTop;
 	UTexture2D* CrosshairsBottom;
+	float CrosshairSpread;
 };
 
 UCLASS()
@@ -28,7 +29,11 @@ public:
 private:
 	FHUDPackage HUDPackage;
 
-	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter); //Center에다가 크로스 헤어 그리기 
+	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter,FVector2D Spread); //Center에다가 크로스 헤어 그리기 
+
+	UPROPERTY(EditAnywhere)
+	float CrossHariSpreadMax = 16.f;
+
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; } // 인라인 화 
 };
