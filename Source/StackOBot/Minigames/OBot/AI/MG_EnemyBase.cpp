@@ -22,7 +22,13 @@ AMG_EnemyBase::AMG_EnemyBase()
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
+	CurrentMonsterType = EMonsterType::None;
 }
+
+void AMG_EnemyBase::Attack()
+{
+}
+
 
 void AMG_EnemyBase::BeginPlay()
 {
@@ -30,6 +36,30 @@ void AMG_EnemyBase::BeginPlay()
 	
 }
 
+float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	SetDead();
+
+	return DamageAmount;
+}
+
+
+void AMG_EnemyBase::SetDead()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	PlayDeadAnimation();
+	SetActorEnableCollision(false);
+}
+
+void AMG_EnemyBase::PlayDeadAnimation()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(DeadMontage, 1.0f);
+
+}
 
 void AMG_EnemyBase::Tick(float DeltaTime)
 {
@@ -37,15 +67,6 @@ void AMG_EnemyBase::Tick(float DeltaTime)
 	
 }
 
-void AMG_EnemyBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
 
-	if (!IsPlayerControlled())
-	{
-		CurrentMonsterType = EMonsterType::Goblin;
-		GetCharacterMovement()->MaxWalkSpeed = 230.0f;
-	}
-}
 
 

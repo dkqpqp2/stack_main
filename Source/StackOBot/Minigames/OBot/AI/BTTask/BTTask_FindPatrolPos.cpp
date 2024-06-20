@@ -15,23 +15,24 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	auto ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+	APawn* ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
+
 	if (nullptr == ControllingPawn)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(ControllingPawn);
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(ControllingPawn->GetWorld());
 	if (nullptr == NavSystem)
 	{
 		return EBTNodeResult::Failed;
 	}
 
 	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(AMG_NPCController::HomePosKey);
-	FNavLocation NextPatrol;
-	if (NavSystem->GetRandomPointInNavigableRadius(FVector::ZeroVector, 500.0f, NextPatrol))
+	FNavLocation NextPatrolPos;
+	if (NavSystem->GetRandomPointInNavigableRadius(Origin, 500.0f, NextPatrolPos))
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(AMG_NPCController::PatrolPosKey, NextPatrol);
+		OwnerComp.GetBlackboardComponent()->SetValueAsVector(AMG_NPCController::PatrolPosKey, NextPatrolPos);
 		return EBTNodeResult::Succeeded;
 	}
 

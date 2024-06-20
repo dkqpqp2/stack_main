@@ -13,7 +13,7 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 	GetCharacterMovement()->JumpZVelocity = 700.0f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->SetWalkableFloorAngle(50.0f);
-	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
 	GetCharacterMovement()->GravityScale = 1.0f;
@@ -21,7 +21,6 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetCollisionProfileName(TEXT("EnemyMesh"));
 
-	EMonsterType::Goblin;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> GoblinMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/UndeadPack/EnemyGoblin/Mesh/SM_EnemyGoblin.SM_EnemyGoblin'"));
 	if (GoblinMeshRef.Object)
@@ -35,4 +34,10 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 		GetMesh()->SetAnimInstanceClass(GoblinAnimInstanceClassRef.Class);
 	}
 
+	CurrentMonsterType = EMonsterType::Goblin;
+
+}
+
+void AMG_EnemyGoblin::Attack()
+{
 }

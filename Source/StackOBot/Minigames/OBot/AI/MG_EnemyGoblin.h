@@ -15,5 +15,7 @@ class STACKOBOT_API AMG_EnemyGoblin : public AMG_EnemyBase
 
 public:
 	AMG_EnemyGoblin();
+
+	virtual void Attack();
 	
 };
