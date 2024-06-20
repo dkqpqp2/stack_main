@@ -8,6 +8,8 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "../../../ShootingGames/Weapons/WeaponBase.h"	
+#include "../../../ShootingGames/FPSHUD.h"	
 #include "Net/UnrealNetwork.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
@@ -44,6 +46,7 @@ void AMG_ShootingCharacterPlayer::BeginPlay()
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
+		HUD = Cast<AFPSHUD>(PlayerController->GetHUD());
 	}
 	
 }
@@ -51,7 +54,7 @@ void AMG_ShootingCharacterPlayer::BeginPlay()
 void AMG_ShootingCharacterPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	SetHUDCrossHair(DeltaTime);
 }
 
 
@@ -122,5 +125,34 @@ void AMG_ShootingCharacterPlayer::OnCrouch(const FInputActionValue& Value)
 void AMG_ShootingCharacterPlayer::OffCrouch(const FInputActionValue& Value)
 {
 	UnCrouch(false);
+}
+
+
+void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
+{
+	if (HUD)
+	{
+		FHUDPackage HUDPackage;
+		//무기를 끼고 있으면 
+		if (IsValid(CurrentWeaponBase))
+		{
+
+			HUDPackage.CrosshairsCenter = CurrentWeaponBase->CrosshairsCenter;
+			HUDPackage.CrosshairsLeft = CurrentWeaponBase->CrosshairsLeft;
+			HUDPackage.CrosshairsRight = CurrentWeaponBase->CrosshairsRight;
+			HUDPackage.CrosshairsTop = CurrentWeaponBase->CrosshairsTop;
+			HUDPackage.CrosshairsBottom = CurrentWeaponBase->CrosshairsBottom;
+		}
+		else
+		{
+			HUDPackage.CrosshairsCenter = nullptr;
+			HUDPackage.CrosshairsLeft = nullptr;
+			HUDPackage.CrosshairsRight = nullptr;
+			HUDPackage.CrosshairsBottom = nullptr;
+			HUDPackage.CrosshairsTop = nullptr;
+		}
+		HUD->SetHUDPackage(HUDPackage);
+	}
+
 }
 

@@ -25,7 +25,8 @@ public:
 	/** Returns the properties used for network replication, this needs to be overridden by all actor classes with native replicated properties */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-protected:
+
+public:
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
 	class UTexture2D* CrosshairsCenter;
 
@@ -39,7 +40,7 @@ protected:
 	class UTexture2D* CrosshairsTop;
 
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
-	class UTexture2D* CrosshairsBottome;
+	class UTexture2D* CrosshairsBottom;
 
 	UPROPERTY(EditAnywhere)
 	float Damage;
