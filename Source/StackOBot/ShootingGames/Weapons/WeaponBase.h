@@ -6,6 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8 
+{ 
+	Rifle UMETA(DisplayName = "Rifle"), 
+	Pistol UMETA(DisplayName = "Pistol"), 
+	Grenade UMETA(DisplayName = "Grenade"), 
+};
+
 UCLASS()
 class STACKOBOT_API AWeaponBase : public AActor
 {
@@ -42,12 +50,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
 	class UTexture2D* CrosshairsBottom;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Damage;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MaxAmmo;
 
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite)
 	int32 CurrentAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EWeaponType WeaponType;
 };

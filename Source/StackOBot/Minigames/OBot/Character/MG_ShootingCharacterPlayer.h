@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MG_ShootingCharacterBase.h"
+#include "../../../ShootingGames/Weapons/WeaponBase.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
 
@@ -84,4 +85,6 @@ public:
 	void SetHUDCrossHair(float DeltaTime); // 크로스 헤어 틱마다 불러오는 함수 
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 TotalAmmos = 0;
 };
