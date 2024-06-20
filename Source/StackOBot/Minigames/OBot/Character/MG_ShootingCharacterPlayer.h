@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MG_ShootingCharacterBase.h"
+#include "../../../ShootingGames/Weapons/WeaponBase.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
 
@@ -76,7 +77,7 @@ public:
 	bool HasWeapon = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
-	TObjectPtr<class AWeaponBase> CurrentWeaponBase;
+	TObjectPtr<AWeaponBase> CurrentWeaponBase;
 
 
 };
