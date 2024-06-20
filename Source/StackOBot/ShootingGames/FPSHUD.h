@@ -27,6 +27,8 @@ public:
 	virtual void DrawHUD() override;
 private:
 	FHUDPackage HUDPackage;
+
+	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter); //Center에다가 크로스 헤어 그리기 
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; } // 인라인 화 
 };

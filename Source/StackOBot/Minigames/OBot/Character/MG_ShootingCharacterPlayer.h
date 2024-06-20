@@ -64,7 +64,9 @@ protected:
 	class UTexture2D* CrosshairsTop;
 
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
-	class UTexture2D* CrosshairsBottome;
+	class UTexture2D* CrosshairsBottom;
+
+	class AFPSHUD* HUD;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -77,6 +79,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TObjectPtr<class AWeaponBase> CurrentWeaponBase;
+
+	UFUNCTION(BlueprintCallable)
+	void SetHUDCrossHair(float DeltaTime); // 크로스 헤어 틱마다 불러오는 함수 
 
 
 };
