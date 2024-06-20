@@ -89,4 +89,7 @@ public:
 	int32 TotalAmmos = 0;
 
 	float CrosshairVelocityFactor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CrosshairShootingFactor = 0.f;
 };
