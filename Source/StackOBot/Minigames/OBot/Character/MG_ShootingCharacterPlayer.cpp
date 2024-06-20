@@ -151,6 +151,16 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 			HUDPackage.CrosshairsBottom = nullptr;
 			HUDPackage.CrosshairsTop = nullptr;
 		}
+		//Calculate Crosshair spread
+		//[0,600] -> [0,1]
+		FVector2D WalkSpeedRange(0.f, GetCharacterMovement()->MaxWalkSpeed);
+		FVector2D VelocityMultiplierRange(0.f, 1.f);//charactermovement를 0-1로 정규화
+		FVector Velocity = GetVelocity();
+		Velocity.Z = 0.f;
+
+		CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+		//속도를 기반으로 퍼지는걸 가져오는 함수 
+		HUDPackage.CrosshairSpread = CrosshairVelocityFactor;
 		HUD->SetHUDPackage(HUDPackage);
 	}
 
