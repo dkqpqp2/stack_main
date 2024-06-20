@@ -79,5 +79,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	TObjectPtr<AWeaponBase> CurrentWeaponBase;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 TotalAmmos = 0;
 };
