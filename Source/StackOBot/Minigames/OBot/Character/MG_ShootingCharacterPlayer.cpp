@@ -91,6 +91,9 @@ void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimePro
 
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, HasWeapon);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentWeaponBase);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, RifleAmmos);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, PistolAmmos);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, GrenadeAmmos);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentHealth);
 }
 

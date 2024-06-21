@@ -61,4 +61,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWeaponType WeaponType;
+
+
 };
