@@ -108,7 +108,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float MaxHealth = 100.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,  ReplicatedUsing = OnRep_Health)
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health)
 	float CurrentHealth = 100.f;
 
 	UFUNCTION()
