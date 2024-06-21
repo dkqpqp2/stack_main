@@ -10,7 +10,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "../../../ShootingGames/Weapons/WeaponBase.h"	
 #include "../../../ShootingGames/FPSHUD.h"	
+#include "../../../ShootingGames/FPSPlayerController.h"
+#include "GameFramework/Pawn.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/GameState.h"
+#include "GameFramework/PlayerState.h"
 
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
@@ -43,11 +47,18 @@ AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 void AMG_ShootingCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+	AFPSPlayerController* PlayerController = Cast<AFPSPlayerController>(GetController());
 	if (PlayerController)
 	{
 		EnableInput(PlayerController);
+		//PlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
 		HUD = Cast<AFPSHUD>(PlayerController->GetHUD());
+	}
+	UpdateHUDHealth();
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &AMG_ShootingCharacterPlayer::ReceiveDamage);
 	}
 	
 }
@@ -175,8 +186,91 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 
 void AMG_ShootingCharacterPlayer::OnRep_Health()
 {
-
+	GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
+	//UpdateHUDHealth();
+	// 애니메이션 보여도 됨 
+	//체력이랑 애니메이션은 서버에서도 보여아 함으로 여기서 처리 해도 괜찮음
 }
+
+void AMG_ShootingCharacterPlayer::ReceiveDamage(AActor* DamagaedActor, float Damagae, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damagae, 0.f, MaxHealth); // 체력을 0-100 제한
+	GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
+
+	//UpdateHUDHealth();
+	// 맞을때 애니메이션 넣어도 됨
+	// 
+	//AGameState* GS = GetWorld()->GetGameState<AGameState>();
+	//if (!IsValid(GS))
+	//{
+	//	return;
+	//}
+
+	//for (APlayerState* PS : GS->PlayerArray)
+	//{
+	//	AMG_ShootingCharacterPlayer* ShootingPlayer = PS->GetPawn<AMG_ShootingCharacterPlayer>();
+	//	if (!IsValid(ShootingPlayer))
+	//	{
+	//		return;
+	//	}
+	//	
+	//	// netmulticast 함수 호출.
+	//	ShootingPlayer->Multicast_RefreshHP();
+
+	//}
+}
+
+void AMG_ShootingCharacterPlayer::UpdateHUDHealth()
+{
+	FPSPlayerController = FPSPlayerController == nullptr ? Cast<AFPSPlayerController>(Controller) : FPSPlayerController;
+	if (FPSPlayerController)
+	{
+		FPSPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
+	}
+	if (!FPSPlayerController)
+	{
+		return;
+	}
+	//컨트롤러가 아니라면 ? Client 2-4  적용할 위젯은 
+	AGameState* GS = GetWorld()->GetGameState<AGameState>();
+	if (!IsValid(GS))
+	{
+		return;
+	}
+	int i = 1;
+	for (APlayerState* PS : GS->PlayerArray)//모든 플레이어 정보를 가져오는 state를 참조하고
+	{
+		if (GetPlayerState() == PS)
+		{
+			continue;
+		}
+		AMG_ShootingCharacterPlayer* ShootingPlayer = PS->GetPawn<AMG_ShootingCharacterPlayer>();
+		if (!IsValid(ShootingPlayer))
+		{
+			return;
+		}
+		float PlayerHealth = ShootingPlayer->CurrentHealth;
+		if (i == 1)
+		{
+			FPSPlayerController->SetHUDHealth_1(PlayerHealth, MaxHealth);
+
+		}
+		else if (i == 2)
+		{
+			FPSPlayerController->SetHUDHealth_2(PlayerHealth, MaxHealth);
+
+		}
+		else if (i == 3)
+		{
+			FPSPlayerController->SetHUDHealth_3(PlayerHealth, MaxHealth);
+
+		}
+		i += 1;
+		
+
+	}
+}
+
 
 void AMG_ShootingCharacterPlayer::TryReloadWeapon()
 {
@@ -277,4 +371,11 @@ void AMG_ShootingCharacterPlayer::PlayReloadStartAnimation_Implementation()
 		PlayAnimMontage(ReloadAnimMontage);
 	}
 }
+
+void AMG_ShootingCharacterPlayer::Multicast_RefreshHP_Implementation()
+{
+	UpdateHUDHealth();
+}
+
+
 
