@@ -3,7 +3,6 @@
 #pragma once
 
 #include "MG_ShootingCharacterBase.h"
-#include "../../../ShootingGames/Weapons/WeaponBase.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
 
@@ -113,5 +112,23 @@ public:
 
 	UFUNCTION()
 	void OnRep_Health();
+
+
+protected:
+	UFUNCTION(BlueprintCallable)
+	void TryReloadWeapon();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Replicated)
+	bool IsReloading = false;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void PlayReloadStartAnimation();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UAnimMontage> ReloadAnimMontage;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnEndReloadAnimation();
 
 };

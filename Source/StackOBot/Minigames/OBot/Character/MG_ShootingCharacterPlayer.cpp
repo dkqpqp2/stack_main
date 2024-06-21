@@ -12,6 +12,7 @@
 #include "../../../ShootingGames/FPSHUD.h"	
 #include "Net/UnrealNetwork.h"
 
+
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
@@ -95,6 +96,7 @@ void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, PistolAmmos);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, GrenadeAmmos);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentHealth);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, IsReloading);
 }
 
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
@@ -174,5 +176,105 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 void AMG_ShootingCharacterPlayer::OnRep_Health()
 {
 
+}
+
+void AMG_ShootingCharacterPlayer::TryReloadWeapon()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+	if (!IsValid(CurrentWeaponBase))
+	{
+		return;
+	}
+	int32 CurrentPlayerAmmos = 0;
+	switch (CurrentWeaponBase->WeaponType)
+	{
+	case EWeaponType::Rifle:
+		CurrentPlayerAmmos = RifleAmmos;
+		break;
+	case EWeaponType::Pistol:
+		CurrentPlayerAmmos = PistolAmmos;
+		break;
+	case EWeaponType::Grenade:
+		CurrentPlayerAmmos = GrenadeAmmos;
+		break;
+	default:
+		break;
+	}
+
+	if (CurrentWeaponBase->MaxAmmo - CurrentWeaponBase->CurrentAmmo > 0
+		&& CurrentPlayerAmmos > 0 )
+	{
+		PlayReloadStartAnimation();
+		IsReloading = true;
+	}
+}
+
+void AMG_ShootingCharacterPlayer::OnEndReloadAnimation()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (!IsValid(CurrentWeaponBase))
+	{
+		return;
+	}
+	IsReloading = false;
+
+	int32 CurrentPlayerAmmos = 0;
+	switch (CurrentWeaponBase->WeaponType)
+	{
+	case EWeaponType::Rifle:
+		CurrentPlayerAmmos = RifleAmmos;
+		break;
+	case EWeaponType::Pistol:
+		CurrentPlayerAmmos = PistolAmmos;
+		break;
+	case EWeaponType::Grenade:
+		CurrentPlayerAmmos = GrenadeAmmos;
+		break;
+	default:
+		break;
+	}
+
+	int32 NeedToFillAmmos = CurrentWeaponBase->MaxAmmo - CurrentWeaponBase->CurrentAmmo;
+	if (CurrentPlayerAmmos >= NeedToFillAmmos)
+	{
+		CurrentWeaponBase->CurrentAmmo = CurrentWeaponBase->MaxAmmo;
+		CurrentPlayerAmmos -= NeedToFillAmmos;
+	}
+	else
+	{
+		CurrentWeaponBase->CurrentAmmo += CurrentPlayerAmmos;
+		CurrentPlayerAmmos = 0;
+	}
+
+	switch (CurrentWeaponBase->WeaponType)
+	{
+	case EWeaponType::Rifle:
+		RifleAmmos = CurrentPlayerAmmos;
+		break;
+	case EWeaponType::Pistol:
+		PistolAmmos = CurrentPlayerAmmos;
+		break;
+	case EWeaponType::Grenade:
+		GrenadeAmmos = CurrentPlayerAmmos;
+		break;
+	default:
+		break;
+	}
+
+}
+
+void AMG_ShootingCharacterPlayer::PlayReloadStartAnimation_Implementation()
+{
+	if (IsValid(ReloadAnimMontage))
+	{
+		PlayAnimMontage(ReloadAnimMontage);
+	}
 }
 
