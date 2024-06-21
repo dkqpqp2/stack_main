@@ -18,6 +18,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar_1;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar_2;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar_3;
+
 	UPROPERTY(meta = (BindWidget))	
 	class UTextBlock* HealthText;
 };

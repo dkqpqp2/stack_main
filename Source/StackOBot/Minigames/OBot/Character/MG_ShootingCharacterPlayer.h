@@ -105,7 +105,7 @@ public:
 	int32 GrenadeAmmos = 0;
 
 public:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	float MaxHealth = 100.f;
 
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health)
@@ -114,4 +114,14 @@ public:
 	UFUNCTION()
 	void OnRep_Health();
 
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagaedActor, float Damagae, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+
+	void UpdateHUDHealth();
+
+	class AFPSPlayerController* FPSPlayerController;
+
+protected:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_RefreshHP();
 };
