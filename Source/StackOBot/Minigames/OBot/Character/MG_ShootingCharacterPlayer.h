@@ -92,4 +92,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CrosshairShootingFactor = 0.f;
+
+public:
+	UPROPERTY(VisibleAnywhere)
+	float MaxHealth = 100.f;
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health)
+	float CurrentHealth = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health();
 };

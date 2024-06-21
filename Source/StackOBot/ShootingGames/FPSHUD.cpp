@@ -2,6 +2,27 @@
 
 
 #include "FPSHUD.h"
+#include "GameFramework/PlayerController.h"
+#include "FPSOverlay.h"
+
+
+void AFPSHUD::BeginPlay()
+{
+	Super::BeginPlay();
+	AddCharacterOverlay();
+}
+
+void AFPSHUD::AddCharacterOverlay()
+{
+	GetOwningPlayerController(); // 플레이어 컨트롤러 가져오는 기본 함수
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && FPSOverlayClass)
+	{
+		FPSOverlay = CreateWidget<UFPSOverlay>(PlayerController, FPSOverlayClass);
+		FPSOverlay->AddToViewport();
+	}
+}
+
 
 void AFPSHUD::DrawHUD()
 {
@@ -42,6 +63,7 @@ void AFPSHUD::DrawHUD()
 		}
 	}
 }
+
 
 void AFPSHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter,FVector2D Spread)
 {
