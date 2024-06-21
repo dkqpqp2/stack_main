@@ -84,7 +84,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetHUDCrossHair(float DeltaTime); // 크로스 헤어 틱마다 불러오는 함수 
 
-
+	// 안쓰게 될지도.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int32 TotalAmmos = 0;
 
@@ -92,4 +92,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CrosshairShootingFactor = 0.f;
+
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 RifleAmmos = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 PistolAmmos = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	int32 GrenadeAmmos = 0;
 };
