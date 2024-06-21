@@ -14,4 +14,10 @@ class STACKOBOT_API UFPSOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar;
+
+	UPROPERTY(meta = (BindWidget))	
+	class UTextBlock* HealthText;
 };

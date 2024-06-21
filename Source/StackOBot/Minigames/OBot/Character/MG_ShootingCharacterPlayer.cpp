@@ -94,6 +94,7 @@ void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, RifleAmmos);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, PistolAmmos);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, GrenadeAmmos);
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentHealth);
 }
 
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
@@ -163,9 +164,15 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 
 		CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
 		//속도를 기반으로 퍼지는걸 가져오는 함수 
-		HUDPackage.CrosshairSpread = CrosshairVelocityFactor;
+		CrosshairShootingFactor =FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+		HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairShootingFactor;
 		HUD->SetHUDPackage(HUDPackage);
 	}
+
+}
+
+void AMG_ShootingCharacterPlayer::OnRep_Health()
+{
 
 }
 

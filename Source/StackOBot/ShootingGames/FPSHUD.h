@@ -26,6 +26,15 @@ class STACKOBOT_API AFPSHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> FPSOverlayClass; //위젯 하위 클래스 
+
+	class UFPSOverlay* FPSOverlay;
+
+protected:
+	virtual void BeginPlay() override;
+	void AddCharacterOverlay();
 private:
 	FHUDPackage HUDPackage;
 

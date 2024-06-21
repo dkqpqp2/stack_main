@@ -103,4 +103,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int32 GrenadeAmmos = 0;
+
+public:
+	UPROPERTY(VisibleAnywhere)
+	float MaxHealth = 100.f;
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health)
+	float CurrentHealth = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health();
+
 };
