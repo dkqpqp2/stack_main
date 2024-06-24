@@ -3,6 +3,7 @@
 
 #include "BTTask_Attack.h"
 #include "Minigames/OBot/Player/MG_NPCController.h"
+#include "Minigames/OBot/Interface/MG_AIInterface.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -14,9 +15,29 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
-	APawn* Enmey = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
+	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
+	if (nullptr == ControllingPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
 
-	return EBTNodeResult::Type();
+	IMG_AIInterface* AIPawn = Cast<IMG_AIInterface>(ControllingPawn);
+	if (nullptr == ControllingPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+	
+	FAICharacterAttackFinished OnAttackFinished;
+	OnAttackFinished.BindLambda(
+		[&]()
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	);
+
+	AIPawn->SetAIAttackDelegate(OnAttackFinished);
+	AIPawn->AttackByAI();
+	return EBTNodeResult::InProgress;
 }
 
 void UBTTask_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

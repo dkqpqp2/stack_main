@@ -11,6 +11,7 @@
 #include "../../../ShootingGames/Weapons/WeaponBase.h"	
 #include "../../../ShootingGames/FPSHUD.h"	
 #include "Net/UnrealNetwork.h"
+#include "Engine/DamageEvents.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
@@ -36,6 +37,15 @@ AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 	{
 		Jetpack->SetSkeletalMesh(JetpackMeshRef.Object);
 	}
+
+	// Test HpBar
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Character/Input/IA_Attack.IA_Attack'"));
+	if (nullptr != InputActionAttackRef.Object)
+	{
+		AttackAction = InputActionAttackRef.Object;
+	}
+
+	bCanAttack = true;
 
 }
 
@@ -82,6 +92,8 @@ void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* Pla
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::OnCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::OffCrouch);
+	// Test
+	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::Attack);
 
 }
 
@@ -91,6 +103,8 @@ void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimePro
 
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, HasWeapon);
 	DOREPLIFETIME(AMG_ShootingCharacterPlayer, CurrentWeaponBase);
+	// Test HpBar
+	DOREPLIFETIME(AMG_ShootingCharacterPlayer, bCanAttack);
 }
 
 void AMG_ShootingCharacterPlayer::Move(const FInputActionValue& Value)
@@ -164,5 +178,88 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 		HUD->SetHUDPackage(HUDPackage);
 	}
 
+}
+
+// Test
+void AMG_ShootingCharacterPlayer::Attack()
+{
+	if (bCanAttack)
+	{
+		ServerAttack();
+	}
+}
+
+void AMG_ShootingCharacterPlayer::AttackHitCheck()
+{
+	if (HasAuthority())
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(Attack), true, this);
+
+		const float AttackRange = 10.0f;
+		const float AttackRadius = 20.0f;
+		const FVector Start = GetMesh()->GetSocketLocation(TEXT("AttackSocket")) + GetActorForwardVector();
+		const FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+		if (HitDetected)
+		{
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(20.0f, DamageEvent, GetController(), this);
+		}
+
+#if ENABLE_DRAW_DEBUG
+
+		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+		float CapsuleHalfHeight = AttackRange * 0.5f;
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+
+		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
+
+#endif
+	}
+}
+
+bool AMG_ShootingCharacterPlayer::ServerAttack_Validate()
+{
+	return true;
+}
+
+void AMG_ShootingCharacterPlayer::ServerAttack_Implementation()
+{
+	MulticastAttack();
+}
+
+void AMG_ShootingCharacterPlayer::MulticastAttack_Implementation()
+{
+	if (HasAuthority())
+	{
+		bCanAttack = false;
+		OnRep_CanAttack();
+
+		FTimerHandle Handle;
+		GetWorld()->GetTimerManager().SetTimer(Handle, FTimerDelegate::CreateLambda([&]
+			{
+				bCanAttack = true;
+				OnRep_CanAttack();
+			}
+		), AttackTime, false, -1.0f);
+	}
+	// Animation은 Server와 Client 모두 보여야함
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(ActionMontage);
+}
+
+void AMG_ShootingCharacterPlayer::OnRep_CanAttack()
+{
+	if (!bCanAttack)
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	}
+	else
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
 }
 

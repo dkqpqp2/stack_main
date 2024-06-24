@@ -16,6 +16,25 @@ class STACKOBOT_API AMG_EnemyGoblin : public AMG_EnemyBase
 public:
 	AMG_EnemyGoblin();
 
-	virtual void Attack();
+protected:
+	virtual void BeginPlay() override;
+	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
+	//virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
+	virtual void AttackActionEnd(class UAnimMontage* TargetMontage, bool InProperlyEnded) override;
+	virtual void PlayAttackAnimation() override;
+	virtual void AttackByAI() override;
+	virtual void NotifyAttackActionEnd() override;
+
+public:
+	virtual float GetMaxHp() { return MaxHp; }
+	virtual float GetCurrentHp() { return CurrentHp; }
+	//virtual float ApplyDamage(float InDamage) override;
+
+protected:
+	//virtual void SetHp(float NewHp) override;
+	//void SetDead() override;
+	//virtual void SetupCharacterWidget(class UMG_UserWidget* InUserWidget) override;
 	
 };

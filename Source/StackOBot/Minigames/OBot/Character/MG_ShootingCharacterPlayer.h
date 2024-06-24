@@ -4,6 +4,7 @@
 
 #include "MG_ShootingCharacterBase.h"
 #include "../../../ShootingGames/Weapons/WeaponBase.h"
+#include "Minigames/OBot/Interface/MG_AnimationAttackInterface.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
 
@@ -12,7 +13,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase
+class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase, public IMG_AnimationAttackInterface
 {
 	GENERATED_BODY()
 public:
@@ -51,6 +52,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> CrouchAction;
+
+	// Test HpBar
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere,Category = CrossHairs)
 	class UTexture2D* CrosshairsCenter;
@@ -92,4 +97,29 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CrosshairShootingFactor = 0.f;
+
+// Test HpBar
+protected:
+	void Attack();
+	virtual void AttackHitCheck() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAttack();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAttack();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CanAttack)
+	uint8 bCanAttack : 1;
+
+	UFUNCTION()
+	void OnRep_CanAttack();
+
+	float AttackTime = 1.4667f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ActionMontage;
+
+private:
+	bool bHitAttack;
 };
