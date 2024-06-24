@@ -62,5 +62,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWeaponType WeaponType;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float CoolTime;
 };
