@@ -33,6 +33,7 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeaponBase, CurrentAmmo);
+	DOREPLIFETIME(AWeaponBase, WeaponOwner);
 	
 }
 
@@ -59,6 +60,11 @@ void AWeaponBase::SetHUDBullet()
 }
 
 void AWeaponBase::On_RepAmmo()
+{
+	SetHUDBullet();
+}
+
+void AWeaponBase::OnRep_WeaponOwner()
 {
 	SetHUDBullet();
 }
