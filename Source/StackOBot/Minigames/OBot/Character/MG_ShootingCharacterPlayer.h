@@ -103,6 +103,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	int32 GrenadeAmmos = 0;
 
+	//플레이어 체력, 이름 
 public:
 	UPROPERTY(EditAnywhere)
 	float MaxHealth = 100.f;
@@ -113,6 +114,9 @@ public:
 	UFUNCTION()
 	void OnRep_Health();
 
+	UPROPERTY(EditAnywhere, Replicated)
+	FString PlayerName = "";
+	
 
 protected:
 	UFUNCTION(BlueprintCallable)
