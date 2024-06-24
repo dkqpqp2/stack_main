@@ -38,13 +38,22 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 void AWeaponBase::SetHUDBullet()
 {
-	FPSCharacter = FPSCharacter == nullptr ? Cast<AMG_ShootingCharacterPlayer>(GetOwner()) : FPSCharacter;
+	FPSCharacter = WeaponOwner;
 	if (FPSCharacter)
 	{
 		FPSPlayerController = FPSPlayerController == nullptr ? Cast<AFPSPlayerController>(FPSCharacter->Controller) : FPSPlayerController;
 		if (FPSPlayerController)
 		{
 			FPSPlayerController->SetHUDAmmo(CurrentAmmo,MaxAmmo); //캐릭터랑 컨트롤러 가 있을때 hud set 
+		}
+	}
+	else
+	{
+		FPSCharacter = nullptr; // 무기 버렸을 때 
+		if (FPSPlayerController)
+		{
+			FPSPlayerController->SetHUDAmmo(0, 0); //캐릭터랑 컨트롤러 가 있을때 hud set 
+			FPSPlayerController = nullptr;
 		}
 	}
 }

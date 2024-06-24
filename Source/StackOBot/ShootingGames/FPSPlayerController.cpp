@@ -105,7 +105,7 @@ void AFPSPlayerController::SetHUDAmmo(int32 Ammo, int32 MaxAmmo)
 	if (bValid)
 	{
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
-		FString MaxAmmoText = FString::Printf(TEXT("%d"), Ammo);
+		FString MaxAmmoText = FString::Printf(TEXT("%d"), MaxAmmo);
 		FPSHUD->FPSOverlay->CurrentBullet->SetText(FText::FromString(AmmoText));
 		FPSHUD->FPSOverlay->MaxBullet->SetText(FText::FromString(MaxAmmoText));
 	}
