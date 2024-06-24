@@ -225,7 +225,7 @@ void AMG_ShootingCharacterPlayer::UpdateHUDHealth()
 	FPSPlayerController = FPSPlayerController == nullptr ? Cast<AFPSPlayerController>(Controller) : FPSPlayerController;
 	if (FPSPlayerController)
 	{
-		FPSPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
+		FPSPlayerController->SetHUDHealth(CurrentHealth, MaxHealth, PlayerName);
 	}
 	if (!FPSPlayerController)
 	{
@@ -250,19 +250,20 @@ void AMG_ShootingCharacterPlayer::UpdateHUDHealth()
 			return;
 		}
 		float PlayerHealth = ShootingPlayer->CurrentHealth;
+		FString PlayerSteamName = PS->GetPlayerName();
 		if (i == 1)
 		{
-			FPSPlayerController->SetHUDHealth_1(PlayerHealth, MaxHealth);
+			FPSPlayerController->SetHUDHealth_1(PlayerHealth, MaxHealth,PlayerSteamName);
 
 		}
 		else if (i == 2)
 		{
-			FPSPlayerController->SetHUDHealth_2(PlayerHealth, MaxHealth);
+			FPSPlayerController->SetHUDHealth_2(PlayerHealth, MaxHealth,PlayerSteamName);
 
 		}
 		else if (i == 3)
 		{
-			FPSPlayerController->SetHUDHealth_3(PlayerHealth, MaxHealth);
+			FPSPlayerController->SetHUDHealth_3(PlayerHealth, MaxHealth,PlayerSteamName);
 
 		}
 		i += 1;

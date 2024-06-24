@@ -15,19 +15,20 @@ class STACKOBOT_API AFPSPlayerController : public AGamePlayerController
 	GENERATED_BODY()
 
 public:
-	void SetHUDHealth(float CurrentHealth, float MaxHealth);
+	void SetHUDHealth(float CurrentHealth, float MaxHealth, FString PlayerName);
 
-	void SetHUDHealth_1(float CurrentHealth, float MaxHealth);
+	void SetHUDHealth_1(float CurrentHealth, float MaxHealth, FString PlayerName);
 
-	void SetHUDHealth_2(float CurrentHealth, float MaxHealth);
+	void SetHUDHealth_2(float CurrentHealth, float MaxHealth, FString PlayerName);
 
-	void SetHUDHealth_3(float CurrentHealth, float MaxHealth);
+	void SetHUDHealth_3(float CurrentHealth, float MaxHealth, FString PlayerName);
 
-
+	void SetHUDAmmo(int32 Ammo, int32 MaxAmmo);
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY()
 	class AFPSHUD* FPSHUD;
 	
 	//컨트롤러에서 월드에 만들어진 character pawn -> currentHealth를 받아서 배열에 저장 
