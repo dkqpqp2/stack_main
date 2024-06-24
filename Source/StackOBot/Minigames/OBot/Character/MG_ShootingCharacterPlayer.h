@@ -147,4 +147,11 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_RefreshHP();
 
+protected:
+	void OnDeathPlayRagdoll();
+	FTimerHandle DeathTimer;
+	void OnDeathEnd();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayRagdoll();
 };
