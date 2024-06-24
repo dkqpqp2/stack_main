@@ -73,4 +73,8 @@ public:
 
 	UFUNCTION()
 	void On_RepAmmo();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float CoolTime;
+
 };
