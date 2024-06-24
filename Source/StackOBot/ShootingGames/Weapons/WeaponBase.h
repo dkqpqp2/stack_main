@@ -33,6 +33,9 @@ public:
 	/** Returns the properties used for network replication, this needs to be overridden by all actor classes with native replicated properties */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable)
+	void SetHUDBullet(); //HUD에 Ammo 갱신 
+
 
 public:
 	UPROPERTY(EditAnywhere, Category = CrossHairs)
@@ -56,12 +59,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 MaxAmmo;
 
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, ReplicatedUsing = On_RepAmmo, BlueprintReadWrite)
 	int32 CurrentAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWeaponType WeaponType;
 
+	UPROPERTY()
+	class AMG_ShootingCharacterPlayer* FPSCharacter;
+
+	UPROPERTY()
+	class AFPSPlayerController* FPSPlayerController;
+
+	UFUNCTION()
+	void On_RepAmmo();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CoolTime;
+
 };

@@ -2,6 +2,8 @@
 
 
 #include "ShootingGames/Weapons/WeaponBase.h"
+#include "Minigames/OBot/Character/MG_ShootingCharacterPlayer.h"
+#include "ShootingGames/FPSPlayerController.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -32,5 +34,23 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 	DOREPLIFETIME(AWeaponBase, CurrentAmmo);
 	
+}
+
+void AWeaponBase::SetHUDBullet()
+{
+	FPSCharacter = FPSCharacter == nullptr ? Cast<AMG_ShootingCharacterPlayer>(GetOwner()) : FPSCharacter;
+	if (FPSCharacter)
+	{
+		FPSPlayerController = FPSPlayerController == nullptr ? Cast<AFPSPlayerController>(FPSCharacter->Controller) : FPSPlayerController;
+		if (FPSPlayerController)
+		{
+			FPSPlayerController->SetHUDAmmo(CurrentAmmo,MaxAmmo); //캐릭터랑 컨트롤러 가 있을때 hud set 
+		}
+	}
+}
+
+void AWeaponBase::On_RepAmmo()
+{
+	SetHUDBullet();
 }
 
