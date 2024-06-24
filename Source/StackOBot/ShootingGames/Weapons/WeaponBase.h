@@ -78,7 +78,9 @@ public:
 	float CoolTime;
 
 
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_WeaponOwner, BlueprintReadWrite)
 	TObjectPtr<class AMG_ShootingCharacterPlayer> WeaponOwner;
 
+	UFUNCTION()
+	void OnRep_WeaponOwner();
 };
