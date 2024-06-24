@@ -15,7 +15,8 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
@@ -197,6 +198,11 @@ void AMG_ShootingCharacterPlayer::ReceiveDamage(AActor* DamagaedActor, float Dam
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damagae, 0.f, MaxHealth); // 체력을 0-100 제한
 	GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
 
+	if (CurrentHealth <= 0.f)
+	{
+		OnDeathPlayRagdoll();
+	}
+
 	//UpdateHUDHealth();
 	// 맞을때 애니메이션 넣어도 됨
 	// 
@@ -270,6 +276,48 @@ void AMG_ShootingCharacterPlayer::UpdateHUDHealth()
 
 	}
 }
+
+void AMG_ShootingCharacterPlayer::OnDeathPlayRagdoll()
+{
+	if (HasAuthority())
+	{
+		Multicast_PlayRagdoll();
+	}
+
+}
+
+void AMG_ShootingCharacterPlayer::OnDeathEnd()
+{
+	GetMesh()->SetAllBodiesSimulatePhysics(false);
+	GetCharacterMovement()->SetDefaultMovementMode();
+	GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+	Jetpack->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("BackpackSocket"));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -60), FRotator(0, -90, 0));
+	if (HasAuthority())
+	{
+		AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+		//다른 물체가 닿으면 start 위치로 location 설정
+		if (IsValid(PlayerStart))
+		{
+			SetActorLocation(PlayerStart->GetActorLocation());
+
+			//GetMesh()->AttachToComponent()
+			//Jetpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
+		}
+	}
+
+	
+}
+
+void AMG_ShootingCharacterPlayer::Multicast_PlayRagdoll_Implementation()
+{
+	GetMesh()->SetAllBodiesSimulatePhysics(true);
+	GetCharacterMovement()->DisableMovement();
+	// restart function...
+	GetWorldTimerManager().SetTimer(DeathTimer, this, &ThisClass::OnDeathEnd, 2.f, false);
+}
+
+
 
 
 void AMG_ShootingCharacterPlayer::TryReloadWeapon()
