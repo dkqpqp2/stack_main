@@ -301,7 +301,8 @@ void AMG_ShootingCharacterPlayer::OnDeathEnd()
 		if (IsValid(PlayerStart))
 		{
 			SetActorLocation(PlayerStart->GetActorLocation());
-
+			CurrentHealth = MaxHealth;
+			GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
 			//GetMesh()->AttachToComponent()
 			//Jetpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
 		}
