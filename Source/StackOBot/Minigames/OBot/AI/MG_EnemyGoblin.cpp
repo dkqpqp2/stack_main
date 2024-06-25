@@ -4,6 +4,9 @@
 #include "MG_EnemyGoblin.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
+#include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
+#include "MG_EnemyStatComponent.h"
 
 AMG_EnemyGoblin::AMG_EnemyGoblin()
 {
@@ -34,10 +37,39 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 		GetMesh()->SetAnimInstanceClass(GoblinAnimInstanceClassRef.Class);
 	}
 
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+
 	CurrentMonsterType = EMonsterType::Goblin;
 
 }
 
-void AMG_EnemyGoblin::Attack()
+void AMG_EnemyGoblin::BeginPlay()
 {
+	Super::BeginPlay();
 }
+
+void AMG_EnemyGoblin::SetDead()
+{
+	Super::SetDead();
+
+	FTimerHandle DeadTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
+		[&]()
+		{
+			Destroy();
+		}
+	), DeadEventDelayTime, false);
+}
+
+void AMG_EnemyGoblin::AttackByAI_Implementation()
+{
+	PlayAttackAnimation();
+}
+
+void AMG_EnemyGoblin::NotifyAttackActionEnd_Implementation()
+{
+	Super::NotifyAttackActionEnd();
+	OnAttackFinished.ExecuteIfBound();
+}
+
+

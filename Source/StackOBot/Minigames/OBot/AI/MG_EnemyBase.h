@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Minigames/OBot/Interface/MG_AIInterface.h"
+#include "Minigames/OBot/Interface/MG_CharacterWidgetInterface.h"
 #include "MG_EnemyBase.generated.h"
 
 UENUM()
@@ -17,10 +19,8 @@ enum class EMonsterType
 	Lich
 };
 
-DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
-
 UCLASS()
-class STACKOBOT_API AMG_EnemyBase : public ACharacter
+class STACKOBOT_API AMG_EnemyBase : public ACharacter, public IMG_AIInterface, public IMG_CharacterWidgetInterface
 {
 	GENERATED_BODY()
 
@@ -28,26 +28,53 @@ public:
 	// Sets default values for this character's properties
 	AMG_EnemyBase();
 
-	void Attack();
-	FOnAttackEndDelegate OnAttackEnd;
-
 	EMonsterType GetCurrentMonsterType() { return CurrentMonsterType; }
 
+	virtual void PostInitializeComponents() override;
+
 protected:
-	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(VisibleAnywhere)
 	EMonsterType CurrentMonsterType;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Dead, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> AttackMontage;
+
+	
 	virtual void SetDead();
-	void PlayDeadAnimation();
+	UFUNCTION(NetMulticast, Unreliable)
+	virtual void PlayDeadAnimation();
+	virtual void PlayAttackAnimation();
+	virtual void AttackActionEnd(class UAnimMontage* TargetMontage, bool InProperlyEnded);
+	virtual void NotifyAttackActionEnd();
+
+	float DeadEventDelayTime = 2.0f;
 
 public:
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	virtual float GetAIPatrolRadius() override;
+	virtual float GetAIDetectRange() override;
+	virtual float GetAIAttackRange() override;
+	virtual float GetAITurnSpeed() override;
+
+	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
+	virtual void AttackByAI();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+	TObjectPtr<class UMG_EnemyStatComponent> Stat;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget)
+	TObjectPtr<class UMG_WidgetComponent> HpBar;
+
+	virtual void SetupCharacterWidget(class UMG_UserWidget* InUserWidget);
 	
 };
