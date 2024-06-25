@@ -12,11 +12,12 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase, public IMG_AnimationAttackInterface
+class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase
 {
 	GENERATED_BODY()
 public:
 	AMG_ShootingCharacterPlayer();
+
 
 protected:
 	// Called when the game starts or when spawned
