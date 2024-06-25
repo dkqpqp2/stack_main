@@ -11,6 +11,7 @@
 #include "Animation/AnimMontage.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "MG_EnemyStatComponent.h"
 
 AMG_EnemyBase::AMG_EnemyBase()
 {
@@ -31,6 +32,7 @@ AMG_EnemyBase::AMG_EnemyBase()
 	{
 		DeadMontage = DeadMontageRef.Object;
 	}
+	Stat = CreateDefaultSubobject<UMG_EnemyStatComponent>(TEXT("Stat"));
 
 	HpBar = CreateDefaultSubobject<UMG_WidgetComponent>(TEXT("HpBar"));
 	HpBar->SetupAttachment(GetMesh());
@@ -46,20 +48,20 @@ AMG_EnemyBase::AMG_EnemyBase()
 	CurrentMonsterType = EMonsterType::None;
 }
 
+
 void AMG_EnemyBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	OnHpZero.AddUObject(this, &AMG_EnemyBase::SetDead);
+	Stat->OnHpZero.AddUObject(this, &AMG_EnemyBase::SetDead);
 }
-
 
 float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	//ApplyDamage(DamageAmount);
-	SetDead();
+	Stat->ApplyDamage(DamageAmount);
+	//SetDead();
 
 	return DamageAmount;
 }
@@ -67,14 +69,14 @@ float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 void AMG_EnemyBase::SetDead()
 {
-	NPCController->StopAI();
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	PlayDeadAnimation();
 	SetActorEnableCollision(false);
 	HpBar->SetHiddenInGame(true);
+	Cast<AMG_NPCController>(GetController())->StopAI();
 }
 
-void AMG_EnemyBase::PlayDeadAnimation()
+void AMG_EnemyBase::PlayDeadAnimation_Implementation()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->StopAllMontages(0.0f);
@@ -83,10 +85,18 @@ void AMG_EnemyBase::PlayDeadAnimation()
 
 void AMG_EnemyBase::PlayAttackAnimation()
 {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(AttackMontage, 1.0f);
+
+	FOnMontageEnded EndDelegate;
+	EndDelegate.BindUObject(this, &AMG_EnemyBase::AttackActionEnd);
+	AnimInstance->Montage_SetEndDelegate(EndDelegate, AttackMontage);
 }
 
 void AMG_EnemyBase::AttackActionEnd(UAnimMontage* TargetMontage, bool InProperlyEnded)
 {
+	NotifyAttackActionEnd();
 }
 
 void AMG_EnemyBase::NotifyAttackActionEnd()
@@ -114,6 +124,11 @@ float AMG_EnemyBase::GetAIAttackRange()
 	return 250.0f;
 }
 
+float AMG_EnemyBase::GetAITurnSpeed()
+{
+	return 2.0f;
+}
+
 void AMG_EnemyBase::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
 {
 	OnAttackFinished = InOnAttackFinished;
@@ -123,33 +138,14 @@ void AMG_EnemyBase::AttackByAI()
 {
 }
 
-float AMG_EnemyBase::ApplyDamage(float InDamage)
-{
-	const float PrevHp = CurrentHp;
-	const float ActualDamage = FMath::Clamp<float>(InDamage, 0, InDamage);
-
-	SetHp(PrevHp - ActualDamage);
-	if (CurrentHp <= KINDA_SMALL_NUMBER)
-	{
-		OnHpZero.Broadcast();
-	}
-	return ActualDamage;
-}
-
-void AMG_EnemyBase::SetHp(float NewHp)
-{
-	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
-	OnHpChanged.Broadcast(CurrentHp);
-}
-
 void AMG_EnemyBase::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
 {
 	UMG_MonsterHpBar* HpBarWidget = Cast<UMG_MonsterHpBar>(InUserWidget);
 	if (HpBarWidget)
 	{
-		HpBarWidget->SetMaxHp(GetMaxHp());
-		HpBarWidget->UpdateHpBar(GetCurrentHp());
-		OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
+		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
+		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
+		Stat->OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
 	}
 }
 

@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
+#include "MG_EnemyStatComponent.h"
 
 AMG_EnemyGoblin::AMG_EnemyGoblin()
 {
@@ -39,110 +40,36 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
 
 	CurrentMonsterType = EMonsterType::Goblin;
-	MaxHp = 50.0f;
-	CurrentHp = MaxHp;
 
 }
 
 void AMG_EnemyGoblin::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetHp(MaxHp);
 }
 
-//float AMG_EnemyGoblin::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-//{
-//	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-//
-//	ApplyDamage(DamageAmount);
-//
-//	return DamageAmount;
-//}
-
-//void AMG_EnemyGoblin::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
-//{
-//	Super::SetAIAttackDelegate(InOnAttackFinished);
-//
-//	OnAttackFinished = InOnAttackFinished;
-//}
-
-void AMG_EnemyGoblin::AttackActionEnd(UAnimMontage* TargetMontage, bool InProperlyEnded)
+void AMG_EnemyGoblin::SetDead()
 {
-	NotifyAttackActionEnd();
+	Super::SetDead();
+
+	FTimerHandle DeadTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
+		[&]()
+		{
+			Destroy();
+		}
+	), DeadEventDelayTime, false);
 }
 
-void AMG_EnemyGoblin::PlayAttackAnimation()
+void AMG_EnemyGoblin::AttackByAI_Implementation()
 {
-	Super::PlayAttackAnimation();
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(AttackMontage, 1.0f);
-
-	FOnMontageEnded EndDelegate;
-	EndDelegate.BindUObject(this, &AMG_EnemyGoblin::AttackActionEnd);
-	AnimInstance->Montage_SetEndDelegate(EndDelegate, AttackMontage);
-}
-
-void AMG_EnemyGoblin::AttackByAI()
-{
-	Super::AttackByAI();
-
 	PlayAttackAnimation();
-
 }
 
-void AMG_EnemyGoblin::NotifyAttackActionEnd()
+void AMG_EnemyGoblin::NotifyAttackActionEnd_Implementation()
 {
 	Super::NotifyAttackActionEnd();
 	OnAttackFinished.ExecuteIfBound();
 }
 
-//float AMG_EnemyGoblin::ApplyDamage(float InDamage)
-//{
-//	Super::ApplyDamage(InDamage);
-//	const float PrevHp = CurrentHp;
-//	const float ActualDamage = FMath::Clamp<float>(InDamage, 0, InDamage);
-//
-//	SetHp(PrevHp - ActualDamage);
-//	if (CurrentHp <= KINDA_SMALL_NUMBER)
-//	{
-//		OnHpZero.Broadcast();
-//	}
-//	return ActualDamage;
-//}
-//
-//void AMG_EnemyGoblin::SetHp(float NewHp)
-//{
-//	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
-//	OnHpChanged.Broadcast(CurrentHp);
-//}
-//
-//void AMG_EnemyGoblin::SetDead()
-//{
-//	Super::SetDead();
-//
-//	FTimerHandle DeadTimerHandle;
-//	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-//		[&]()
-//		{
-//			Destroy();
-//		}
-//	), DeadEventDelayTime, false);
-//
-//}
-//
-//void AMG_EnemyGoblin::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
-//{
-//	Super::SetupCharacterWidget(InUserWidget);
-//
-//	UMG_MonsterHpBar* HpBarWidget = Cast<UMG_MonsterHpBar>(InUserWidget);
-//	if (HpBarWidget)
-//	{
-//		HpBarWidget->SetMaxHp(GetMaxHp());
-//		HpBarWidget->UpdateHpBar(GetCurrentHp());
-//		OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
-//	}
-//}
 

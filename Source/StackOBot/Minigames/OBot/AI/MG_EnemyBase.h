@@ -19,9 +19,6 @@ enum class EMonsterType
 	Lich
 };
 
-DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /*CurrentHp*/);
-
 UCLASS()
 class STACKOBOT_API AMG_EnemyBase : public ACharacter, public IMG_AIInterface, public IMG_CharacterWidgetInterface
 {
@@ -48,51 +45,36 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
+	
 	virtual void SetDead();
+	UFUNCTION(NetMulticast, Unreliable)
 	virtual void PlayDeadAnimation();
 	virtual void PlayAttackAnimation();
 	virtual void AttackActionEnd(class UAnimMontage* TargetMontage, bool InProperlyEnded);
 	virtual void NotifyAttackActionEnd();
 
-	float DeadEventDelayTime = 5.0f;
+	float DeadEventDelayTime = 2.0f;
 
 public:
 	virtual void Tick(float DeltaTime) override;
-	
-	FOnHpZeroDelegate OnHpZero;
-	FOnHpChangedDelegate OnHpChanged;
 
 protected:
 	virtual float GetAIPatrolRadius() override;
 	virtual float GetAIDetectRange() override;
 	virtual float GetAIAttackRange() override;
+	virtual float GetAITurnSpeed() override;
 
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
-	virtual void AttackByAI() override;
-
-	FAICharacterAttackFinished OnAttackFinished;
-
-public:
-	virtual float GetMaxHp() { return MaxHp; }
-	virtual float GetCurrentHp() { return CurrentHp; }
-	virtual float ApplyDamage(float InDamage);
+	virtual void AttackByAI();
 
 protected:
-	virtual void SetHp(float NewHp);
-	UPROPERTY(VisibleInstanceOnly, Category = Hp)
-	float MaxHp;
-
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Hp)
-	float CurrentHp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+	TObjectPtr<class UMG_EnemyStatComponent> Stat;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget)
 	TObjectPtr<class UMG_WidgetComponent> HpBar;
 
 	virtual void SetupCharacterWidget(class UMG_UserWidget* InUserWidget);
-
-public:
-	TObjectPtr<class AMG_NPCController> NPCController;
-
 	
 };
