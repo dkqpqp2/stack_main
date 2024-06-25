@@ -298,7 +298,8 @@ void AMG_ShootingCharacterPlayer::OnDeathEnd()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -60), FRotator(0, -90, 0));
 	if (HasAuthority())
 	{
-		AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+		//AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+		AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(1));
 		//다른 물체가 닿으면 start 위치로 location 설정
 		if (IsValid(PlayerStart))
 		{
