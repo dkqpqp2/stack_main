@@ -12,7 +12,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS()
-class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase, public IMG_AnimationAttackInterface
+class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBase
 {
 	GENERATED_BODY()
 public:
@@ -51,10 +51,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> CrouchAction;
-
-	// Test HpBar
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere,Category = CrossHairs)
 	class UTexture2D* CrosshairsCenter;

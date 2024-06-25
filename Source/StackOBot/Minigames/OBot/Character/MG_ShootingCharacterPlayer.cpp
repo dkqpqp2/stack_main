@@ -43,15 +43,6 @@ AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 		Jetpack->SetSkeletalMesh(JetpackMeshRef.Object);
 	}
 
-	// Test HpBar
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionAttackRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Character/Input/IA_Attack.IA_Attack'"));
-	if (nullptr != InputActionAttackRef.Object)
-	{
-		AttackAction = InputActionAttackRef.Object;
-	}
-
-	bCanAttack = true;
-
 }
 
 void AMG_ShootingCharacterPlayer::BeginPlay()
@@ -104,9 +95,7 @@ void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* Pla
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::OnCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::OffCrouch);
-	// Test
-	EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::Attack);
-
+	
 }
 
 void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
