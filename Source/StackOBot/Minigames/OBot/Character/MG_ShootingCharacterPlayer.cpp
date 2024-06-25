@@ -411,7 +411,7 @@ void AMG_ShootingCharacterPlayer::OnEndReloadAnimation()
 	default:
 		break;
 	}
-
+	CurrentWeaponBase->SetHUDBullet();
 }
 
 void AMG_ShootingCharacterPlayer::PlayReloadStartAnimation_Implementation()
