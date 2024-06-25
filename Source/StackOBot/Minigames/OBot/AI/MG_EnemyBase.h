@@ -6,18 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Minigames/OBot/Interface/MG_AIInterface.h"
 #include "Minigames/OBot/Interface/MG_CharacterWidgetInterface.h"
+#include "EnemyData/EnemyStat.h"
 #include "MG_EnemyBase.generated.h"
-
-UENUM()
-enum class EMonsterType
-{
-	None,
-	Goblin,
-	Ghoul,
-	Skeleton,
-	Zombie,
-	Lich
-};
 
 UCLASS()
 class STACKOBOT_API AMG_EnemyBase : public ACharacter, public IMG_AIInterface, public IMG_CharacterWidgetInterface
@@ -34,8 +24,8 @@ public:
 
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
-	UPROPERTY(VisibleAnywhere)
+	
+	UPROPERTY(VisibleAnywhere, Category = EnemyType)
 	EMonsterType CurrentMonsterType;
 
 protected:

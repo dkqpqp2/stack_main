@@ -7,6 +7,7 @@
 #include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 #include "MG_EnemyStatComponent.h"
+#include "EnemyData/EnemyStat.h"
 
 AMG_EnemyGoblin::AMG_EnemyGoblin()
 {
@@ -38,9 +39,8 @@ AMG_EnemyGoblin::AMG_EnemyGoblin()
 	}
 
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
-
-	CurrentMonsterType = EMonsterType::Goblin;
-
+	
+	CurrentMonsterType = EMonsterType::Ghoul;
 }
 
 void AMG_EnemyGoblin::BeginPlay()

@@ -143,7 +143,7 @@ void AMG_EnemyBase::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
 	UMG_MonsterHpBar* HpBarWidget = Cast<UMG_MonsterHpBar>(InUserWidget);
 	if (HpBarWidget)
 	{
-		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
+		HpBarWidget->SetMaxHp(Stat->GetTotalStat().MaxHp);
 		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
 		Stat->OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
 	}

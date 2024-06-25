@@ -1,16 +1,24 @@
 #include "MG_EnemyStatComponent.h"
+#include "EnemyData/MG_GameSingleton.h"
 
 
 UMG_EnemyStatComponent::UMG_EnemyStatComponent()
 {
-	MaxHp = 50.0f;
 }
 
 void UMG_EnemyStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetHp(MaxHp);
+	SetEnemyType(EnemyType);
+	SetHp(EnemyStat.MaxHp);
+}
+
+void UMG_EnemyStatComponent::SetEnemyType(int32 InEnemyType)
+{
+	EnemyType = FMath::Clamp(InEnemyType, 1, UMG_GameSingleton::Get().EnemyTypeNum);
+	EnemyStat = UMG_GameSingleton::Get().GetEnemyStat(EnemyType);
+	
 }
 
 float UMG_EnemyStatComponent::ApplyDamage(float InDamage)
@@ -25,7 +33,7 @@ float UMG_EnemyStatComponent::ApplyDamage(float InDamage)
 
 void UMG_EnemyStatComponent::SetHp(float NewHp)
 {
-	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
+	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, EnemyStat.MaxHp);
 	if (CurrentHp <= KINDA_SMALL_NUMBER)
 	{
 		OnHpZero.Broadcast();

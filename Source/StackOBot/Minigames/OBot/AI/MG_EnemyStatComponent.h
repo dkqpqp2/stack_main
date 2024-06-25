@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "EnemyData/EnemyStat.h"
 #include "MG_EnemyStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate);
@@ -27,17 +28,22 @@ public:
 	FOnHpZeroDelegate OnHpZero;
 	FOnHpChangedDelegate OnHpChanged;
 
-	float GetMaxHp() { return MaxHp; }
+	void SetEnemyType(int32 InEnemyType);
+	float GetCurrentEnemyType() const { return EnemyType; }
+	FEnemyStat GetTotalStat() const { return EnemyStat; }
 	float GetCurrentHp() { return CurrentHp; }
 	float ApplyDamage(float InDamage);
+
 
 protected:
 	void SetHp(float NewHp);
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat)
-	float MaxHp;
-
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp;
-	
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	int32 EnemyType;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	FEnemyStat EnemyStat;
 };
