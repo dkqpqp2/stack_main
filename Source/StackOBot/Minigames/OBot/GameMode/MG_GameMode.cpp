@@ -91,7 +91,7 @@ void AMG_GameMode::OnMatchStateSet()
 	if (MatchState == MatchState::InProgress)
 	{
 		// 시작.
-		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true, 5.f);
+		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true, 3.f);
 	}
 }
 
@@ -102,7 +102,7 @@ void AMG_GameMode::HandleMatchHasEnded()
 	// 안심해도 되겠다.
 	Super::HandleMatchHasEnded();
 	
-
+	GetWorldTimerManager().ClearTimer(UpdatePlayersRankTimer);
 
 	// podium을 가져오자.
 	APodium* PodiumActor = Cast<APodium>(UGameplayStatics::GetActorOfClass(GetWorld(), APodium::StaticClass()));
@@ -126,7 +126,12 @@ void AMG_GameMode::HandleMatchHasEnded()
 		}
 		// 폰 위치 이동.
 		// 왜 클라이언트와 서버의 위치가 살짝 다르지? (2등위치)
-		PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[i]->GetComponentTransform());		
+
+		AMG_PlayerState* MGPS = Cast<AMG_PlayerState>(PlayerState);
+		if (1 <= MGPS->GetFinalRank() && MGPS->GetFinalRank() <= 4)
+		{
+			PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[MGPS->GetFinalRank() - 1]->GetComponentTransform());
+		}
 
 		auto PC = PlayerState->GetPlayerController();
 		if (IsValid(PC))
@@ -159,7 +164,7 @@ void AMG_GameMode::UpdatePlayersRank()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FinishActor is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
 		return;
 	}
-	if (GS->GetMatchState() != MatchState::InProgress)
+	if ((GS->GetMatchState() != MatchState::InProgress) && (GS->GetMatchState() != MatchState::CoolDown))
 	{
 		return;
 	}
