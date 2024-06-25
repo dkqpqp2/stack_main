@@ -91,7 +91,7 @@ void AMG_GameMode::OnMatchStateSet()
 	if (MatchState == MatchState::InProgress)
 	{
 		// 시작.
-		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true);
+		GetWorldTimerManager().SetTimer(UpdatePlayersRankTimer, this, &ThisClass::UpdatePlayersRank, 0.1f, true, 5.f);
 	}
 }
 
@@ -141,6 +141,8 @@ void AMG_GameMode::HandleMatchHasEnded()
 	}
 
 	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
+	GetWorldTimerManager().SetTimer(FinishLevelTimer, this, &ThisClass::ReturnToLobby, 5.f, false);
+
 }
 
 void AMG_GameMode::UpdatePlayersRank()
@@ -155,6 +157,10 @@ void AMG_GameMode::UpdatePlayersRank()
 	if (!IsValid(FinishActor))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("FinishActor is Not Valid (AMG_GameMode::UpdatePlayersRank())"));
+		return;
+	}
+	if (GS->GetMatchState() != MatchState::InProgress)
+	{
 		return;
 	}
 
@@ -182,6 +188,12 @@ void AMG_GameMode::UpdatePlayersRank()
 	}
 
 	// 순위UI업데이트...
+}
+
+void AMG_GameMode::ReturnToLobby()
+{
+	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+
 }
 
 
