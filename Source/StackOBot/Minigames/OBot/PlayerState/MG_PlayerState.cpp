@@ -17,6 +17,7 @@ void AMG_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(AMG_PlayerState, CurrentItemName);
 	DOREPLIFETIME(AMG_PlayerState, Rank);
+	DOREPLIFETIME(AMG_PlayerState, FinalRank);
 
 }
 
@@ -31,7 +32,15 @@ void AMG_PlayerState::UpdateRankUI()
 	AMG_CharacterPlayer* Character = GetPawn<AMG_CharacterPlayer>();
 	if (IsValid(Character))
 	{
-		Character->SetPlayerRankWidget(Rank);
+		if (FinalRank == 0)
+		{
+			Character->SetPlayerRankWidget(Rank);
+		}
+		else
+		{
+			Character->SetPlayerRankWidget(FinalRank);
+
+		}
 	}
 }
 
@@ -42,12 +51,29 @@ void AMG_PlayerState::SetRank(int32 NewRank)
 		return;
 	}
 	Rank = NewRank;
+
 	UpdateRankUI();
 }
 
 int32 AMG_PlayerState::GetRank()
 {
 	return Rank;
+}
+
+int32 AMG_PlayerState::GetFinalRank()
+{
+	return FinalRank;
+}
+
+void AMG_PlayerState::SetFinalRank(int32 NewRank)
+{
+	FinalRank = NewRank;
+	UpdateRankUI();
+}
+
+void AMG_PlayerState::OnRep_FinalRank()
+{
+	UpdateRankUI();
 }
 
 
