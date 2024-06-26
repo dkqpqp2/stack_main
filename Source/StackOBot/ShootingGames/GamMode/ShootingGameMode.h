@@ -17,15 +17,18 @@ public:
 
 	UFUNCTION()
 	void OnPlayerFinishLineReached();
+
 	void AllPlayerDeadCheck();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(Replicated)
+	bool IsWin;
 protected:
 
 	virtual void BeginPlay() override;
 	virtual void OnMatchStateSet() override;
 	virtual void HandleMatchHasEnded() override;
-
-	UPROPERTY()
-	bool IsWin;
 
 	
 };

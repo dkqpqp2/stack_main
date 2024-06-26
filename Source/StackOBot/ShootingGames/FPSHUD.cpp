@@ -4,11 +4,14 @@
 #include "FPSHUD.h"
 #include "GameFramework/PlayerController.h"
 #include "FPSOverlay.h"
+#include "FPSAnnouncement.h"
+
 
 
 void AFPSHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	AddAnnouncement();
 	AddCharacterOverlay();
 }
 
@@ -22,6 +25,18 @@ void AFPSHUD::AddCharacterOverlay()
 		FPSOverlay->AddToViewport();
 	}
 }
+
+void AFPSHUD::AddAnnouncement()
+{
+	GetOwningPlayerController();
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && AnnouncementClass)
+	{
+		Announcement = CreateWidget<UFPSAnnouncement>(PlayerController, AnnouncementClass);
+		Announcement->AddToViewport();
+	}
+}
+
 
 
 void AFPSHUD::DrawHUD()

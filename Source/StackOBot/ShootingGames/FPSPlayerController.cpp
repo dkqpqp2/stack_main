@@ -10,6 +10,8 @@
 #include "Components/TextBlock.h"
 #include "Curves/CurveLinearColor.h"
 #include "../ShootingGames/GamMode/ShootingGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "ShootingGames/FPSAnnouncement.h"	
 
 void AFPSPlayerController::BeginPlay()
 {
@@ -121,6 +123,11 @@ void AFPSPlayerController::SetHUDAmmo(int32 Ammo, int32 MaxAmmo)
 	}
 }
 
+void AFPSPlayerController::SetHUDAnnouncement()
+{
+
+}
+
 void AFPSPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -168,13 +175,17 @@ void AFPSPlayerController::SetHUDMatchCountDown(float CountDownTime)
 
 void AFPSPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
+	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
 	if (CountDownInt != SecondsLeft)
 	{
 		SetHUDMatchCountDown(MatchTime - GetServerTime());
 	}
+	else //seconds left가 0이되면
+	{
+		HandleMatchHasEnded();//기본이 false이기 때문에 바로 ended호출 
+	}
 
-	CountDownInt = SecondsLeft;
+	//CountDownInt = SecondsLeft;
 }
 
 void AFPSPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
@@ -228,27 +239,30 @@ void AFPSPlayerController::OnRep_MatchState()
 void AFPSPlayerController::HandleMatchHasStarted()
 {
 	//영상 보여주는거 넣으면 될듯 
-	//
+	hiddenAnnouncement();
 }
 
 void AFPSPlayerController::HandleMatchHasEnded()
 {
 	//UI띄우고 Announce <ex> 게임이 종료되었습니다 
-	if (bIsWinner)
+	//AShootingGameMode* GameMode = Cast<AShootingGameMode>(UGameplayStatics::GetGameMode(this));
+	//SeeAnnouncement();
+	 AShootingGameMode* GameMode = Cast<AShootingGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
-		UUserWidget* WinScreen = CreateWidget(this, WinScreenClass);
-		if (WinScreen != nullptr)
+		bIsWinner = GameMode->IsWin;
+		if (bIsWinner)
 		{
-			WinScreen->AddToViewport();
+			SeeAnnouncement(Win);
+		}
+		else
+		{
+			SeeAnnouncement(Lose);
 		}
 	}
 	else
 	{
-		UUserWidget* LoseScreen = CreateWidget(this, LoseScreenClass );
-		if (LoseScreen != nullptr)
-		{
-			LoseScreen->AddToViewport();
-		}
+		UE_LOG(LogTemp, Warning, TEXT("NO MODE!"));
 	}
 }
 
@@ -256,5 +270,29 @@ void AFPSPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFPSPlayerController, MatchState)
-	DOREPLIFETIME(AFPSPlayerController, bIsWinner)
+}
+
+void AFPSPlayerController::hiddenAnnouncement()
+{
+	FPSHUD = FPSHUD == nullptr ? Cast<AFPSHUD>(GetHUD()) : FPSHUD;
+	if (FPSHUD)
+	{
+		if (FPSHUD->Announcement)
+		{
+			FPSHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+void AFPSPlayerController::SeeAnnouncement(FString Announce)
+{
+	FPSHUD = FPSHUD == nullptr ? Cast<AFPSHUD>(GetHUD()) : FPSHUD;
+	if (FPSHUD)
+	{
+		if (FPSHUD->Announcement)
+		{
+			FPSHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
+			FPSHUD->Announcement->AnnouncementText->SetText(FText::FromString(Announce));
+		}
+	}
 }

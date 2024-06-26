@@ -59,7 +59,7 @@ void AMG_GameMode::Tick(float Deltatime)
 			bCoolDown = true; // 플래그 설정
 		}
 		if(bCoolDown == true)
-		CountDownTime = CoolDownTime + ServerTimeAtCoolDown/*게임진행시간*/ - GetWorld()->GetTimeSeconds();
+		CountDownTime = 10.f + ServerTimeAtCoolDown - GetWorld()->GetTimeSeconds();
 		if (CountDownTime <= 0.f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("post"));

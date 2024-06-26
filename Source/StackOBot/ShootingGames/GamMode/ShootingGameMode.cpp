@@ -46,6 +46,12 @@ void AShootingGameMode::AllPlayerDeadCheck()
 	}
 }
 
+void AShootingGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AShootingGameMode, IsWin); // 승리 패배 조건을 RPC로 보내기 
+}
+
 void AShootingGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();

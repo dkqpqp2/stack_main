@@ -34,6 +34,14 @@ public:
 	UPROPERTY()
 	class UFPSOverlay* FPSOverlay;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UFPSAnnouncement> AnnouncementClass;
+
+	void AddAnnouncement();
+
+	UPROPERTY()
+	class UFPSAnnouncement* Announcement;
+
 protected:
 	virtual void BeginPlay() override;
 	void AddCharacterOverlay();
@@ -46,5 +54,5 @@ private:
 	float CrossHariSpreadMax = 16.f;
 
 public:
-	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; } // 인라인 화 
+	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; } // 인라인 화
 };

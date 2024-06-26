@@ -95,4 +95,6 @@ public:
 
 	UPROPERTY(ReplicatedUsing=OnRep_ServerTime)
 	float ServerTimeAtCoolDown;
+
+
 };

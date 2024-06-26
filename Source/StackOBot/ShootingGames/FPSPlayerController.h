@@ -25,6 +25,8 @@ public:
 
 	void SetHUDAmmo(int32 Ammo, int32 MaxAmmo);
 
+	void SetHUDAnnouncement();
+
 protected:
 	virtual void BeginPlay() override;
 private:
@@ -45,7 +47,7 @@ private:
 	TObjectPtr<class UCurveLinearColor> HealthCurve;
 
 	//Timer
-	float MatchTime = 600.f;
+	float MatchTime = 5.f;
 
 public:
 	void SetHUDMatchCountDown(float CountDownTume);
@@ -87,13 +89,14 @@ public:
 	FName MatchState;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(Replicated,EditAnywhere)
 	bool bIsWinner; //승패 bool
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> WinScreenClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> LoseScreenClass;
+	void hiddenAnnouncement();
+	void SeeAnnouncement(FString Announce);
 
+	FString Win = "Survive!";
+	FString Lose = "Dead..";
 
 };
