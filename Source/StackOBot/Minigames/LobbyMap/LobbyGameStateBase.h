@@ -6,6 +6,18 @@
 #include "GameFramework/GameStateBase.h"
 #include "LobbyGameStateBase.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FGameMapStruct
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MapURL;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString MapName;
+};
 /**
  * 
  */
@@ -13,5 +25,18 @@ UCLASS()
 class STACKOBOT_API ALobbyGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_MapIndex)
+	int32 MapIndex = 0;
+
+	UFUNCTION()
+	void OnRep_MapIndex();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FGameMapStruct> GameMaps;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	
 };
