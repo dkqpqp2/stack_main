@@ -76,6 +76,9 @@ public:
 	UFUNCTION()
 	void OnRep_MatchState(); //Server 연결
 
+	UFUNCTION()
+	void OnRep_ServerTime(); //Server 연결
+
 	void HandleMatchHasStarted();
 	void HandleCoolDown();
 	void HandleMatchHasEnded();
@@ -87,6 +90,9 @@ public:
 	float CoolDownTime = 5.0f;
 	float RaceTIme = 0.f; // 러닝 타임 
 
+	UPROPERTY(Replicated)
 	bool bCoolDown = false; // 플래그
-	float ServerTimeAtCoolDown = 0.f;
+
+	UPROPERTY(ReplicatedUsing=OnRep_ServerTime)
+	float ServerTimeAtCoolDown;
 };

@@ -48,4 +48,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* MaxBullet; //최대 총알 
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* MatchCountDownText; //매치 시간
+
 };

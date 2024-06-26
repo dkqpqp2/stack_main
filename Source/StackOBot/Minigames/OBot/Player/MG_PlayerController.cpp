@@ -24,13 +24,14 @@ void AMG_PlayerController::Tick(float DeltaTime)
 
 	SetHUDTime(DeltaTime);
 	CheckTimeSync(DeltaTime);
-	//PollInit();
 }
 
 void AMG_PlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMG_PlayerController, MatchState)
+	DOREPLIFETIME(AMG_PlayerController, ServerTimeAtCoolDown)
+	DOREPLIFETIME(AMG_PlayerController, bCoolDown)
 }
 
 float AMG_PlayerController::GetServerTime()
@@ -90,26 +91,23 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 
 void AMG_PlayerController::SetHUDTime(float DeltaTime)
 {
-	//실시간 시간 세팅 
-	//AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
 	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
-	float GetTimeSeconds = GetWorld()->GetTimeSeconds();
-	float TimeLeft = 0.f;
-	float RunTime = GameMode->ServerTimeAtCoolDown;
+	float GetTimeSeconds = GetWorld()->GetTimeSeconds(); //실시간 
+	float TimeLeft = 0.f; // 기록할 시간 
 	if (MatchState == MatchState::WaitingToStart)
 		TimeLeft = WarmupTime - GetServerTime();
 	else if (MatchState == MatchState::InProgress)
 		TimeLeft = GetServerTime() - WarmupTime;
 	else if (MatchState == MatchState::CoolDown && bCoolDown == false)
 	{
-		float GetTime = GetWorld()->GetTimeSeconds();
+		float GetTime = GetServerTime();
 		ServerTimeAtCoolDown = GetTime;
 		bCoolDown = true; // 플래그 설정
 	}
 	else if (MatchState == MatchState::CoolDown && bCoolDown == true) {
-		TimeLeft = CoolDownTime + ServerTimeAtCoolDown - GetServerTime();
+	TimeLeft = 5.0 + ServerTimeAtCoolDown + WarmupTime - GetServerTime();
 	}
-	else if (MatchState == MatchState::CoolDown && GameMode->bCoolDown == true) {
+	/*else if (MatchState == MatchState::CoolDown && GameMode->bCoolDown == true) {
 		TimeLeft = CoolDownTime +  RunTime - GetServerTime();
 		/*TimeSinceLastLog += DeltaTime;
 		if (TimeSinceLastLog >= 1.0f)
@@ -117,8 +115,8 @@ void AMG_PlayerController::SetHUDTime(float DeltaTime)
 			CoolDownTime -= DecreaseTime;
 			TimeSinceLastLog = 0.0f;
 		}
-		*/
-	}
+		
+	}*/
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountDown != SecondsLeft)
 	{
@@ -205,6 +203,19 @@ void AMG_PlayerController::OnRep_MatchState()
 	if (MatchState == MatchState::WaitingPostMatch)
 	{
 		HandleMatchHasEnded();
+	}
+}
+
+void AMG_PlayerController::OnRep_ServerTime()
+{
+	//float GetTimeSeconds = GetWorld()->GetTimeSeconds();
+	//float TimeLeft = 0.f;
+	//float RunTime = ServerTimeAtCoolDown;
+    if (MatchState == MatchState::CoolDown && bCoolDown == false)
+	{
+		float GetTime = GetWorld()->GetTimeSeconds();
+		ServerTimeAtCoolDown = GetTime;
+		//bCoolDown = true; // 플래그 설정
 	}
 }
 
