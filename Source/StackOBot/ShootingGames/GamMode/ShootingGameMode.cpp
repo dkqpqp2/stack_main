@@ -4,6 +4,10 @@
 #include "ShootingGameMode.h"
 #include "../../Minigames/OBot/Character/MG_ShootingCharacterPlayer.h"
 #include"../StackOBot/ShootingGames/FPSPlayerController.h"
+#include "Minigames/OBot/Actors/Podium.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/GameState.h"
+#include "GameFramework/PlayerState.h"
 
 
 void AShootingGameMode::BeginPlay()
@@ -69,5 +73,64 @@ void AShootingGameMode::HandleMatchHasEnded()
 {
 	//Poduim처리 여기서 해주시면 됩니당 
 	//승리시 성공한 캐릭터들만 실패시 아무도 안나오는 식으로 ? 
+	Super::HandleMatchHasEnded();
+
+	// podium을 가져오자.
+	APodium* PodiumActor = Cast<APodium>(UGameplayStatics::GetActorOfClass(GetWorld(), APodium::StaticClass()));
+	if (!IsValid(PodiumActor))
+	{
+		return;
+	}
+
+	AGameState* GS = GetGameState<AGameState>();
+	if (!IsValid(GS))
+	{
+		return;
+	}
+
+	int i = 1;
+	for (TObjectPtr<APlayerState> PlayerState : GS->PlayerArray)
+	{
+		if (i >= PodiumActor->PlayerLocations.Num())
+		{
+			i = PodiumActor->PlayerLocations.Num() - 1;
+		}
+		// 폰 위치 이동.
+		// 왜 클라이언트와 서버의 위치가 살짝 다르지? (2등위치)
+
+		AMG_ShootingCharacterPlayer* Pawn = PlayerState->GetPawn<AMG_ShootingCharacterPlayer>();
+		if (Pawn->IsWinner)
+		{
+			PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[0]->GetComponentTransform());
+		}
+		else
+		{
+			if (i >= 4)
+			{
+				i = 3;
+			}
+			PlayerState->GetPawn()->SetActorTransform(PodiumActor->PlayerLocations[i]->GetComponentTransform());
+			i += 1;
+		}
+		
+
+		auto PC = PlayerState->GetPlayerController();
+		if (IsValid(PC))
+		{
+			// 알아서 PodiumActor안에 있는 카메라 컴포넌트를 찾아서 하는 viewtarget을 바꾸는듯...
+			PC->SetViewTarget(PodiumActor);
+			//PlayerState->GetPawn<AMG_CharacterPlayer>()->OnDisableInput();
+		}
+
+	}
+
+	// 몇초 뒤에 시상식 종료... 로비화면으로 이동?
+	GetWorldTimerManager().SetTimer(FinishLevelTimer, this, &ThisClass::ReturnToLobby, 5.f, false);
+}
+
+void AShootingGameMode::ReturnToLobby()
+{
+	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+
 }
 
