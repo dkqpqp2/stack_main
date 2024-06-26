@@ -31,5 +31,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UBlackboardData> BBAsset;
-	
+
+	UPROPERTY()
+	TObjectPtr<class UBehaviorTreeComponent> BTComponent;
 };

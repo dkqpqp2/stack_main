@@ -51,7 +51,7 @@ void AMG_NPCController::RunAI()
 
 void AMG_NPCController::StopAI()
 {
-	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+	BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
 	if (BTComponent)
 	{
 		BTComponent->StopTree();

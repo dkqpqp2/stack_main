@@ -12,6 +12,8 @@
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Minigames/OBot/AI/DataAsset/MG_EnemyComboActionData.h"
+#include "Net/UnrealNetwork.h"
+#include "Minigames/OBot/AI/SpawnPoint/MG_EnemySpawnPoint.h"
 
 AMG_EnemyBase::AMG_EnemyBase()
 {
@@ -39,6 +41,7 @@ AMG_EnemyBase::AMG_EnemyBase()
 	}
 
 	CurrentMonsterType = EMonsterType::None;
+	SetReplicates(true);
 }
 
 
@@ -77,11 +80,19 @@ float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 
 void AMG_EnemyBase::SetDead()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	PlayDeadAnimation();
-	SetActorEnableCollision(false);
-	HpBar->SetHiddenInGame(true);
-	Cast<AMG_NPCController>(GetController())->StopAI();
+	if (HasAuthority())
+	{
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		PlayDeadAnimation();
+		SetActorEnableCollision(false);
+		Cast<AMG_NPCController>(GetController())->StopAI();
+
+		if (SpawnPoint)
+		{
+			SpawnPoint->ClearSpawnObject();
+		}
+	}
+
 }
 
 void AMG_EnemyBase::PlayDeadAnimation_Implementation()
@@ -89,6 +100,7 @@ void AMG_EnemyBase::PlayDeadAnimation_Implementation()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(DeadMontage, 1.0f);
+	HpBar->SetHiddenInGame(true);
 }
 
 void AMG_EnemyBase::PlayAttackAnimation()
@@ -191,7 +203,16 @@ void AMG_EnemyBase::AttackHitCheck()
 
 		const float AttackRange = 10.0f;
 		const float AttackRadius = 20.0f;
-		const FVector Start = GetMesh()->GetSocketLocation(TEXT("LHand_Socket")) + GetActorForwardVector();
+		FVector SocketLocation;
+		if (GetMesh()->GetSocketByName(TEXT("LHand_Socket")) == nullptr)
+		{
+			SocketLocation = GetMesh()->GetSocketLocation(TEXT("RHand_Socket"));
+		}
+		else
+		{
+			SocketLocation = GetMesh()->GetSocketLocation(TEXT("LHand_Socket"));
+		}
+		const FVector Start = SocketLocation + GetActorForwardVector();
 		const FVector End = Start + GetActorForwardVector() * AttackRange;
 
 		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
@@ -270,6 +291,27 @@ void AMG_EnemyBase::SetHp(float NewHp)
 	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
 	
 	OnHpChanged.Broadcast(CurrentHp);
+}
+
+void AMG_EnemyBase::ReadyForReplication()
+{
+
+}
+
+void AMG_EnemyBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMG_EnemyBase, CurrentHp);
+}
+
+void AMG_EnemyBase::OnRep_CurrentHp()
+{
+	OnHpChanged.Broadcast(CurrentHp);
+	if (CurrentHp <= KINDA_SMALL_NUMBER)
+	{
+		OnHpZero.Broadcast();
+	}
 }
 
 

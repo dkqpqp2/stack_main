@@ -106,9 +106,24 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Stat)
 	float MaxHp;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentHP, Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Stat)
 	float AttackDamage;
+
+protected:
+	virtual void ReadyForReplication();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_CurrentHp();
+
+public:
+	TObjectPtr<class AMG_EnemySpawnPoint> SpawnPoint;
+
+	void SetItemSpawnPoint(class AMG_EnemySpawnPoint* Point)
+	{
+		SpawnPoint = Point;
+	}
 };
