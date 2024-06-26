@@ -18,7 +18,7 @@ void UPlayerCardWidget::CardUpdate(const ALobbyPlayerState* const  LobbyPS )
 	}
 
 	CharacterText->SetText(FText::FromString(LobbyPS->GetSelectedCharacter()));
-
+	NameTextBlock->SetText(FText::FromString(LobbyPS->GetPlayerName()));
 	if (LobbyPS->GetIsHost())
 	{
 		ReadyTextBlock->SetText(FText::FromString(TEXT("Host")));

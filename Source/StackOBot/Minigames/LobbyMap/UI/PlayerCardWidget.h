@@ -24,6 +24,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ReadyTextBlock;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* NameTextBlock;
 public:
 	void CardUpdate(const class ALobbyPlayerState* const  LobbyPS);
 	

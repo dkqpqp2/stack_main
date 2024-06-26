@@ -205,6 +205,7 @@ void AMG_ShootingCharacterPlayer::ReceiveDamage(AActor* DamagaedActor, float Dam
 	if (CurrentHealth <= 0.f)
 	{
 		OnDeathPlayRagdoll();
+		// 범준씨가 나중에 만들 모든 플레이어가 죽었는지 체크하는 게임모드 함수를 콜하자.
 	}
 
 	//UpdateHUDHealth();
