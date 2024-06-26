@@ -299,7 +299,27 @@ void AMG_ShootingCharacterPlayer::OnDeathEnd()
 	if (HasAuthority())
 	{
 		//AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
-		AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(1));
+		// from playerstate's get playerstart... that would be nice...
+		auto MyPS = GetPlayerState();
+		TArray<TObjectPtr<APlayerState>> PlayerStateArray = GetWorld()->GetGameState<AGameState>()->PlayerArray;
+		for (int i = 0; i < PlayerStateArray.Num(); i++)
+		{
+			if (MyPS == PlayerStateArray[i])
+			{
+				AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(i));
+				//다른 물체가 닿으면 start 위치로 location 설정
+				if (IsValid(PlayerStart))
+				{
+					SetActorLocation(PlayerStart->GetActorLocation());
+					CurrentHealth = MaxHealth;
+					GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
+					//GetMesh()->AttachToComponent()
+					//Jetpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
+				}
+				return;
+			}
+		}
+		AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(2));
 		//다른 물체가 닿으면 start 위치로 location 설정
 		if (IsValid(PlayerStart))
 		{
