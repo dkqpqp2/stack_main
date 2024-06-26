@@ -10,8 +10,22 @@
  * 
  */
 UCLASS()
-class STACKOBOT_API AShootingGameMode : public AMG_GameMode
+class STACKOBOT_API AShootingGameMode : public AGameMapGameMode
 {
 	GENERATED_BODY()
+public:
+
+	UFUNCTION()
+	void OnPlayerFinishLineReached();
+	void AllPlayerDeadCheck();
+protected:
+
+	virtual void BeginPlay() override;
+	virtual void OnMatchStateSet() override;
+	virtual void HandleMatchHasEnded() override;
+
+	UPROPERTY()
+	bool IsWin;
+
 	
 };

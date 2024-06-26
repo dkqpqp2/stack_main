@@ -3,9 +3,12 @@
 #pragma once
 
 #include "MG_ShootingCharacterBase.h"
+#include "Net/UnrealNetwork.h"
 #include "../../../ShootingGames/Weapons/WeaponBase.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFinishLineReached1); //데디케이트 브로드캐스트 가능한 함수 정의
 
 struct FInputActionValue;
 /**
@@ -160,4 +163,13 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_PlayRagdoll();
+
+//------Character begin Overlap ------
+// 충돌 이벤트를 처리하기 위한 이벤트 디스패처
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnFinishLineReached1 OnFinishLineReached1;
+
+	UFUNCTION()
+	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 };

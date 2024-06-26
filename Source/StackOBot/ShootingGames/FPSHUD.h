@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Net/UnrealNetwork.h"
 #include "FPSHUD.generated.h"
 
 USTRUCT(BlueprintType)
@@ -30,6 +31,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> FPSOverlayClass; //위젯 하위 클래스 
 
+	UPROPERTY()
 	class UFPSOverlay* FPSOverlay;
 
 protected:
