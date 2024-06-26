@@ -120,7 +120,15 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ALobbyGameMode::ServerTravelToGameMap()
 {
+	ALobbyGameStateBase* LobbyGS = GetGameState<ALobbyGameStateBase>();
+	if (!IsValid(LobbyGS))
+	{
+		return;
+	}
+
+	
 	// /Script/Engine.World'/Game/Lobby/ThirdPerson/Maps/TempGameMap.TempGameMap'
 	//GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/TempGameMap");
-	GetWorld()->ServerTravel("/Game/MainGame/Level/GameMap");
+	//GetWorld()->ServerTravel("/Game/MainGame/Level/GameMap");
+	GetWorld()->ServerTravel(LobbyGS->GameMaps[LobbyGS->MapIndex].MapURL);
 }

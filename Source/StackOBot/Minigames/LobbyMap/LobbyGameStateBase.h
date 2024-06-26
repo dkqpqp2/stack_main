@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_MapIndex)
 	int32 MapIndex = 0;
 
+	void SetMapIndex(int32 NewMapIndex);
+
+
 	UFUNCTION()
 	void OnRep_MapIndex();
 
