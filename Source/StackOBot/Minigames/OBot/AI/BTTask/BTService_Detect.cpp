@@ -8,6 +8,7 @@
 #include "DrawDebugHelpers.h"
 #include "Minigames/OBot/AI/MG_EnemyBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Minigames/OBot/Interface/MG_AIInterface.h"
 
 UBTService_Detect::UBTService_Detect()
 {
@@ -27,12 +28,19 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	UWorld* World = ControllingPawn->GetWorld();
 	FVector Center = ControllingPawn->GetActorLocation();
-	float DetectRadius = 600.0f;
 
 	if (nullptr == World)
 	{
 		return;
 	}
+
+	IMG_AIInterface* AIPawn = Cast<IMG_AIInterface>(ControllingPawn);
+	if (nullptr == AIPawn)
+	{
+		return;
+	}
+	float DetectRadius = AIPawn->GetAIDetectRange();
+
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(SCENE_QUERY_STAT(Detect), false, ControllingPawn);
 	bool bResult = World->OverlapMultiByChannel(
@@ -44,17 +52,16 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		CollisionQueryParam
 	);
 
+	AMG_EnemyBase* Enemy = Cast<AMG_EnemyBase>(ControllingPawn);
 
 	if (bResult)
 	{
 		for (auto OverlapResult : OverlapResults)
 		{
 			APawn* Pawn = Cast<APawn>(OverlapResult.GetActor());
-			if (Pawn && Pawn->GetController()->IsPlayerController())
+			if (Pawn && Pawn->GetController()->IsPlayerController()) // 
 			{
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(AMG_NPCController::TargetKey, Pawn);
-
-				AMG_EnemyBase* Enemy = Cast<AMG_EnemyBase>(ControllingPawn);
 				switch (Enemy->GetCurrentMonsterType())
 				{
 					case EMonsterType::Goblin:

@@ -5,6 +5,7 @@
 #include "Minigames/OBot/Player/MG_NPCController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
+#include "Minigames/OBot/Interface/MG_AIInterface.h"
 
 UBTTask_FindPatrolPos::UBTTask_FindPatrolPos()
 {
@@ -28,9 +29,16 @@ EBTNodeResult::Type UBTTask_FindPatrolPos::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	}
 
+	IMG_AIInterface* AIPawn = Cast<IMG_AIInterface>(ControllingPawn);
+	if (nullptr == AIPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+
 	FVector Origin = OwnerComp.GetBlackboardComponent()->GetValueAsVector(AMG_NPCController::HomePosKey);
 	FNavLocation NextPatrolPos;
-	if (NavSystem->GetRandomPointInNavigableRadius(Origin, 500.0f, NextPatrolPos))
+	float PatrolRadius = AIPawn->GetAIPatrolRadius();
+	if (NavSystem->GetRandomPointInNavigableRadius(Origin, PatrolRadius, NextPatrolPos))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(AMG_NPCController::PatrolPosKey, NextPatrolPos);
 		return EBTNodeResult::Succeeded;

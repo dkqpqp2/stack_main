@@ -4,6 +4,7 @@
 #include "BTDecorator_IsInAttackRange.h"
 #include "Minigames/OBot/Player/MG_NPCController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Minigames/OBot/Interface/MG_AIInterface.h"
 
 
 UBTDecorator_IsInAttackRange::UBTDecorator_IsInAttackRange()
@@ -22,6 +23,12 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 		return false;
 	}
 
+	IMG_AIInterface* AIPawn = Cast<IMG_AIInterface>(ControllingPawn);
+	if (nullptr == AIPawn)
+	{
+		return false;
+	}
+
 	APawn* Target = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AMG_NPCController::TargetKey));
 	if (nullptr == Target)
 	{
@@ -29,7 +36,8 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	}
 
 	float DistanceToTarget = ControllingPawn->GetDistanceTo(Target);
-	bResult = (DistanceToTarget <= 200.0f);
+	float AttackRangeWithRadius = AIPawn->GetAIAttackRange();
+	bResult = (DistanceToTarget <= AttackRangeWithRadius);
 
 	return bResult;
 }

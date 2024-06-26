@@ -44,6 +44,8 @@ AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 		Jetpack->SetSkeletalMesh(JetpackMeshRef.Object);
 	}
 
+
+
 }
 
 void AMG_ShootingCharacterPlayer::BeginPlay()
@@ -97,7 +99,7 @@ void AMG_ShootingCharacterPlayer::SetupPlayerInputComponent(UInputComponent* Pla
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AMG_ShootingCharacterPlayer::OnCrouch);
 	EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMG_ShootingCharacterPlayer::OffCrouch);
-
+	// Test
 }
 
 void AMG_ShootingCharacterPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -298,12 +300,34 @@ void AMG_ShootingCharacterPlayer::OnDeathEnd()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -60), FRotator(0, -90, 0));
 	if (HasAuthority())
 	{
-		AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+		//AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+		// from playerstate's get playerstart... that would be nice...
+		auto MyPS = GetPlayerState();
+		TArray<TObjectPtr<APlayerState>> PlayerStateArray = GetWorld()->GetGameState<AGameState>()->PlayerArray;
+		for (int i = 0; i < PlayerStateArray.Num(); i++)
+		{
+			if (MyPS == PlayerStateArray[i])
+			{
+				AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(i));
+				//다른 물체가 닿으면 start 위치로 location 설정
+				if (IsValid(PlayerStart))
+				{
+					SetActorLocation(PlayerStart->GetActorLocation());
+					CurrentHealth = MaxHealth;
+					GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
+					//GetMesh()->AttachToComponent()
+					//Jetpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
+				}
+				return;
+			}
+		}
+		AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(2));
 		//다른 물체가 닿으면 start 위치로 location 설정
 		if (IsValid(PlayerStart))
 		{
 			SetActorLocation(PlayerStart->GetActorLocation());
-
+			CurrentHealth = MaxHealth;
+			GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
 			//GetMesh()->AttachToComponent()
 			//Jetpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
 		}
@@ -420,7 +444,7 @@ void AMG_ShootingCharacterPlayer::OnEndReloadAnimation()
 	default:
 		break;
 	}
-
+	CurrentWeaponBase->SetHUDBullet();
 }
 
 void AMG_ShootingCharacterPlayer::PlayReloadStartAnimation_Implementation()

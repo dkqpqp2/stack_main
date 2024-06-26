@@ -51,4 +51,8 @@ protected:
 	AActor* FinishActor;
 private:
 	float CountDownTime = 0.f;
+
+protected:
+	FTimerHandle FinishLevelTimer;
+	void ReturnToLobby();
 };

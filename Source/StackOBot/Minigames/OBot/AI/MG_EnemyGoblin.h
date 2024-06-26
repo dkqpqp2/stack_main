@@ -16,6 +16,16 @@ class STACKOBOT_API AMG_EnemyGoblin : public AMG_EnemyBase
 public:
 	AMG_EnemyGoblin();
 
-	virtual void Attack();
+protected:
+	virtual void BeginPlay() override;
+public:
+	virtual void SetDead() override;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	virtual void AttackByAI() override;
+
+	UFUNCTION(NetMulticast, Unreliable)
+	virtual void NotifyAttackActionEnd() override;
+
 	
 };

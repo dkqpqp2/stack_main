@@ -4,6 +4,7 @@
 
 #include "MG_ShootingCharacterBase.h"
 #include "Net/UnrealNetwork.h"
+#include "../../../ShootingGames/Weapons/WeaponBase.h"
 #include "MG_ShootingCharacterPlayer.generated.h"
 
 
@@ -19,6 +20,7 @@ class STACKOBOT_API AMG_ShootingCharacterPlayer : public AMG_ShootingCharacterBa
 	GENERATED_BODY()
 public:
 	AMG_ShootingCharacterPlayer();
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,6 +55,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> CrouchAction;
+
+	// Test HpBar
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> AttackAction;
 
 	UPROPERTY(EditAnywhere,Category = CrossHairs)
 	class UTexture2D* CrosshairsCenter;

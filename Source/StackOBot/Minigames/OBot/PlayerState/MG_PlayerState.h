@@ -29,7 +29,14 @@ protected:
 public:
 	void SetRank(int32 NewRank);
 	int32 GetRank();
-
+	int32 GetFinalRank();
+	UFUNCTION(BlueprintCallable)
+	void SetFinalRank(int32 NewRank);
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_FinalRank, BlueprintReadWrite)
+	int32 FinalRank = 0;
+	UFUNCTION()
+	void OnRep_FinalRank();
 
 	// --------- ITEM ----------
 protected:
