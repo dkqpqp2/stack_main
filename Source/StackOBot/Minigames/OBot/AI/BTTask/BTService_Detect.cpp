@@ -68,13 +68,16 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 						Enemy->GetCharacterMovement()->MaxWalkSpeed = 450.f;
 						break;
 					case EMonsterType::Ghoul:
-						Enemy->GetCharacterMovement()->MaxWalkSpeed = 450.f;
+						Enemy->GetCharacterMovement()->MaxWalkSpeed = 500.f;
 						break;
 					case EMonsterType::Skeleton:
-						Enemy->GetCharacterMovement()->MaxWalkSpeed = 450.f;
+						Enemy->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+						break;
+					case EMonsterType::Zombie:
+						Enemy->GetCharacterMovement()->MaxWalkSpeed = 230.f;
 						break;
 					case EMonsterType::Lich:
-						Enemy->GetCharacterMovement()->MaxWalkSpeed = 450.f;
+						Enemy->GetCharacterMovement()->MaxWalkSpeed = 800.f;
 						break;
 					default:
 						break;

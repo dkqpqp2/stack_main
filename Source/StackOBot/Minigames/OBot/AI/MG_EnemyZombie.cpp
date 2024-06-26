@@ -1,57 +1,57 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MG_EnemyGoblin.h"
+#include "MG_EnemyZombie.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 
-AMG_EnemyGoblin::AMG_EnemyGoblin()
+AMG_EnemyZombie::AMG_EnemyZombie()
 {
-	GetCapsuleComponent()->InitCapsuleSize(60.0f, 60.0f);
+	GetCapsuleComponent()->InitCapsuleSize(80.0f, 130.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
+	GetCapsuleComponent()->SetRelativeScale3D(FVector(0.5, 0.5, 0.5));
 
 	GetCharacterMovement()->JumpZVelocity = 700.0f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->SetWalkableFloorAngle(50.0f);
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 130.0f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
 	GetCharacterMovement()->GravityScale = 1.0f;
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -60.0), FRotator(0.0, -90.0,0.0));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -130.0), FRotator(0.0, -90.0, 0.0));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetCollisionProfileName(TEXT("EnemyMesh"));
 
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> GoblinMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/UndeadPack/EnemyGoblin/Mesh/SM_EnemyGoblin.SM_EnemyGoblin'"));
-	if (GoblinMeshRef.Object)
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ZombieMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/UndeadPack/Zombie/Mesh/SK_Zombie.SK_Zombie'"));
+	if (ZombieMeshRef.Object)
 	{
-		GetMesh()->SetSkeletalMesh(GoblinMeshRef.Object);
+		GetMesh()->SetSkeletalMesh(ZombieMeshRef.Object);
 	}
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> GoblinAnimInstanceClassRef(TEXT("/Game/Character/AI/Goblin/MG_Goblin.MG_Goblin_C"));
-	if (GoblinAnimInstanceClassRef.Class)
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ZombieAnimInstanceClassRef(TEXT("/Game/Character/AI/Zombie/MG_Zombie.MG_Zombie_C"));
+	if (ZombieAnimInstanceClassRef.Class)
 	{
-		GetMesh()->SetAnimInstanceClass(GoblinAnimInstanceClassRef.Class);
+		GetMesh()->SetAnimInstanceClass(ZombieAnimInstanceClassRef.Class);
 	}
 
-	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 120.0f));
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 150.0f));
 
-	CurrentMonsterType = EMonsterType::Goblin;
-	MaxHp = 100.0f;
-	AttackDamage = 5.0f;
-
+	CurrentMonsterType = EMonsterType::Zombie;
+	MaxHp = 444.0f;
+	AttackDamage = 4.0f;
 }
 
-void AMG_EnemyGoblin::BeginPlay()
+void AMG_EnemyZombie::BeginPlay()
 {
 	Super::BeginPlay();
 
 	CurrentHp = MaxHp;
 }
 
-void AMG_EnemyGoblin::SetDead()
+void AMG_EnemyZombie::SetDead()
 {
 	Super::SetDead();
 
@@ -64,16 +64,13 @@ void AMG_EnemyGoblin::SetDead()
 	), DeadEventDelayTime, false);
 }
 
-void AMG_EnemyGoblin::AttackByAI_Implementation()
+void AMG_EnemyZombie::AttackByAI_Implementation()
 {
 	PlayAttackAnimation();
-	//ProcessComboAttack();
 }
 
-void AMG_EnemyGoblin::NotifyAttackActionEnd_Implementation()
+void AMG_EnemyZombie::NotifyAttackActionEnd_Implementation()
 {
 	Super::NotifyAttackActionEnd();
 	OnAttackFinished.ExecuteIfBound();
 }
-
-
