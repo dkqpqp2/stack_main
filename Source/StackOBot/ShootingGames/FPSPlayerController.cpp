@@ -14,6 +14,11 @@
 void AFPSPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	bShowMouseCursor = false;
+	FInputModeGameOnly GameInputMode;
+	SetInputMode(GameInputMode);
+
 	FPSHUD = Cast<AFPSHUD>(GetHUD());
 	AMG_ShootingCharacterPlayer* PlayerOwner = Cast<AMG_ShootingCharacterPlayer>(GetPawn());
 	PlayerOwner = PlayerOwner == nullptr ? Cast<AMG_ShootingCharacterPlayer>(GetPawn()) : PlayerOwner;
