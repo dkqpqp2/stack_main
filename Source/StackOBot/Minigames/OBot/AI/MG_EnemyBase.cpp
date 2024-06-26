@@ -11,7 +11,7 @@
 #include "Animation/AnimMontage.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
-#include "MG_EnemyStatComponent.h"
+#include "Minigames/OBot/AI/DataAsset/MG_EnemyComboActionData.h"
 
 AMG_EnemyBase::AMG_EnemyBase()
 {
@@ -26,13 +26,6 @@ AMG_EnemyBase::AMG_EnemyBase()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Character/AI/Goblin/MG_GoblinDead.MG_GoblinDead'"));
-	if (DeadMontageRef.Object)
-	{
-		DeadMontage = DeadMontageRef.Object;
-	}
-	Stat = CreateDefaultSubobject<UMG_EnemyStatComponent>(TEXT("Stat"));
 
 	HpBar = CreateDefaultSubobject<UMG_WidgetComponent>(TEXT("HpBar"));
 	HpBar->SetupAttachment(GetMesh());
@@ -53,14 +46,29 @@ void AMG_EnemyBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	Stat->OnHpZero.AddUObject(this, &AMG_EnemyBase::SetDead);
+	OnHpZero.AddUObject(this, &AMG_EnemyBase::SetDead);
+}
+
+float AMG_EnemyBase::ApplyDamage(float InDamage)
+{
+	const float PrevHp = CurrentHp;
+	const float ActualDamage = FMath::Clamp<float>(InDamage, 0, InDamage);
+
+	SetHp(PrevHp - ActualDamage);
+
+	if (CurrentHp <= KINDA_SMALL_NUMBER)
+	{
+		OnHpZero.Broadcast();
+	}
+
+	return ActualDamage;
 }
 
 float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	Stat->ApplyDamage(DamageAmount);
+	ApplyDamage(DamageAmount);
 	//SetDead();
 
 	return DamageAmount;
@@ -94,13 +102,116 @@ void AMG_EnemyBase::PlayAttackAnimation()
 	AnimInstance->Montage_SetEndDelegate(EndDelegate, AttackMontage);
 }
 
+void AMG_EnemyBase::ProcessComboAttack()
+{
+	if (CurrentCombo == 0)
+	{
+		ComboActionBegin();
+		return;
+	}
+
+	if (!ComboTimerHandle.IsValid())
+	{
+		HasNextComboCommand = false;
+	}
+	else
+	{
+		HasNextComboCommand = true;
+	}
+	
+}
+
+void AMG_EnemyBase::ComboActionBegin()
+{
+	CurrentCombo = 1;
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+	const float AttackSpeedRate = 1.0f;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->Montage_Play(AttackMontage, AttackSpeedRate);
+
+	FOnMontageEnded EndDelegate;
+	EndDelegate.BindUObject(this, &AMG_EnemyBase::AttackActionEnd);
+	AnimInstance->Montage_SetEndDelegate(EndDelegate, AttackMontage);
+
+	ComboTimerHandle.Invalidate();
+	SetComboCheckTimer();
+}
+
 void AMG_EnemyBase::AttackActionEnd(UAnimMontage* TargetMontage, bool InProperlyEnded)
 {
+	/*ensure(CurrentCombo != 0);
+
+	CurrentCombo = 0;
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);*/
+
 	NotifyAttackActionEnd();
 }
 
 void AMG_EnemyBase::NotifyAttackActionEnd()
 {
+}
+
+void AMG_EnemyBase::SetComboCheckTimer()
+{
+	int32 ComboIndex = CurrentCombo - 1;
+	ensure(ComboActionData->EffectiveFrameCount.IsValidIndex(ComboIndex));
+
+	const float AttackSpeedRate = 2.0f;
+	float ComboEffectiveTime = (ComboActionData->EffectiveFrameCount[ComboIndex] / ComboActionData->FrameRate) / AttackSpeedRate;
+	if (ComboEffectiveTime > 0.0f)
+	{
+		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AMG_EnemyBase::ComboCheck, ComboEffectiveTime, false);
+	}
+}
+
+void AMG_EnemyBase::ComboCheck()
+{
+	ComboTimerHandle.Invalidate();
+	if (HasNextComboCommand)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, ComboActionData->MaxComboCount);
+		FName NextSection = *FString::Printf(TEXT("%s%d"), *ComboActionData->MontageSectionNamePrefix, CurrentCombo);
+		AnimInstance->Montage_JumpToSection(NextSection, AttackMontage);
+		SetComboCheckTimer();
+		HasNextComboCommand = false;
+	}
+}
+
+void AMG_EnemyBase::AttackHitCheck()
+{
+	if (HasAuthority())
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(AttackByAI), true, this);
+
+		const float AttackRange = 10.0f;
+		const float AttackRadius = 20.0f;
+		const FVector Start = GetMesh()->GetSocketLocation(TEXT("LHand_Socket")) + GetActorForwardVector();
+		const FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+		if (HitDetected)
+		{
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+		}
+
+#if ENABLE_DRAW_DEBUG
+
+		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+		float CapsuleHalfHeight = AttackRange * 0.5f;
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+
+		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
+
+#endif
+	}
 }
 
 void AMG_EnemyBase::Tick(float DeltaTime)
@@ -121,7 +232,7 @@ float AMG_EnemyBase::GetAIDetectRange()
 
 float AMG_EnemyBase::GetAIAttackRange()
 {
-	return 250.0f;
+	return 150.0f;
 }
 
 float AMG_EnemyBase::GetAITurnSpeed()
@@ -131,11 +242,16 @@ float AMG_EnemyBase::GetAITurnSpeed()
 
 void AMG_EnemyBase::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished)
 {
-	OnAttackFinished = InOnAttackFinished;
+	if (!HasNextComboCommand)
+	{
+		OnAttackFinished = InOnAttackFinished;
+	}
+	
 }
 
 void AMG_EnemyBase::AttackByAI()
 {
+	ProcessComboAttack();
 }
 
 void AMG_EnemyBase::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
@@ -143,10 +259,17 @@ void AMG_EnemyBase::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
 	UMG_MonsterHpBar* HpBarWidget = Cast<UMG_MonsterHpBar>(InUserWidget);
 	if (HpBarWidget)
 	{
-		HpBarWidget->SetMaxHp(Stat->GetMaxHp());
-		HpBarWidget->UpdateHpBar(Stat->GetCurrentHp());
-		Stat->OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
+		HpBarWidget->SetMaxHp(GetMaxHp());
+		HpBarWidget->UpdateHpBar(GetCurrentHp());
+		OnHpChanged.AddUObject(HpBarWidget, &UMG_MonsterHpBar::UpdateHpBar);
 	}
+}
+
+void AMG_EnemyBase::SetHp(float NewHp)
+{
+	CurrentHp = FMath::Clamp<float>(NewHp, 0.0f, MaxHp);
+	
+	OnHpChanged.Broadcast(CurrentHp);
 }
 
 

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Minigames/OBot/Interface/MG_AIInterface.h"
 #include "Minigames/OBot/Interface/MG_CharacterWidgetInterface.h"
+#include "Minigames/OBot/Interface/MG_AnimationAttackInterface.h"
 #include "MG_EnemyBase.generated.h"
 
 UENUM()
@@ -19,8 +20,11 @@ enum class EMonsterType
 	Lich
 };
 
+DECLARE_MULTICAST_DELEGATE(FOnHpZeroDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, float /*CurrentHp*/);
+
 UCLASS()
-class STACKOBOT_API AMG_EnemyBase : public ACharacter, public IMG_AIInterface, public IMG_CharacterWidgetInterface
+class STACKOBOT_API AMG_EnemyBase : public ACharacter, public IMG_AIInterface, public IMG_CharacterWidgetInterface, public IMG_AnimationAttackInterface
 {
 	GENERATED_BODY()
 
@@ -32,6 +36,14 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
+	FOnHpZeroDelegate OnHpZero;
+	FOnHpChangedDelegate OnHpChanged;
+
+	float GetMaxHp() { return MaxHp; }
+	float GetCurrentHp() { return CurrentHp; }
+	float ApplyDamage(float InDamage);
+	virtual void AttackHitCheck();
+
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -39,21 +51,32 @@ protected:
 	EMonsterType CurrentMonsterType;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Dead, Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dead, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> AttackMontage;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack)
+	TObjectPtr<class UMG_EnemyComboActionData> ComboActionData;
+
 	virtual void SetDead();
+
 	UFUNCTION(NetMulticast, Unreliable)
 	virtual void PlayDeadAnimation();
 	virtual void PlayAttackAnimation();
+	virtual void ProcessComboAttack();
+	virtual void ComboActionBegin();
 	virtual void AttackActionEnd(class UAnimMontage* TargetMontage, bool InProperlyEnded);
 	virtual void NotifyAttackActionEnd();
+	void SetComboCheckTimer();
+	void ComboCheck();
 
-	float DeadEventDelayTime = 2.0f;
+
+	float DeadEventDelayTime = 1.75f;
+	int32 CurrentCombo = 0;
+	FTimerHandle ComboTimerHandle;
+	bool HasNextComboCommand = false;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -76,5 +99,16 @@ protected:
 	TObjectPtr<class UMG_WidgetComponent> HpBar;
 
 	virtual void SetupCharacterWidget(class UMG_UserWidget* InUserWidget);
-	
+
+protected:
+	void SetHp(float NewHp);
+
+	UPROPERTY(VisibleInstanceOnly, Category = Stat)
+	float MaxHp;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
+	float CurrentHp;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Stat)
+	float AttackDamage;
 };
