@@ -172,4 +172,6 @@ public:
 
 	UFUNCTION()
 	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
+
+	bool IsWinner = false;
 };

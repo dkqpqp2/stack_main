@@ -27,5 +27,6 @@ protected:
 	UPROPERTY()
 	bool IsWin;
 
-	
+	FTimerHandle FinishLevelTimer;
+	void ReturnToLobby();
 };

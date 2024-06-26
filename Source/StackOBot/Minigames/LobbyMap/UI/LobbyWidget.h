@@ -21,6 +21,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* ReadyOrStartSwitcher;
 
+	UPROPERTY(meta = (BindWidget))
+	class UMapSelectWidget* CurrentMapSelectWidget;
+
 public:
 	void SwitchSwitcherWidget(bool bIsReady);
 };

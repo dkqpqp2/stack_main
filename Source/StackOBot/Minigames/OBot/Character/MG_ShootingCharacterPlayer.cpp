@@ -18,6 +18,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "../../../Minigames/Item/FinishLineBox.h"
+#include "ShootingGames/GamMode/ShootingGameMode.h"
 
 AMG_ShootingCharacterPlayer::AMG_ShootingCharacterPlayer()
 {
@@ -63,6 +64,7 @@ void AMG_ShootingCharacterPlayer::BeginPlay()
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AMG_ShootingCharacterPlayer::ReceiveDamage);
+
 	}
 	OnActorBeginOverlap.AddDynamic(this, &AMG_ShootingCharacterPlayer::OnOverlapBegin);
 	
@@ -340,8 +342,10 @@ void AMG_ShootingCharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor
 {
 	if (OtherActor->IsA<AFinishLineBox>() && HasAuthority())
 	{
-		OnFinishLineReached1.Broadcast(); // FINISHLINE 캐릭터 플레이어 오버랩되면 결승 사실 전달
-
+		IsWinner = true;
+		GetController<AFPSPlayerController>()->bIsWinner = true;
+		//OnFinishLineReached1.AddDynamic(GetWorld()->GetAuthGameMode(), &AShootingGameMode::OnPlayerFinishLineReached); //결승전에 도달한거 전달받으면 reached함수 
+		GetWorld()->GetAuthGameMode<AShootingGameMode>()->OnPlayerFinishLineReached();
 	}
 }
 

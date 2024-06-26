@@ -12,6 +12,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "LobbyGameStateBase.h"
 #include "UI/PlayerCardWidget.h"
+#include "UI/MapSelectWidget.h"
 
 void ALobbyPlayerController::BeginPlay()
 {
@@ -148,5 +149,9 @@ void ALobbyPlayerController::LobbyWidgetUpdate()
 	if (HasAuthority() && IsLocalController())
 	{
 		LobbyWidget->ReadyOrStartSwitcher->GetActiveWidget()->SetIsEnabled(bActiveGameStartButton);
+		LobbyWidget->CurrentMapSelectWidget->EnableButton();
 	}
+
+	// MapSelect Widget Update
+	LobbyWidget->CurrentMapSelectWidget->UpdateCurrentMap();
 }
