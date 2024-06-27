@@ -191,6 +191,15 @@ void AMG_ShootingCharacterPlayer::SetHUDCrossHair(float DeltaTime)
 
 }
 
+void AMG_ShootingCharacterPlayer::OnRep_Weapon()
+{
+	if (!IsValid(CurrentWeaponBase))
+	{
+		return;
+	}
+	CurrentWeaponBase->SetHUDBullet();
+}
+
 void AMG_ShootingCharacterPlayer::OnRep_Health()
 {
 	GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();

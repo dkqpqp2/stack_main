@@ -86,8 +86,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	bool HasWeapon = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_Weapon)
 	TObjectPtr<class AWeaponBase> CurrentWeaponBase;
+
+	UFUNCTION()
+	void OnRep_Weapon();
 
 	UFUNCTION(BlueprintCallable)
 	void SetHUDCrossHair(float DeltaTime); // 크로스 헤어 틱마다 불러오는 함수 
