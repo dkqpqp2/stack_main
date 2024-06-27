@@ -9,7 +9,7 @@
 
 AMG_EnemyGhoul::AMG_EnemyGhoul()
 {
-	GetCapsuleComponent()->InitCapsuleSize(55.0f, 70.0f);
+	GetCapsuleComponent()->InitCapsuleSize(40.0f, 70.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
 
 	GetCharacterMovement()->JumpZVelocity = 700.0f;
@@ -19,7 +19,7 @@ AMG_EnemyGhoul::AMG_EnemyGhoul()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.0f;
 	GetCharacterMovement()->GravityScale = 1.0f;
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -60.0), FRotator(0.0, -90.0, 0.0));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -70.0), FRotator(0.0, -90.0, 0.0));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetCollisionProfileName(TEXT("EnemyMesh"));
 

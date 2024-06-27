@@ -44,11 +44,14 @@ public:
 	float ApplyDamage(float InDamage);
 	virtual void AttackHitCheck();
 
+
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(VisibleAnywhere)
 	EMonsterType CurrentMonsterType;
+
+	TObjectPtr<class UAnimInstance> AnimInstance;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dead, Meta = (AllowPrivateAccess = "true"))
@@ -56,6 +59,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> EquipSwordMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack)
 	TObjectPtr<class UMG_EnemyComboActionData> ComboActionData;
@@ -90,6 +96,8 @@ protected:
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
 	virtual void AttackByAI();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Detect)
+	float DetectRange;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	TObjectPtr<class UMG_EnemyStatComponent> Stat;
