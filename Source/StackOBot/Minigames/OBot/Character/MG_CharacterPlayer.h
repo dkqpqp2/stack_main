@@ -253,4 +253,12 @@ public:
 	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 
 
+public:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void StunnedMood();
+
+protected:
+	FTimerHandle StunTimer;
+	void OnStunEnd();
 };

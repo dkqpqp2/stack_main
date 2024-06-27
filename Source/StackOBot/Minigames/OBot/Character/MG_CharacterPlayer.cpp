@@ -748,3 +748,16 @@ void AMG_CharacterPlayer::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherA
 	}
 	*/
 }
+
+void AMG_CharacterPlayer::OnStunEnd()
+{
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 0.0f);
+	GetCharacterMovement()->Activate();
+}
+
+void AMG_CharacterPlayer::StunnedMood_Implementation()
+{
+	GetMesh()->CreateDynamicMaterialInstance(1)->SetScalarParameterValue(TEXT("Mood"), 12.0f);
+	GetCharacterMovement()->Deactivate();
+	GetWorldTimerManager().SetTimer(StunTimer, this, &ThisClass::OnStunEnd, 2.f, false);
+}
