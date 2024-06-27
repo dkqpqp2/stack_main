@@ -78,7 +78,7 @@ void AMG_CharacterBase::BeginPlay()
     if (IsValid(PS))
     {
         //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
-        SetMaterialToTeamColor(PS->GetIsRedTeam());
+        SetMaterialToTeamColor(PS->GetPlayerColor());
     }
 }
 
@@ -105,28 +105,21 @@ void AMG_CharacterBase::PossessedBy(AController* NewController)
             );*/
             return;
         }
-        SetMaterialToTeamColor(PS->GetIsRedTeam());
+        SetMaterialToTeamColor(PS->GetPlayerColor());
     }
 }
 
 // 머티리얼의 색깔 지정해주는 함수.
-void AMG_CharacterBase::SetMaterialToTeamColor(bool IsTeamRed)
+void AMG_CharacterBase::SetMaterialToTeamColor(FVector4 NewColor)
 {
     if (!IsValid(MaterialDynamicInstance))
     {
         //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("DYNAMIC MATERIAL NOT VALID : AMG_CharacterBase::SetMaterialToTeamColor"));
         return;
     }
+    MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), NewColor);
 
-    if (IsTeamRed)
-    {
-        MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), FVector4(1.0, 0.0, 0.0, 1.0));
 
-    }
-    else
-    {
-        MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), FVector4(0.0, 0.0, 1.0, 1.0));
-    }
 }
 
 

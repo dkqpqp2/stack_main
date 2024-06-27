@@ -40,6 +40,25 @@ void ABasePlayerState::OnIsRedTeamChanged()
 {
 }
 
+// ----------------
+void ABasePlayerState::SetPlayerColor(FVector4 NewColor)
+{
+}
+
+FVector4 ABasePlayerState::GetPlayerColor() const
+{
+	return PlayerColor;
+}
+
+void ABasePlayerState::OnRep_PlayerColor()
+{
+}
+
+void ABasePlayerState::OnPlayerColorChanged()
+{
+}
+
+// -------------------
 void ABasePlayerState::SetSelectedCharacter(FString NewCharacter)
 {
 }

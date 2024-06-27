@@ -75,7 +75,7 @@ protected:
 	UMaterialInstanceDynamic* MeshMID;
 
 public:
-	virtual void SetMaterialToTeamColor(bool IsTeamRed) override;
+	virtual void SetMaterialToTeamColor(FVector4 NewColor) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 
