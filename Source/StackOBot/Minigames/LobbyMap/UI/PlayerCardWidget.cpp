@@ -17,7 +17,7 @@ void UPlayerCardWidget::CardUpdate(const ALobbyPlayerState* const  LobbyPS )
 	//	TeamImage->SetBrushTintColor(FSlateColor(FColor::Blue));
 	//}
 	FVector4 PlayerColor = LobbyPS->GetPlayerColor();
-	TeamImage->SetBrushTintColor(FSlateColor(FColor(FColor(PlayerColor.X, PlayerColor.Y, PlayerColor.Z, PlayerColor.W))));
+	TeamImage->SetBrushTintColor(FSlateColor(FColor(PlayerColor.X * 255, PlayerColor.Y * 255, PlayerColor.Z * 255, PlayerColor.W * 255)));
 
 	CharacterText->SetText(FText::FromString(LobbyPS->GetSelectedCharacter()));
 	NameTextBlock->SetText(FText::FromString(LobbyPS->GetPlayerName()));
