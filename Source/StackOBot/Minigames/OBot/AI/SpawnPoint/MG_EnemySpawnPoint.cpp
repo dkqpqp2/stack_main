@@ -13,7 +13,7 @@ AMG_EnemySpawnPoint::AMG_EnemySpawnPoint()
 
 	RootComponent = Root;
 
-	Root->bVisualizeComponent = true;
+	//Root->bVisualizeComponent = true;
 
 	SpawnEnemy = nullptr;
 	AccTime = 0.f;

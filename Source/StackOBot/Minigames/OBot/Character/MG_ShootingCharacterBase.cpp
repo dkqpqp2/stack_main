@@ -36,11 +36,11 @@ AMG_ShootingCharacterBase::AMG_ShootingCharacterBase()
 
     }
 
-    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/Character/Animation/ShootingPlayer/MG_ShootingOBot.MG_ShootingOBot_C"));
-    if (AnimInstanceClassRef.Class)
-    {
-        GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
-    }
+    //static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/Character/Animation/ShootingPlayer/MG_ShootingOBot.MG_ShootingOBot_C"));
+    //if (AnimInstanceClassRef.Class)
+    //{
+    //    GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
+    //}
 
 }
 
