@@ -201,11 +201,20 @@ void AMG_MissileTest::Tick(float DeltaTime)
 
 void AMG_MissileTest::OnOverlapBegin(UPrimitiveComponent* OverlapComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& HitResult)
 {
-	class AMG_CharacterPlayer* PlayerCharacter = Cast<AMG_CharacterPlayer>(OtherActor);
+	AMG_CharacterPlayer* PlayerCharacter = Cast<AMG_CharacterPlayer>(OtherActor);
 	class AStaticMeshActor* GroundActor = Cast<AStaticMeshActor>(OtherActor);
 
+	if (!HasAuthority())
+	{
+		return;
+	}
 	if (PlayerCharacter != nullptr)
 	{
+		if (!PlayerCharacter->GetIsShield())
+		{
+			PlayerCharacter->StunnedMood();
+
+		}
 		PlayExplosion(ExplosionSystem);
 		PlayExplosionSound(ExplosionSound);
 		if (this->IsValidLowLevel())
