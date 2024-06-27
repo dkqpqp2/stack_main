@@ -394,6 +394,13 @@ void AMG_ShootingCharacterPlayer::TryReloadWeapon()
 	}
 }
 
+void AMG_ShootingCharacterPlayer::SetCurrentHealthWithHUDUpdate(float NewHealth)
+{
+	CurrentHealth = NewHealth;
+	GetWorld()->GetFirstPlayerController()->GetPawn<AMG_ShootingCharacterPlayer>()->UpdateHUDHealth();
+
+}
+
 void AMG_ShootingCharacterPlayer::OnEndReloadAnimation()
 {
 	if (!HasAuthority())

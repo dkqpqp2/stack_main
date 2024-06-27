@@ -123,6 +123,9 @@ public:
 	UFUNCTION()
 	void OnRep_Health();
 
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentHealthWithHUDUpdate(float NewHealth);
+
 	UPROPERTY(EditAnywhere, Replicated)
 	FString PlayerName = "";
 	
