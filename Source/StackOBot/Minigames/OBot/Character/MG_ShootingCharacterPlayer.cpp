@@ -403,6 +403,35 @@ void AMG_ShootingCharacterPlayer::TryReloadWeapon()
 	}
 }
 
+void AMG_ShootingCharacterPlayer::OnRep_RifleAmmos()
+{
+	AFPSPlayerController* FPSPC = GetController<AFPSPlayerController>();
+
+	if (FPSPC)
+	{
+		FPSPC->SetHUDInHandAmmo(RifleAmmos, EWeaponType::Rifle); //캐릭터랑 컨트롤러 가 있을때 hud set 
+	}
+}
+
+void AMG_ShootingCharacterPlayer::OnRep_PistolAmmos()
+{
+	AFPSPlayerController* FPSPC = GetController<AFPSPlayerController>();
+
+	if (FPSPC)
+	{
+		FPSPC->SetHUDInHandAmmo(PistolAmmos, EWeaponType::Pistol); //캐릭터랑 컨트롤러 가 있을때 hud set 
+	}
+}
+
+void AMG_ShootingCharacterPlayer::OnRep_GrenadeAmmos()
+{
+	AFPSPlayerController* FPSPC = GetController<AFPSPlayerController>();
+
+	if (FPSPC)
+	{
+		FPSPC->SetHUDInHandAmmo(GrenadeAmmos, EWeaponType::Grenade); //캐릭터랑 컨트롤러 가 있을때 hud set 
+	}
+}
 void AMG_ShootingCharacterPlayer::SetCurrentHealthWithHUDUpdate(float NewHealth)
 {
 	CurrentHealth = NewHealth;
@@ -455,17 +484,21 @@ void AMG_ShootingCharacterPlayer::OnEndReloadAnimation()
 	{
 	case EWeaponType::Rifle:
 		RifleAmmos = CurrentPlayerAmmos;
+		OnRep_RifleAmmos();
 		break;
 	case EWeaponType::Pistol:
 		PistolAmmos = CurrentPlayerAmmos;
+		OnRep_PistolAmmos();
 		break;
 	case EWeaponType::Grenade:
 		GrenadeAmmos = CurrentPlayerAmmos;
+		OnRep_GrenadeAmmos();
 		break;
 	default:
 		break;
 	}
 	CurrentWeaponBase->SetHUDBullet();
+
 }
 
 void AMG_ShootingCharacterPlayer::PlayReloadStartAnimation_Implementation()

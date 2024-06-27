@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Weapons/WeaponBase.h"
 #include "Minigames/GameMap/GamePlayerController.h"
 #include "FPSPlayerController.generated.h"
 
@@ -24,6 +25,8 @@ public:
 	void SetHUDHealth_3(float CurrentHealth, float MaxHealth, FString PlayerName);
 
 	void SetHUDAmmo(int32 Ammo, int32 MaxAmmo);
+
+	void SetHUDInHandAmmo(int32 NewAmmo, EWeaponType AmmoType);
 
 protected:
 	virtual void BeginPlay() override;

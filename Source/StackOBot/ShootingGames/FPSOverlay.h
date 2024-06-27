@@ -51,4 +51,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* MatchCountDownText; //매치 시간
 
+	UPROPERTY(meta = (BindWidget))
+	class UInBagAmmoWidget* RifleInHandAmmos;
+
+	UPROPERTY(meta = (BindWidget))
+	class UInBagAmmoWidget* PistolInHandAmmos;
+
+	UPROPERTY(meta = (BindWidget))
+	class UInBagAmmoWidget* GrenadeInHandAmmos;
 };

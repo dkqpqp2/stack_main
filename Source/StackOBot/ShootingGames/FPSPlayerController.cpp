@@ -10,6 +10,7 @@
 #include "Components/TextBlock.h"
 #include "Curves/CurveLinearColor.h"
 #include "../ShootingGames/GamMode/ShootingGameMode.h"
+#include "Weapons/InBagAmmoWidget.h"
 
 void AFPSPlayerController::BeginPlay()
 {
@@ -123,6 +124,32 @@ void AFPSPlayerController::SetHUDAmmo(int32 Ammo, int32 MaxAmmo)
 		FString MaxAmmoText = FString::Printf(TEXT("%d"), MaxAmmo);
 		FPSHUD->FPSOverlay->CurrentBullet->SetText(FText::FromString(AmmoText));
 		FPSHUD->FPSOverlay->MaxBullet->SetText(FText::FromString(MaxAmmoText));
+	}
+}
+
+void AFPSPlayerController::SetHUDInHandAmmo(int32 NewAmmo, EWeaponType AmmoType)
+{
+	FPSHUD = FPSHUD == nullptr ? Cast<AFPSHUD>(GetHUD()) : FPSHUD;
+
+	bool bValid = FPSHUD &&
+		FPSHUD->FPSOverlay;
+
+	if (bValid)
+	{
+		switch (AmmoType)
+		{
+		case EWeaponType::Rifle:
+			FPSHUD->FPSOverlay->RifleInHandAmmos->SetAmmosTextBlock(NewAmmo);
+			break;
+		case EWeaponType::Pistol:
+			FPSHUD->FPSOverlay->PistolInHandAmmos->SetAmmosTextBlock(NewAmmo);
+			break;
+		case EWeaponType::Grenade:
+			FPSHUD->FPSOverlay->GrenadeInHandAmmos->SetAmmosTextBlock(NewAmmo);
+			break;
+		default:
+			break;
+		}
 	}
 }
 

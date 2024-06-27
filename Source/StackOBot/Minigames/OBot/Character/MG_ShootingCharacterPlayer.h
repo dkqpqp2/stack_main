@@ -106,15 +106,23 @@ public:
 
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_RifleAmmos)
 	int32 RifleAmmos = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_PistolAmmos)
 	int32 PistolAmmos = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_GrenadeAmmos)
 	int32 GrenadeAmmos = 0;
 
+	UFUNCTION()
+	void OnRep_RifleAmmos();
+
+	UFUNCTION()
+	void OnRep_PistolAmmos();
+
+	UFUNCTION()
+	void OnRep_GrenadeAmmos();
 	//플레이어 체력, 이름 
 public:
 	UPROPERTY(EditAnywhere)
