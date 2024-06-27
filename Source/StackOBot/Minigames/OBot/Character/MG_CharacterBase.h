@@ -37,6 +37,6 @@ protected:
 public:
 	virtual void PossessedBy(AController* NewController) override;
 	// 머티리얼 색깔을 바꾸는 함수 (인터페이스로 상속받았다)
-	virtual void SetMaterialToTeamColor(bool IsTeamRed) override;
+	virtual void SetMaterialToTeamColor(FVector4 NewColor) override;
 
 };

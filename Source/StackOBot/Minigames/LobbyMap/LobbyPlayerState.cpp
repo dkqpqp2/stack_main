@@ -62,13 +62,63 @@ void ALobbyPlayerState::OnIsRedTeamChanged()
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 		return;
 	}
-	Pawn->SetMaterialToTeamColor(IsRedTeam);
+	//Pawn->SetMaterialToTeamColor(PlayerColor);
 
 	//Widget Also Changes.
 
 	UpdatePlayerListWidget();
 
 }
+//---------------------Color
+void ALobbyPlayerState::SetPlayerColor(FVector4 NewColor)
+{
+	//if server
+	if (HasAuthority())
+	{
+		// 그냥 값 변경
+		PlayerColor = NewColor;
+		// 자신의 화면 업데이트.
+		OnPlayerColorChanged();
+	}
+	else
+	{
+		// 서버로 전송. 
+		SV_SetPlayerColor(NewColor);
+	}
+}
+
+void ALobbyPlayerState::SV_SetPlayerColor_Implementation(FVector4 NewColor)
+{
+	// 값 변경
+	PlayerColor = NewColor;
+	// 화면 업데이트.
+	OnPlayerColorChanged();
+}
+
+void ALobbyPlayerState::OnRep_PlayerColor()
+{
+	// 화면 업데이트 함수 호출
+	OnPlayerColorChanged();
+
+	//Widget Also Changes.
+	UpdatePlayerListWidget();
+}
+
+void ALobbyPlayerState::OnPlayerColorChanged()
+{
+	ITeamChangeInterface* Pawn = Cast<ITeamChangeInterface>(GetPawn());
+	if (Pawn == nullptr)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
+		return;
+	}
+	Pawn->SetMaterialToTeamColor(PlayerColor);
+
+	//Widget Also Changes.
+
+	UpdatePlayerListWidget();
+}
+//---------------------Color
 
 void ALobbyPlayerState::SetSelectedCharacter(FString NewCharacter)
 {
@@ -199,7 +249,7 @@ void ALobbyPlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APaw
 			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
 			return;
 		}
-		LobbyPawn->SetMaterialToTeamColor(IsRedTeam);
+		LobbyPawn->SetMaterialToTeamColor(PlayerColor);
 		
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("OnPawnSet"));
 	}

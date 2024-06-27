@@ -46,6 +46,23 @@ protected:
 
 	virtual void OnIsRedTeamChanged();
 
+// ------------ Character Color -------------------
+
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
+	FVector4 PlayerColor = FVector4(1.0, 1.0, 1.0, 1.0);
+
+public:
+	virtual void SetPlayerColor(FVector4 NewColor);
+	FVector4 GetPlayerColor() const;
+
+	UFUNCTION()
+	virtual void OnRep_PlayerColor();
+
+	virtual void OnPlayerColorChanged();
+
+	
+
 // ------------ Selected Character's ----------------------
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_SelectedCharacter)

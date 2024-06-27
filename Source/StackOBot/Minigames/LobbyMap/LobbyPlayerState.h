@@ -34,6 +34,17 @@ protected:
 	virtual void OnRep_IsRedTeam() override;
 	virtual void OnIsRedTeamChanged() override;
 
+// ----------- PlayerColors ----------------------------
+public:
+	virtual void SetPlayerColor(FVector4 NewColor) override;
+
+protected:
+	UFUNCTION(Server, Reliable)
+	void SV_SetPlayerColor(FVector4 NewColor);
+
+	virtual void OnRep_PlayerColor() override;
+	virtual void OnPlayerColorChanged() override;
+
 // ------------ Selected Character's ----------------------
 public:
 	virtual void SetSelectedCharacter(FString NewCharacter) override;

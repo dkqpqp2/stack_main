@@ -3,6 +3,7 @@
 
 #include "MG_ShootingCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Minigames/GameMap/GamePlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -48,7 +49,25 @@ AMG_ShootingCharacterBase::AMG_ShootingCharacterBase()
 void AMG_ShootingCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+    MaterialDynamicInstance = GetMesh()->CreateDynamicMaterialInstance(0);
+
+    auto PS = GetPlayerState<AGamePlayerState>();
+    if (IsValid(PS))
+    {
+        //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Set Material TeamColor To Bot At BeginPlay()"));
+        SetMaterialToTeamColor(PS->GetPlayerColor());
+    }
+}
+
+void AMG_ShootingCharacterBase::SetMaterialToTeamColor(FVector4 NewColor)
+{
+    if (!IsValid(MaterialDynamicInstance))
+    {
+        //GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("DYNAMIC MATERIAL NOT VALID : AMG_CharacterBase::SetMaterialToTeamColor"));
+        return;
+    }
+    MaterialDynamicInstance->SetVectorParameterValue(FName("MainColor"), NewColor);
+
 }
 
 

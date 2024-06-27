@@ -67,16 +67,17 @@ void AGamePlayerState::SV_TrySetScore_Implementation(float NewScore)
 
 void AGamePlayerState::SetPlayerPawn(APlayerState* Player, APawn* NewPawn, APawn* OldPawn)
 {
+	ITeamChangeInterface* GamePawn = Cast<ITeamChangeInterface>(NewPawn);
+	if (GamePawn == nullptr)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
+		return;
+	}
+	GamePawn->SetMaterialToTeamColor(PlayerColor);
 	if (!HasAuthority())
 	{
-		ITeamChangeInterface* GamePawn = Cast<ITeamChangeInterface>(NewPawn);
-		if (GamePawn == nullptr)
-		{
-			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Pawn Does Not Implemets ITeamChangeInterface"));
-			return;
-		}
-		GamePawn->SetMaterialToTeamColor(IsRedTeam);
-
+		
+		// 왜 내가 이걸로 감싸놨었을까?
 	}
 
 }

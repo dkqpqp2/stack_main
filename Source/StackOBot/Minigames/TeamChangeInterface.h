@@ -22,5 +22,5 @@ class STACKOBOT_API ITeamChangeInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetMaterialToTeamColor(bool IsTeamRed) = 0;
+	virtual void SetMaterialToTeamColor(FVector4 NewColor) = 0;
 };

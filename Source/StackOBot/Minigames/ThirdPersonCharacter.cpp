@@ -69,7 +69,7 @@ void AThirdPersonCharacter::BeginPlay()
 	if (IsValid(PS))
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Magenta, TEXT("Char BeginPlay, SetMaterial Success?"));
-		SetMaterialToTeamColor(PS->GetIsRedTeam());
+		//SetMaterialToTeamColor(PS->GetIsRedTeam());
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Char Begin Play MID Setted"));
@@ -86,24 +86,24 @@ void AThirdPersonCharacter::BeginPlay()
 
 }
 
-void AThirdPersonCharacter::SetMaterialToTeamColor(bool IsTeamRed)
+void AThirdPersonCharacter::SetMaterialToTeamColor(FVector4 NewColor)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted Start"));
 
-	// Why Not Valid?
-	if (IsValid(MeshMID))
-	{
-		if (IsTeamRed)
-		{
-			MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(1.0, 0.0, 0.0, 1.0));
+	//// Why Not Valid?
+	//if (IsValid(MeshMID))
+	//{
+	//	if (IsTeamRed)
+	//	{
+	//		MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(1.0, 0.0, 0.0, 1.0));
 
-		}
-		else
-		{
-			MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(0.0, 0.0, 1.0, 1.0));
-		}
-		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted"));
-	}
+	//	}
+	//	else
+	//	{
+	//		MeshMID->SetVectorParameterValue(FName("Tint"), FVector4(0.0, 0.0, 1.0, 1.0));
+	//	}
+	//	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, TEXT("Material Setted"));
+	//}
 }
 
 void AThirdPersonCharacter::PossessedBy(AController* NewController)
@@ -129,7 +129,7 @@ void AThirdPersonCharacter::PossessedBy(AController* NewController)
 			);*/
 			return;
 		}
-		SetMaterialToTeamColor(PS->GetIsRedTeam());
+		//SetMaterialToTeamColor(PS->GetIsRedTeam());
 	}
 
 
