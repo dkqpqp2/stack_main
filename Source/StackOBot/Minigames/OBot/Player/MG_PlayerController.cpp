@@ -21,7 +21,6 @@ void AMG_PlayerController::BeginPlay()
 void AMG_PlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	SetHUDTime(DeltaTime);
 	CheckTimeSync(DeltaTime);
 }
@@ -91,13 +90,13 @@ void AMG_PlayerController::SetHUDAnnouncementCountDown(float CountDownTime)
 
 void AMG_PlayerController::SetHUDTime(float DeltaTime)
 {
-	AMG_GameMode* GameMode = Cast<AMG_GameMode>(UGameplayStatics::GetGameMode(this));
+	AMG_GameMode* GameMode = Cast<AMG_GameMode>(GetWorld()->GetAuthGameMode()/*UGameplayStatics::GetGameMode(this)*/);
 	float GetTimeSeconds = GetWorld()->GetTimeSeconds(); //실시간 
 	float TimeLeft = 0.f; // 기록할 시간 
 	if (MatchState == MatchState::WaitingToStart)
-		TimeLeft = WarmupTime - GetServerTime();
+		TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
 	else if (MatchState == MatchState::InProgress)
-		TimeLeft = GetServerTime() - WarmupTime;
+		TimeLeft = GetServerTime() - WarmupTime - LevelStartingTime;
 	else if (MatchState == MatchState::CoolDown && bCoolDown == false)
 	{
 		float GetTime = GetServerTime();

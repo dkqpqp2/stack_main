@@ -43,7 +43,7 @@ void AMG_GameMode::Tick(float Deltatime)
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		float GetTimeSeconds = GetWorld()->GetTimeSeconds();
-		CountDownTime = WarmupTime - GetTimeSeconds;
+		CountDownTime = WarmupTime - GetTimeSeconds + LevelStartingTime; 
 		if (CountDownTime <= 0.f)
 		{
 			StartMatch();
