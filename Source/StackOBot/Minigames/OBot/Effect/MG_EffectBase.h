@@ -6,21 +6,22 @@
 #include "GameFramework/Actor.h"
 #include "MG_EffectBase.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class STACKOBOT_API AMG_EffectBase : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	AMG_EffectBase();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Niagara)
+	TObjectPtr<class UNiagaraComponent> NiagaraEffect;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Niagara)
+	TObjectPtr<class UNiagaraSystem> NiagaraActivationEffect;
+
 
 };

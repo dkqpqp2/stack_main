@@ -14,6 +14,7 @@
 #include "Minigames/OBot/AI/DataAsset/MG_EnemyComboActionData.h"
 #include "Net/UnrealNetwork.h"
 #include "Minigames/OBot/AI/SpawnPoint/MG_EnemySpawnPoint.h"
+#include "Minigames/OBot/Effect/MG_EffectBase.h"
 
 AMG_EnemyBase::AMG_EnemyBase()
 {
@@ -222,7 +223,16 @@ void AMG_EnemyBase::AttackHitCheck()
 		if (HitDetected)
 		{
 			FDamageEvent DamageEvent;
+			FActorSpawnParameters ParamResult;
+			const FVector HitActorLocation = HitResult.GetActor()->GetActorLocation();
+			const FRotator HitActorRotator = HitResult.GetActor()->GetActorRotation();
+
+			ParamResult.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 			HitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+
+			GetWorld()->SpawnActor(EffectClass, &HitActorLocation, &HitActorRotator, ParamResult);
+
 		}
 
 #if ENABLE_DRAW_DEBUG
@@ -234,6 +244,41 @@ void AMG_EnemyBase::AttackHitCheck()
 		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.0f);
 
 #endif
+	}
+	else
+	{
+		FHitResult HitResult;
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(AttackByAI), true, this);
+
+
+		FVector SocketLocation;
+		if (GetMesh()->GetSocketByName(TEXT("LHand_Socket")) == nullptr)
+		{
+			SocketLocation = GetMesh()->GetSocketLocation(TEXT("RHand_Socket"));
+		}
+		else
+		{
+			SocketLocation = GetMesh()->GetSocketLocation(TEXT("LHand_Socket"));
+		}
+		const FVector Start = SocketLocation + GetActorForwardVector();
+		const FVector End = Start + GetActorForwardVector() * AttackRange;
+
+		bool HitDetected = GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(AttackRadius), Params);
+
+		if (HitDetected)
+		{
+			FDamageEvent DamageEvent;
+			FActorSpawnParameters ParamResult;
+			const FVector HitActorLocation = HitResult.GetActor()->GetActorLocation();
+			const FRotator HitActorRotator = HitResult.GetActor()->GetActorRotation();
+
+			ParamResult.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			HitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+
+			GetWorld()->SpawnActor(EffectClass, &HitActorLocation, &HitActorRotator, ParamResult);
+
+		}
 	}
 }
 

@@ -7,6 +7,8 @@
 #include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
 #include "Minigames/OBot/AI/Skill/MG_LichPoison.h"
+#include "Minigames/OBot/Effect/MG_EffectBase.h"
+#include "Minigames/OBot/Effect/MG_EffectPoison.h"
 
 
 
@@ -63,12 +65,14 @@ void AMG_EnemyLich::PoisonSkill(APawn* InClosePawn)
 {
 	if (InClosePawn)
 	{
+		float RandomRange = FMath::RandRange(-200.0f, 200.0f);
 		const FVector PlayerLocation = InClosePawn->GetActorLocation();
 		const FRotator PlayerRotator = InClosePawn->GetActorRotation();
 
 		FActorSpawnParameters Param;
 
 		GetWorld()->SpawnActor(LichPoisonClass, &PlayerLocation, &PlayerRotator, Param);
+		SpawnNiagara(InClosePawn, RandomRange);
 		PoisonSkillAnimation();
 	}
 }
@@ -86,8 +90,18 @@ void AMG_EnemyLich::SpawnSkill(APawn* InClosePawn)
 		Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
  		GetWorld()->SpawnActor(SpawnEnemyClass, &PlayerLocation, &PlayerRotator, Param);
+		SpawnNiagara(InClosePawn, RandomRange);
 		SpawnSkillAnimation();
 	}
+}
+
+void AMG_EnemyLich::SpawnNiagara_Implementation(APawn* InPawn, float InRandomRange)
+{
+	const FVector PlayerLocation = InPawn->GetActorLocation() + InPawn->GetActorForwardVector() * InRandomRange;
+	const FRotator PlayerRotator = InPawn->GetActorRotation();
+	FActorSpawnParameters Param;
+
+	GetWorld()->SpawnActor(PoisonClass, &PlayerLocation, &PlayerRotator, Param);
 }
 
 void AMG_EnemyLich::PoisonSkillAnimation_Implementation()
