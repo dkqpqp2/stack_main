@@ -91,6 +91,7 @@ void ABasePlayerState::CopyProperties(APlayerState* PlayerState)
 	NewPlayerState->SetSelectedCharacter(SelectedCharacter);
 	NewPlayerState->SetPlayerEnterID(PlayerEnterID);
 	NewPlayerState->SetIsHost(bIsHost);
+	NewPlayerState->SetPlayerColor(PlayerColor);
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, SelectedCharacter);
 }
 
@@ -99,6 +100,7 @@ void ABasePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABasePlayerState, IsRedTeam);
+	DOREPLIFETIME(ABasePlayerState, PlayerColor);
 	DOREPLIFETIME(ABasePlayerState, SelectedCharacter);
 	DOREPLIFETIME(ABasePlayerState, PlayerEnterID);
 	DOREPLIFETIME(ABasePlayerState, bIsHost);
