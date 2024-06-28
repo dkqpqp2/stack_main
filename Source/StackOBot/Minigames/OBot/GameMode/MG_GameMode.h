@@ -29,7 +29,7 @@ public:
 	float WarmupTime = 5.f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float CoolDownTime = 5.f;
+	float CoolDownAnnounceTime = 10.f;
 
 	UFUNCTION()
 	void OnPlayerFinishLineReached();

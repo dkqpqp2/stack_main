@@ -19,6 +19,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UFUNCTION()
 	void OnOverlapFinishLine(
 		UPrimitiveComponent* OverlappedComponent, 
 		AActor* OtherActor, 
@@ -27,6 +28,8 @@ protected:
 		bool bFromSweep, 
 		const FHitResult& SweepResult
 	);
+
+	bool IsGoaled = false;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

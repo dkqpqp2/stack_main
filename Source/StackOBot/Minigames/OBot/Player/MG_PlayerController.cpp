@@ -273,7 +273,7 @@ void AMG_PlayerController::ServerCheckMatchState_Implementation()
 	{
 			WarmupTime = GameMode->WarmupTime;
 			LevelStartingTime = GameMode->LevelStartingTime;
-			CoolDownTime = GameMode->CoolDownTime;
+			CoolDownTime = GameMode->CoolDownAnnounceTime;
 			MatchState = GameMode->GetMatchState();
 			ClientJoinMidgame(MatchState, WarmupTime, CoolDownTime,LevelStartingTime);
 	}

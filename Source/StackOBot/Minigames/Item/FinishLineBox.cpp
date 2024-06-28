@@ -25,9 +25,21 @@ void AFinishLineBox::BeginPlay()
 
 void AFinishLineBox::OnOverlapFinishLine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (HasAuthority())
+	if (HasAuthority() && (!IsGoaled))
 	{
+		if (!OtherActor->IsA<AMG_CharacterPlayer>())
+		{
+			return;
+		}
 
+		AMG_GameMode* GM = Cast<AMG_GameMode> (GetWorld()->GetAuthGameMode() );
+		if (!IsValid(GM))
+		{
+			return;
+		}
+		
+		GM->OnPlayerFinishLineReached();
+		IsGoaled = true;
 	}
 }
 
