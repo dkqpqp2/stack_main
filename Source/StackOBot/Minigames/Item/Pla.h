@@ -40,6 +40,8 @@ private:
 	FVector StartLocation;
 
 	void MovePlatform(float Deltatime);
+
+	UFUNCTION(BlueprintCallable)
 	void RotatePlatform(float Deltatime);
 
 	bool ShouldMoved() const;

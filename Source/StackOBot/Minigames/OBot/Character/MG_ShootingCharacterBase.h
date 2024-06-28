@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Minigames/TeamChangeInterface.h"
+#include "CharacterBase.h"
 #include "MG_ShootingCharacterBase.generated.h"
 
 UCLASS()
-class STACKOBOT_API AMG_ShootingCharacterBase : public ACharacter, public ITeamChangeInterface
+class STACKOBOT_API AMG_ShootingCharacterBase : public ACharacterBase, public ITeamChangeInterface
 {
 	GENERATED_BODY()
 

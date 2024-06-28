@@ -59,7 +59,7 @@ void AMG_GameMode::Tick(float Deltatime)
 			bCoolDown = true; // 플래그 설정
 		}
 		if(bCoolDown == true)
-		CountDownTime = CoolDownTime + ServerTimeAtCoolDown/*게임진행시간*/ - GetWorld()->GetTimeSeconds();
+		CountDownTime = CoolDownAnnounceTime + ServerTimeAtCoolDown/*게임진행시간*/ - GetWorld()->GetTimeSeconds();
 		if (CountDownTime <= 0.f)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("post"));
@@ -82,10 +82,10 @@ void AMG_GameMode::OnMatchStateSet()
 		{
 			MGPlayer->OnMatchStateSet(MatchState);
 		}
-		if (PlayerCharacter)
-		{
-			PlayerCharacter->OnFinishLineReached.AddDynamic(this, &AMG_GameMode::OnPlayerFinishLineReached);
-		}
+		//if (PlayerCharacter)
+		//{
+		//	PlayerCharacter->OnFinishLineReached.AddDynamic(this, &AMG_GameMode::OnPlayerFinishLineReached);
+		//}
 	}
 
 	if (MatchState == MatchState::InProgress)

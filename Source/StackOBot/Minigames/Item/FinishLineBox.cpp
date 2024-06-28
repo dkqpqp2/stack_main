@@ -2,6 +2,9 @@
 
 
 #include "FinishLineBox.h"
+#include "Minigames/OBot/GameMode/MG_GameMode.h"
+#include "Minigames/OBot/Character/MG_CharacterPlayer.h"
+#include "Minigames/OBot/Character/MG_ShootingCharacterPlayer.h"
 
 // Sets default values
 AFinishLineBox::AFinishLineBox()
@@ -17,7 +20,27 @@ AFinishLineBox::AFinishLineBox()
 void AFinishLineBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	FinishLineBox->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapFinishLine);
+}
+
+void AFinishLineBox::OnOverlapFinishLine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (HasAuthority() && (!IsGoaled))
+	{
+		if (!OtherActor->IsA<AMG_CharacterPlayer>())
+		{
+			return;
+		}
+
+		AMG_GameMode* GM = Cast<AMG_GameMode> (GetWorld()->GetAuthGameMode() );
+		if (!IsValid(GM))
+		{
+			return;
+		}
+		
+		GM->OnPlayerFinishLineReached();
+		IsGoaled = true;
+	}
 }
 
 // Called every frame

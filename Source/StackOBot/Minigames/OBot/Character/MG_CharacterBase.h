@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "../../TeamChangeInterface.h"
+#include "CharacterBase.h"
 #include "MG_CharacterBase.generated.h"
 
 UENUM()
@@ -15,7 +16,7 @@ enum class ECharacterControlType : uint8
 };
 
 UCLASS()
-class STACKOBOT_API AMG_CharacterBase : public ACharacter, public ITeamChangeInterface
+class STACKOBOT_API AMG_CharacterBase : public ACharacterBase, public ITeamChangeInterface
 {
 	GENERATED_BODY()
 
