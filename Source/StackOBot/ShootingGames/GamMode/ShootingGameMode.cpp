@@ -130,7 +130,7 @@ void AShootingGameMode::HandleMatchHasEnded()
 
 void AShootingGameMode::ReturnToLobby()
 {
-	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+	GetWorld()->ServerTravel("/Game/MainGame/Level/LobbyMap");
 
 }
 

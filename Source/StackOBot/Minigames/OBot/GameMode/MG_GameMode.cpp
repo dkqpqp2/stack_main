@@ -197,7 +197,7 @@ void AMG_GameMode::UpdatePlayersRank()
 
 void AMG_GameMode::ReturnToLobby()
 {
-	GetWorld()->ServerTravel("/Game/Lobby/ThirdPerson/Maps/LobbyMap");
+	GetWorld()->ServerTravel("/Game/MainGame/Level/LobbyMap");
 
 }
 
