@@ -26,7 +26,9 @@ protected:
 	
 	float PoisonDamage = 1.0f;
 	FTimerHandle PoisonTimer;
+	UFUNCTION()
 	void OverlapBeginPoison(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
 	void OverlapEndPoison(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:	

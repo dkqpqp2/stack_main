@@ -48,6 +48,12 @@ public:
 protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AttackRange)
+	float AttackRange = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AttackRange)
+	float AttackRadius = 20.0f;
+
 	UPROPERTY(VisibleAnywhere)
 	EMonsterType CurrentMonsterType;
 

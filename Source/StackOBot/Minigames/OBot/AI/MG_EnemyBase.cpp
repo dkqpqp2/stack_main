@@ -204,8 +204,7 @@ void AMG_EnemyBase::AttackHitCheck()
 		FHitResult HitResult;
 		FCollisionQueryParams Params(SCENE_QUERY_STAT(AttackByAI), true, this);
 
-		const float AttackRange = 10.0f;
-		const float AttackRadius = 20.0f;
+		
 		FVector SocketLocation;
 		if (GetMesh()->GetSocketByName(TEXT("LHand_Socket")) == nullptr)
 		{

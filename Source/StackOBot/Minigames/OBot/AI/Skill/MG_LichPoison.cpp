@@ -38,21 +38,31 @@ void AMG_LichPoison::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(10.0f);
-	GetWorldTimerManager().SetTimer(PoisonTimer, this, &AMG_LichPoison::ApplyPoisonDamage, 1.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(PoisonTimer, this, &AMG_LichPoison::ApplyPoisonDamage, 1.0f, true);
 	PoisonBox->OnComponentBeginOverlap.AddDynamic(this, &AMG_LichPoison::OverlapBeginPoison);
 	PoisonBox->OnComponentEndOverlap.AddDynamic(this, &AMG_LichPoison::OverlapEndPoison);
 }
 
 void AMG_LichPoison::OverlapBeginPoison(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AMG_ShootingCharacterPlayer* ShootingPlayer = Cast<AMG_ShootingCharacterPlayer>(OverlappedComponent->GetOwner());
+	AMG_ShootingCharacterPlayer* ShootingPlayer = Cast<AMG_ShootingCharacterPlayer>(OtherActor);
+	if (!IsValid(ShootingPlayer))
+	{
+		return;
+	}
 	ShootingPlayer->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	ShootingPlayer->GetCharacterMovement()->GravityScale = 5.0f;
 }
 
 void AMG_LichPoison::OverlapEndPoison(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	AMG_ShootingCharacterPlayer* ShootingPlayer = Cast<AMG_ShootingCharacterPlayer>(OverlappedComponent->GetOwner());
+	AMG_ShootingCharacterPlayer* ShootingPlayer = Cast<AMG_ShootingCharacterPlayer>(OtherActor);
+	if (!IsValid(ShootingPlayer))
+	{
+		return;
+	}
 	ShootingPlayer->GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	ShootingPlayer->GetCharacterMovement()->GravityScale = 1.0f;
 }
 
 // Called every frame

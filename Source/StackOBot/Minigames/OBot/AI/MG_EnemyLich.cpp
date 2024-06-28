@@ -59,14 +59,61 @@ void AMG_EnemyLich::BeginPlay()
 
 }
 
-void AMG_EnemyLich::PoisonSkill()
+void AMG_EnemyLich::PoisonSkill(APawn* InClosePawn)
+{
+	if (InClosePawn)
+	{
+		const FVector PlayerLocation = InClosePawn->GetActorLocation();
+		const FRotator PlayerRotator = InClosePawn->GetActorRotation();
+
+		FActorSpawnParameters Param;
+
+		GetWorld()->SpawnActor(LichPoisonClass, &PlayerLocation, &PlayerRotator, Param);
+		PoisonSkillAnimation();
+	}
+}
+
+void AMG_EnemyLich::SpawnSkill(APawn* InClosePawn)
+{
+	if (InClosePawn)
+	{
+		float RandomRange = FMath::RandRange(-200.0f, 200.0f);
+		const FVector PlayerLocation = InClosePawn->GetActorLocation() + InClosePawn->GetActorForwardVector() * RandomRange;
+		const FRotator PlayerRotator = InClosePawn->GetActorRotation();
+
+		FActorSpawnParameters Param;
+
+		Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+ 		GetWorld()->SpawnActor(SpawnEnemyClass, &PlayerLocation, &PlayerRotator, Param);
+		SpawnSkillAnimation();
+	}
+}
+
+void AMG_EnemyLich::PoisonSkillAnimation_Implementation()
+{
+	AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(PoisionMontage, 1.0f);
+	CurrentPoisonCoolTime = 0.0f;
+}
+
+void AMG_EnemyLich::SpawnSkillAnimation_Implementation()
+{
+	AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(SpawnMontage, 1.0f);
+	CurrentSpawnCoolTime = 0.0f;
+}
+
+APawn* AMG_EnemyLich::FindTarget()
 {
 	UWorld* World = GetWorld();
 	FVector LichLocation = GetActorLocation();
 
 	if (nullptr == World)
 	{
-		return;
+		return nullptr;
 	}
 
 	TArray<FOverlapResult> OverlapResults;
@@ -100,39 +147,12 @@ void AMG_EnemyLich::PoisonSkill()
 			}
 		}
 	}
-
 	if (ClosePawn)
 	{
-		const FVector PlayerLocation = ClosePawn->GetActorLocation();
-		const FRotator PlayerRotator = ClosePawn->GetActorRotation();
-		
-		FActorSpawnParameters Param;
-
-		GetWorld()->SpawnActor(LichPoisonClass, &PlayerLocation, &PlayerRotator, Param);
-		PoisonSkillAnimation();
+		return ClosePawn;
 	}
 
-}
-
-void AMG_EnemyLich::SpawnSkill()
-{
-
-}
-
-void AMG_EnemyLich::PoisonSkillAnimation()
-{
-	AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(PoisionMontage, 1.0f);
-	CurrentPoisonCoolTime = 0.0f;
-}
-
-void AMG_EnemyLich::SpawnSkillAnimation()
-{
-	AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(SpawnMontage, 1.0f);
-	CurrentSpawnCoolTime = 0.0f;
+	return nullptr;
 }
 
 void AMG_EnemyLich::Tick(float DeltaTime)
@@ -146,11 +166,11 @@ void AMG_EnemyLich::Tick(float DeltaTime)
 
 		if (CurrentPoisonCoolTime >= MaxPoisonCoolTime)
 		{
-			PoisonSkill();
+			PoisonSkill(FindTarget());
 		}
 		if (CurrentSpawnCoolTime >= MaxSpawnCoolTime)
 		{
-			SpawnSkill();
+			SpawnSkill(FindTarget());
 		}
 	}
 	

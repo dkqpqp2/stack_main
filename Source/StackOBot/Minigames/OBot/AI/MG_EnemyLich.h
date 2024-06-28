@@ -26,9 +26,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> SpawnMontage;
 
-	void PoisonSkill();
-	void SpawnSkill();
+	void PoisonSkill(APawn* InClosePawn);
+	void SpawnSkill(APawn* InClosePawn);
+
+	UFUNCTION(NetMulticast, Unreliable)
 	void PoisonSkillAnimation();
+	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnSkillAnimation();
 
 	float SkillDetectRange = 5000.0f;
@@ -36,6 +39,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class AMG_LichPoison> LichPoisonClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = SpawnEnemy)
+	TSubclassOf<class AMG_EnemyBase> SpawnEnemyClass;
+
+	APawn* FindTarget();
 
 public:
 	virtual void Tick(float DeltaTime) override;
