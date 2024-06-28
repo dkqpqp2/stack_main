@@ -43,6 +43,7 @@ void ABasePlayerState::OnIsRedTeamChanged()
 // ----------------
 void ABasePlayerState::SetPlayerColor(FVector4 NewColor)
 {
+	PlayerColor = NewColor;
 }
 
 FVector4 ABasePlayerState::GetPlayerColor() const

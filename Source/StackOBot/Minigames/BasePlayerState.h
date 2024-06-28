@@ -49,10 +49,11 @@ protected:
 // ------------ Character Color -------------------
 
 protected:
-	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor)
-	FVector4 PlayerColor = FVector4(1.0, 1.0, 1.0, 1.0);
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerColor, VisibleAnywhere, BlueprintReadOnly)
+	FVector4 PlayerColor;
 
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void SetPlayerColor(FVector4 NewColor);
 	FVector4 GetPlayerColor() const;
 
