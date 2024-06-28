@@ -39,5 +39,7 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	float AttackRangeWithRadius = AIPawn->GetAIAttackRange();
 	bResult = (DistanceToTarget <= AttackRangeWithRadius);
 
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsInAttackRange"), bResult);
+
 	return bResult;
 }
