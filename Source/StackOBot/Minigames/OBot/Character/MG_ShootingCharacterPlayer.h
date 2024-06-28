@@ -123,6 +123,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_GrenadeAmmos();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateInHandAmmosUI(EWeaponType AmmoType);
 	//플레이어 체력, 이름 
 public:
 	UPROPERTY(EditAnywhere)
