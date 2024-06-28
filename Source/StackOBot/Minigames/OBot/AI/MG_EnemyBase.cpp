@@ -72,6 +72,8 @@ float AMG_EnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	ApplyDamage(DamageAmount);
+
+	
 	//SetDead();
 
 	return DamageAmount;
@@ -97,7 +99,7 @@ void AMG_EnemyBase::SetDead()
 
 void AMG_EnemyBase::PlayDeadAnimation_Implementation()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(DeadMontage, 1.0f);
 	HpBar->SetHiddenInGame(true);
@@ -105,7 +107,7 @@ void AMG_EnemyBase::PlayDeadAnimation_Implementation()
 
 void AMG_EnemyBase::PlayAttackAnimation()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(AttackMontage, 1.0f);
 
@@ -113,6 +115,7 @@ void AMG_EnemyBase::PlayAttackAnimation()
 	EndDelegate.BindUObject(this, &AMG_EnemyBase::AttackActionEnd);
 	AnimInstance->Montage_SetEndDelegate(EndDelegate, AttackMontage);
 }
+
 
 void AMG_EnemyBase::ProcessComboAttack()
 {
@@ -140,7 +143,7 @@ void AMG_EnemyBase::ComboActionBegin()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 	const float AttackSpeedRate = 1.0f;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->Montage_Play(AttackMontage, AttackSpeedRate);
 
 	FOnMontageEnded EndDelegate;
@@ -184,7 +187,7 @@ void AMG_EnemyBase::ComboCheck()
 	ComboTimerHandle.Invalidate();
 	if (HasNextComboCommand)
 	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		AnimInstance = GetMesh()->GetAnimInstance();
 
 		CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, ComboActionData->MaxComboCount);
 		FName NextSection = *FString::Printf(TEXT("%s%d"), *ComboActionData->MontageSectionNamePrefix, CurrentCombo);
@@ -201,8 +204,7 @@ void AMG_EnemyBase::AttackHitCheck()
 		FHitResult HitResult;
 		FCollisionQueryParams Params(SCENE_QUERY_STAT(AttackByAI), true, this);
 
-		const float AttackRange = 10.0f;
-		const float AttackRadius = 20.0f;
+		
 		FVector SocketLocation;
 		if (GetMesh()->GetSocketByName(TEXT("LHand_Socket")) == nullptr)
 		{
@@ -248,7 +250,7 @@ float AMG_EnemyBase::GetAIPatrolRadius()
 
 float AMG_EnemyBase::GetAIDetectRange()
 {
-	return 600.0f;
+	return DetectRange;
 }
 
 float AMG_EnemyBase::GetAIAttackRange()
@@ -272,7 +274,7 @@ void AMG_EnemyBase::SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAt
 
 void AMG_EnemyBase::AttackByAI()
 {
-	ProcessComboAttack();
+	//ProcessComboAttack();
 }
 
 void AMG_EnemyBase::SetupCharacterWidget(UMG_UserWidget* InUserWidget)
