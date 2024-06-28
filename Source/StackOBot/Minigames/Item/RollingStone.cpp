@@ -44,6 +44,10 @@ void ARollingStone::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPri
 {
 	UE_LOG(LogTemp, Display, TEXT("HIT"));
 	AMG_CharacterPlayer* Player = Cast<AMG_CharacterPlayer>(OtherActor);
+	if (!IsValid(Player))
+	{
+		return;
+	}
 	if (OtherActor && OtherActor != this)
 	{
 		// Apply impulse to the OtherActor
