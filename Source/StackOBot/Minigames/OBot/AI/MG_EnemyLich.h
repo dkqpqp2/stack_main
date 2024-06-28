@@ -26,11 +26,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Skill, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> SpawnMontage;
 
+	
 	void PoisonSkill(APawn* InClosePawn);
 	void SpawnSkill(APawn* InClosePawn);
 
 	UFUNCTION(NetMulticast, Unreliable)
+	void SpawnNiagara(APawn* InPawn, float InRandomRange);
+
+	UFUNCTION(NetMulticast, Unreliable)
 	void PoisonSkillAnimation();
+
 	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnSkillAnimation();
 

@@ -72,6 +72,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack)
 	TObjectPtr<class UMG_EnemyComboActionData> ComboActionData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Effect)
+	TSubclassOf<class AMG_EffectBase> EffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = PoisonEffect)
+	TSubclassOf<class AMG_EffectPoison> PoisonClass;
+
 	virtual void SetDead();
 
 	UFUNCTION(NetMulticast, Unreliable)
