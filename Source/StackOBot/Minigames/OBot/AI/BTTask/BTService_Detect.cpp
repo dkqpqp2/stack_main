@@ -109,8 +109,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				break;
 			}
 		}
-		DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
-		DrawDebugLine(World, ControllingPawn->GetActorLocation(), ClosePawn->GetActorLocation(), FColor::Blue, false, 0.2f);
+
 	}
 	else
 	{
@@ -138,7 +137,6 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			}
 		}
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(AMG_NPCController::TargetKey, nullptr);
-		DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 	}
 
 }

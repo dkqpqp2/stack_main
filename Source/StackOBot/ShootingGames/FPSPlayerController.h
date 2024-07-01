@@ -48,7 +48,7 @@ private:
 	TObjectPtr<class UCurveLinearColor> HealthCurve;
 
 	//Timer
-	float MatchTime = 600.f;
+	float MatchTime = 900.f;
 
 public:
 	void SetHUDMatchCountDown(float CountDownTume);

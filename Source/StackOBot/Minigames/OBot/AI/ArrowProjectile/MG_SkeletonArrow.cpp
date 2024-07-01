@@ -17,6 +17,7 @@ AMG_SkeletonArrow::AMG_SkeletonArrow()
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
 
+
 	RootComponent = BoxCollision;
 
 	ArrowMesh->SetupAttachment(BoxCollision);
