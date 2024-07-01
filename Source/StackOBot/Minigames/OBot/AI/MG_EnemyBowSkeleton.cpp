@@ -1,15 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MG_EnemySkeleton.h"
+#include "MG_EnemyBowSkeleton.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Minigames/OBot/AI/UI/MG_WidgetComponent.h"
 #include "Minigames/OBot/AI/UI/MG_MonsterHpBar.h"
-#include "Engine/StaticMesh.h"
-#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
-AMG_EnemySkeleton::AMG_EnemySkeleton()
+AMG_EnemyBowSkeleton::AMG_EnemyBowSkeleton()
 {
 	GetCapsuleComponent()->InitCapsuleSize(30.0f, 80.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
@@ -25,8 +24,8 @@ AMG_EnemySkeleton::AMG_EnemySkeleton()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	GetMesh()->SetCollisionProfileName(TEXT("EnemyMesh"));
 
-	SwordMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sword"));
-	SwordMesh->SetupAttachment(GetMesh(), TEXT("FX"));
+	BowMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Bow"));
+	BowMesh->SetupAttachment(GetMesh(), TEXT("SKT_Bow"));
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletonMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/UndeadPack/SkeletonEnemy/Mesh/SK_Skeleton.SK_Skeleton'"));
 	if (SkeletonMeshRef.Object)
@@ -34,43 +33,39 @@ AMG_EnemySkeleton::AMG_EnemySkeleton()
 		GetMesh()->SetSkeletalMesh(SkeletonMeshRef.Object);
 	}
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> SkeletonAnimInstanceClassRef(TEXT("/Game/Character/AI/Skeleton/MG_Skeleton.MG_Skeleton_C"));
-	if (SkeletonAnimInstanceClassRef.Class)
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BowMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/UndeadPack/SkeletonEnemy/Mesh/Weapon/Bow/SK_Bow.SK_Bow'"));
+	if (BowMeshRef.Object)
 	{
-		GetMesh()->SetAnimInstanceClass(SkeletonAnimInstanceClassRef.Class);
+		BowMesh->SetSkeletalMesh(BowMeshRef.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SwordMeshRef(TEXT("/Script/Engine.StaticMesh'/Game/UndeadPack/SkeletonEnemy/Mesh/Weapon/Sword/SM_Sword.SM_Sword'"));
-	if (SwordMeshRef.Object)
+	static ConstructorHelpers::FClassFinder<UAnimInstance> BowSkeletonAnimInstanceClassRef(TEXT("/Game/Character/AI/BowSkeleton/MG_BowSkeleton.MG_BowSkeleton_C"));
+	if (BowSkeletonAnimInstanceClassRef.Class)
 	{
-		SwordMesh->SetStaticMesh(SwordMeshRef.Object);
+		GetMesh()->SetAnimInstanceClass(BowSkeletonAnimInstanceClassRef.Class);
 	}
 
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 160.0f));
 
 	CurrentMonsterType = EMonsterType::Skeleton;
-	MaxHp = 250.0f;
-	AttackDamage = 23.0f;
-	IsEquipped = false;
+	MaxHp = 150.0f;
+	AttackDamage = 5.0f;
 	DeadEventDelayTime = 1.0f;
+
 }
 
-void AMG_EnemySkeleton::BeginPlay()
+void AMG_EnemyBowSkeleton::BeginPlay()
 {
 	Super::BeginPlay();
 
 	CurrentHp = MaxHp;
 }
 
-void AMG_EnemySkeleton::PlayEquipSwordMontage_Implementation()
+void AMG_EnemyBowSkeleton::FindTarget()
 {
-	AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->StopAllMontages(0.0f);
-	AnimInstance->Montage_Play(EquipSwordMontage, 1.0f);
-	IsEquipped = true;
 }
 
-void AMG_EnemySkeleton::SetDead()
+void AMG_EnemyBowSkeleton::SetDead()
 {
 	Super::SetDead();
 
@@ -83,17 +78,12 @@ void AMG_EnemySkeleton::SetDead()
 	), DeadEventDelayTime, false);
 }
 
-bool AMG_EnemySkeleton::GetIsEquipped()
-{
-	return IsEquipped;
-}
-
-void AMG_EnemySkeleton::AttackByAI_Implementation()
+void AMG_EnemyBowSkeleton::AttackByAI_Implementation()
 {
 	PlayAttackAnimation();
 }
 
-void AMG_EnemySkeleton::NotifyAttackActionEnd_Implementation()
+void AMG_EnemyBowSkeleton::NotifyAttackActionEnd_Implementation()
 {
 	Super::NotifyAttackActionEnd();
 	OnAttackFinished.ExecuteIfBound();

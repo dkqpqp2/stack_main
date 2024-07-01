@@ -298,6 +298,7 @@ void AMG_ShootingCharacterPlayer::OnDeathPlayRagdoll()
 {
 	if (HasAuthority())
 	{
+		SetActorEnableCollision(false);
 		Multicast_PlayRagdoll();
 	}
 
@@ -305,6 +306,7 @@ void AMG_ShootingCharacterPlayer::OnDeathPlayRagdoll()
 
 void AMG_ShootingCharacterPlayer::OnDeathEnd()
 {
+	SetActorEnableCollision(true);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
 	GetCharacterMovement()->SetDefaultMovementMode();
 	GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
@@ -320,7 +322,12 @@ void AMG_ShootingCharacterPlayer::OnDeathEnd()
 		{
 			if (MyPS == PlayerStateArray[i])
 			{
-				AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(i));
+				int32 PlayerStartIndex = i;
+				if (IsSavePoint)
+				{
+					PlayerStartIndex += 4;
+				}
+				AActor* PlayerStart = GetWorld()->GetAuthGameMode()->FindPlayerStart(GetController(), FString::FromInt(PlayerStartIndex));
 				//다른 물체가 닿으면 start 위치로 location 설정
 				if (IsValid(PlayerStart))
 				{

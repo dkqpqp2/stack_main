@@ -300,7 +300,7 @@ float AMG_EnemyBase::GetAIDetectRange()
 
 float AMG_EnemyBase::GetAIAttackRange()
 {
-	return 150.0f;
+	return AttackRange;
 }
 
 float AMG_EnemyBase::GetAITurnSpeed()
