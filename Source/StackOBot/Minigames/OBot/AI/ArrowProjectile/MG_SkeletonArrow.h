@@ -14,10 +14,12 @@ class STACKOBOT_API AMG_SkeletonArrow : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMG_SkeletonArrow();
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UBoxComponent> BoxCollision;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Arrow)
 	TObjectPtr<class UStaticMeshComponent> ArrowMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UProjectileMovementComponent> ArrowMovement;
 
 protected:

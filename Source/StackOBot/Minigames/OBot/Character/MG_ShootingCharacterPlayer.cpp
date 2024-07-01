@@ -298,6 +298,7 @@ void AMG_ShootingCharacterPlayer::OnDeathPlayRagdoll()
 {
 	if (HasAuthority())
 	{
+		SetActorEnableCollision(false);
 		Multicast_PlayRagdoll();
 	}
 
@@ -305,6 +306,7 @@ void AMG_ShootingCharacterPlayer::OnDeathPlayRagdoll()
 
 void AMG_ShootingCharacterPlayer::OnDeathEnd()
 {
+	SetActorEnableCollision(true);
 	GetMesh()->SetAllBodiesSimulatePhysics(false);
 	GetCharacterMovement()->SetDefaultMovementMode();
 	GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
