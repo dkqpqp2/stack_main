@@ -191,4 +191,8 @@ public:
 	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 
 	bool IsWinner = false;
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool IsSavePoint = false;
 };
