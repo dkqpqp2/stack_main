@@ -39,6 +39,7 @@ protected:
 	UFUNCTION(NetMulticast, Unreliable)
 	void SpawnSkillAnimation();
 
+	UPROPERTY(EditAnywhere, Category = SkillDetect)
 	float SkillDetectRange = 5000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

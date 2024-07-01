@@ -49,10 +49,10 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AttackRange)
-	float AttackRange = 10.0f;
+	float AttackRange = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AttackRange)
-	float AttackRadius = 20.0f;
+	float AttackRadius = 30.0f;
 
 	UPROPERTY(VisibleAnywhere)
 	EMonsterType CurrentMonsterType;
@@ -123,13 +123,13 @@ protected:
 protected:
 	void SetHp(float NewHp);
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(EditAnywhere, Category = Stat)
 	float MaxHp;
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHP, Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHp;
 
-	UPROPERTY(VisibleInstanceOnly, Category = Stat)
+	UPROPERTY(EditAnywhere, Category = Stat)
 	float AttackDamage;
 
 protected:

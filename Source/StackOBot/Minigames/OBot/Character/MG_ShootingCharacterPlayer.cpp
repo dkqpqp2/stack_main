@@ -64,6 +64,7 @@ void AMG_ShootingCharacterPlayer::BeginPlay()
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AMG_ShootingCharacterPlayer::ReceiveDamage);
+		UpdateHUDHealth();
 
 	}
 	OnActorBeginOverlap.AddDynamic(this, &AMG_ShootingCharacterPlayer::OnOverlapBegin);
