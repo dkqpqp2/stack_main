@@ -62,35 +62,11 @@ void AMG_MissileTest::BeginPlay()
 
 		this->SetActorEnableCollision(false);
 	}
-	//FindPlayer();
 }
 
 
 void AMG_MissileTest::FindPlayer(AMG_CharacterBase* TargetActor)
 {
-	//class UWorld* const World = GetWorld();
-
-	//if (World)
-	//{
-	//	for (TActorIterator<AMG_CharacterPlayer> ObstacleItr(World); ObstacleItr; ++ObstacleItr)
-	//	{
-	//		FName PlayerTagName = FName(TEXT("Player"));
-	//		class AMG_CharacterPlayer* FoundPlayer = *ObstacleItr;
-
-	//		if (FoundPlayer != nullptr)
-	//		{
-	//			if (FoundPlayer->ActorHasTag(PlayerTagName))
-	//			{
-	//				if (PlayerInWorld != FoundPlayer)
-	//				{
-	//					PlayerInWorld = FoundPlayer;
-	//				}
-
-	//			}
-	//		}
-	//	}
-	//}
-
 	PlayerInWorld = TargetActor;
 	Target = PlayerInWorld;
 }
@@ -160,9 +136,7 @@ void AMG_MissileTest::Tick(float DeltaTime)
 				if (Target->IsValidLowLevel())
 				{
 					FVector WantedDir = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-					//WantedDir += Target->GetVelocity() * WantedDir.Size() / 200.f;
 					ProjectileMovement->Velocity = WantedDir * 30000.f * DeltaTime;
-					//ProjectileMovement->Velocity = ProjectileMovement->Velocity.GetSafeNormal() * 200.f;
 				}
 				else
 				{
